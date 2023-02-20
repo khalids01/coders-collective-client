@@ -2,8 +2,7 @@ const basicInfo = {
     name: "Coders Collective",
     subtitle: "Learn from the Best, Share with the Rest",
     headline: "Welcome to Coders Collective!",
-    subHeadline:
-        "The ultimate platform for coders to learn, share, and collaborate.",
+    subHeadline: "Join our community of coders and programmers to learn from each other, share your expertise, and collaborate on exciting projects. ",
     introduction: `Join our community of coders and programmers to learn from each other, share your expertise, and collaborate on exciting projects. Our platform is designed to provide a seamless experience for coders of all skill levels, from beginners to advanced users. Whether you're looking to build your skills, share your knowledge, or work on exciting projects, Coders Collective is the place to be.`,
     benefits: [
         "Learn from top coders and programmers around the world",
@@ -25,3 +24,6 @@ const basicInfo = {
 
 
 };
+
+
+export default basicInfo

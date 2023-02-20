@@ -1,7 +1,10 @@
 import Head from "next/head";
 import { Header, Hero, Subscription, Footer } from "../components/landing";
+import { useTheme } from "@/hooks";
 
 export default function Home() {
+  const { colors } = useTheme();
+
   return (
     <>
       <Head>
@@ -11,7 +14,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <section style={{ backgroundColor: "var(--navy)" }}>
+        <section
+          style={{ backgroundColor: colors.landingPage.background.header }}
+        >
           <Header />
           <Hero />
         </section>

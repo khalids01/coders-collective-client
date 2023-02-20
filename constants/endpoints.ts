@@ -10,6 +10,11 @@ const endpoints = {
         fileUpload: {
             image: '/upload-image',
         }
+    },
+    client: {
+        login: '/auth/login',
+        signup: '/auth/signup',
+        dashboard: '/dashboard'
     }
 }
 
