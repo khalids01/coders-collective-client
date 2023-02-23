@@ -14,8 +14,13 @@ import {
 } from "@mantine/core";
 import AuthLayout from "@/Layouts/AuthLayout";
 import { useForm } from "@mantine/form";
+import { useTheme } from "@/hooks";
+import { endpoints } from "@/constants";
+import Link from "next/link";
 
 const Login = () => {
+  const { colors } = useTheme();
+
   const form = useForm({
     initialValues: {
       email: "",
@@ -28,23 +33,27 @@ const Login = () => {
   return (
     <MantineProvider theme={{ colorScheme: "dark" }}>
       <AuthLayout>
-        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}></form>
+        <form
+          autoComplete={"off"}
+          onSubmit={form.onSubmit((values) => handleSubmit(values))}
+          style={{
+            color: colors.landingPage.text.header,
+          }}
+        ></form>
 
-        <Container size={420} my={40}>
-          <Title
-            align="center"
-            sx={(theme) => ({
-              fontFamily: `Greycliff CF, ${theme.fontFamily}`,
-              fontWeight: 900,
-            })}
-          >
+        <Container size={450} my={40}>
+          <Title align="center" color={colors.landingPage.text.header}>
             Welcome back!
           </Title>
           <Text color="dimmed" size="sm" align="center" mt={5}>
             Do not have an account yet?{" "}
-            <Anchor<"a"> href="#" size="sm">
+            <Text
+              component={Link}
+              href={endpoints.client.signup}
+              variant="link"
+            >
               Create account
-            </Anchor>
+            </Text>
           </Text>
 
           <Paper withBorder shadow="md" p={30} mt={30} radius="md">
@@ -57,16 +66,17 @@ const Login = () => {
             />
             <Group position="apart" mt="lg">
               <Checkbox label="Remember me" sx={{ lineHeight: 1 }} />
-              <Anchor<"a">
-                onClick={(event) => event.preventDefault()}
-                href="#"
+              <Text
+                component={Link}
+                href={endpoints.client.signup}
+                variant="link"
                 size="sm"
               >
-                Forgot password?
-              </Anchor>
+                Forgot password
+              </Text>
             </Group>
             <Button fullWidth mt="xl">
-              Sign in
+              Login
             </Button>
           </Paper>
         </Container>

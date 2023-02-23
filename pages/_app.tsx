@@ -22,6 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
           withNormalizeCSS
           theme={{
             ...overRiddenMantineThemeProps,
+            colorScheme,
           }}
         >
           <NotificationsProvider>

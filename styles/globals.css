@@ -83,7 +83,8 @@
 }
 
 html,
-body {
+body,
+#__next {
   font-family: "nunito", sans-serif !important;
   height: 100%;
 }

@@ -1,0 +1,15 @@
+export { IconPhone as Call } from "@tabler/icons";
+export { IconVideo as Video } from "@tabler/icons";
+export { IconInfoCircle as Info } from "@tabler/icons";
+export { IconSettings as Settings } from "@tabler/icons";
+export { IconUser as User } from "@tabler/icons";
+export { IconBrandGithub as Github } from "@tabler/icons";
+export { IconUsers as Users } from "@tabler/icons";
+export { IconHome as Home } from "@tabler/icons";
+export { IconMessage as Message } from "@tabler/icons";
+export { IconCircleDashed as CircleDashed } from '@tabler/icons'
+export { IconSearch as Search } from '@tabler/icons'
+export { IconFilter as Filter } from '@tabler/icons'
+export { IconCode as Code } from '@tabler/icons'
+export { IconSun as Sun } from '@tabler/icons'
+export { IconMoonStars as Moon } from '@tabler/icons'
