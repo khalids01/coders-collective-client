@@ -57,7 +57,7 @@ const ChatItem = ({
         boxShadow: `0 0 12px ${colors.shadows.default}`,
         borderRadius: 8,
         // border: `1px solid ${active ? colors.teal : "transparent"}`,
-        transition: "all 0.3s",
+        transition: "scale 0.3s",
         "&:hover": {
           scale: "101%",
           boxShadow: `0 0 20px ${colors.shadows.default}`,
@@ -65,12 +65,12 @@ const ChatItem = ({
       }}
     >
       <Avatar radius={100}>
-        <img
+        <Image
           src={"/images/k.png"}
           alt={"user"}
           width={40}
           height={40}
-          className="object-cover transition-all duration-300 object-top"
+          className="cover"
         />
       </Avatar>
       <Stack align={"stretch"} spacing={4}>
@@ -97,7 +97,10 @@ const ChatItem = ({
           <Badge
             py={5}
             px={6}
-            bg={active ? "white" : colors.background.default}
+            bg={active ? "var(--badgeBg)" : colors.background.default}
+            sx={{
+              color: active ? "black" : "var(--blue)",
+            }}
           >
             {Math.floor(Math.random() * 5) + 1}
           </Badge>
@@ -250,4 +253,4 @@ const Chats = () => {
   );
 };
 
-export default withHydration(Chats);
+export default Chats;

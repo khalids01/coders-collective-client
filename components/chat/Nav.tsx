@@ -25,6 +25,7 @@ import {
   Moon,
 } from "@/constants/icons";
 import { images } from "@/constants";
+import Link from "next/link";
 
 const navItems = [
   {
@@ -175,15 +176,19 @@ const CustomNavbar = () => {
                 placeContent: "center",
               }}
             >
-              <Image
-                src={
-                  colorScheme === "light" ? images.logoBlack : images.logoWhite
-                }
-                alt="Code Link"
-                height={40}
-                width={40}
-                className="object-contain"
-              />
+              <Link href="/">
+                <Image
+                  src={
+                    colorScheme === "light"
+                      ? images.logoBlack
+                      : images.logoWhite
+                  }
+                  alt={process.env.NEXT_PUBLIC_NAME || "Coders collective"}
+                  height={40}
+                  width={40}
+                  className="contain"
+                />
+              </Link>
             </Box>
           </Stack>
           {navItems.map(
@@ -210,7 +215,7 @@ const CustomNavbar = () => {
                   <ActionIcon
                     size={30}
                     radius={12}
-                    onClick={() => setActiveItem(item.value)}
+                    // onClick={() => setActiveItem(item.value)}
                     // @ts-ignore
                     sx={{
                       color:
@@ -221,7 +226,7 @@ const CustomNavbar = () => {
                         (item.value === activeItem
                           ? colors.card.active
                           : "transparent") + " !important",
-                      transition: "all 0.3s",
+                      transition: "background 0.3s",
                       aspectRatio: "1/1",
                       width: "max-content",
                       padding: 10,
@@ -279,7 +284,7 @@ const CustomNavbar = () => {
                 alt={user?.userName as string}
                 height={48}
                 width={48}
-                className="object-cover rounded-full "
+                className="cover"
               />
             ) : null}
           </Avatar>

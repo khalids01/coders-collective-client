@@ -10,75 +10,67 @@
 }
 
 :root {
-  --neutral: #f8faff; /* ! chats bg */
-  --default: #f0f4fa; /* ! sidebar and conversation bg */
-  --paper: #eaf2fe; /* ! textInput bg */
-  --white: #fff; /* ! chat-item and call-bg  */
-  --active: #5b96f7; /* !active chat-item and button bg */
-
-  --lightest: #f9fafb;
-  --lighter: #f4f6f8;
-  --dark: #454f5b;
-  --darker: #212b36;
-  --darkest: #161c24;
-
-  --blueDark: #0e151e;
-  --blueDarkest: #0e151e;
+  --white: white;
   --teal: #64ffda;
-  --tealDark: #40d2af;
+  --darkTeal: #40d2af;
+  --blue: #2098f5;
+  --divider: rgba(145, 158, 171, 0.24);
+  --badgeBg: white;
 
-  --card: var(--white);
-  --cardActive: #7eb2ff;
-  --cardHover: var(--teal);
+  --landing-text-header: rgb(243, 244, 246);
+  --landing-text-subScription: rgb(17, 24, 39);
+  --landing-text-footer: rgb(17, 24, 39);
+  --landing-text-textDisabled: #9ca3af;
 
-  --sidebarBg: var(--default);
-  --conversationBg: var(--default);
-  --chatsBg: var(--neutral);
-  --chatItemBg: var(--white);
+  --landing-bg-header: rgb(17, 24, 39);
+  --landing-bg-subScription: rgb(17, 24, 39);
+  --landing-bg-footer: rgb(243, 244, 246);
 
-  --textPrimary: #030303;
-  --textSecondary: #7c7c7d;
-  --textDisabled: #7c7c7d;
+  --text-primary: #030303;
+  --text-secondary: #666666;
+  --text-disabled: #828282;
+  --text-muted: #707070;
 
-  --navy: rgb(17, 24, 39);
+  --bg-paper: #ddf1f7;
+  --bg-default: #ecf5ff;
+  --bg-neutral: #f3f6fe;
+  --bg-lighter: #e3eeff;
+
+  --card-active: #5cc7f1;
+  --card-focus: #508be9;
+  --card-text: white;
+
+  --shadows-paper: #bac8d3d5;
+  --shadows-default: #f0f4fa;
+  --shadows-neutral: #f8faff;
 }
 
 .dark {
-  --neutral: #f8faff; /* ! chats bg */
-  --default: #f0f4fa; /* ! sidebar and conversation bg */
-  --paper: #eaf2fe; /* ! textInput bg */
-  --white: #fff; /* ! chat-item and call-bg  */
-  --active: #5b96f7; /* !active chat-item and button bg */
+  --badgeBg: rgb(225, 227, 226);
 
-  --lightest: #f9fafb;
-  --lighter: #f4f6f8;
-  --dark: #454f5b;
-  --darker: #212b36;
-  --darkest: #161c24;
+  --text-primary: #f4fafd;
+  --text-secondary: #d2d2df;
+  --text-disabled: #545456;
+  --text-muted: #3c3c3c;
 
-  --blueDark: #0e151e;
-  --blueDarkest: #0e151e;
-  --teal: #64ffda;
-  --tealDark: #40d2af;
+  --bg-paper: #0e1520;
+  --bg-default: #171e28;
+  --bg-neutral: #1b212b;
+  --bg-lighter: #233043;
 
-  --card: var(--white);
-  --cardActive: #7eb2ff;
-  --cardHover: var(--teal);
+  --card-active: #4783a8;
+  --card-focus: #4376c9;
+  --card-text: white;
 
-  --sidebarBg: var(--default);
-  --conversationBg: var(--default);
-  --chatsBg: var(--neutral);
-  --chatItemBg: var(--white);
-
-  --textPrimary: #030303;
-  --textSecondary: #7c7c7d;
-  --textDisabled: #7c7c7d;
+  --shadows-paper: #2d476ecc;
+  --shadows-default: #191f30;
+  --shadows-neutral: #20232b;
 }
 
 * {
   margin: 0;
   padding: 0;
-  /* font-family: nunito, sans-serif !important; */
+  font-family: nunito, sans-serif !important;
   box-sizing: border-box;
 }
 

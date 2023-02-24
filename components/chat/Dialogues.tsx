@@ -123,7 +123,7 @@ const Dialogues = () => {
     setAllImages(newArr as string[]);
   }, [image]);
 
-  console.log(allImages);
+  // console.log(allImages);
 
   return (
     <ScrollArea
