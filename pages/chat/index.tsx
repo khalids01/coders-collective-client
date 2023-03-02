@@ -8,19 +8,23 @@ const Chat = () => {
 
   return (
     <ChatLayout>
-      <Stack
-        align="stretch"
-        justify="space-between"
-        sx={{
-          maxHeight: "100svh",
-          overflow: "hidden",
-        }}
-        spacing={0}
-      >
-        <ChatHeader />
-        <Dialogues />
+      {md ? (
         <MessageForm />
-      </Stack>
+      ) : (
+        <Stack
+          align="stretch"
+          justify="space-between"
+          sx={{
+            maxHeight: "100svh",
+            overflow: "hidden",
+          }}
+          spacing={0}
+        >
+          <ChatHeader />
+          <Dialogues />
+          <MessageForm />
+        </Stack>
+      )}
     </ChatLayout>
   );
 };

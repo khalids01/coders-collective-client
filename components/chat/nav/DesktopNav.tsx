@@ -1,5 +1,5 @@
 import {
-  Navbar,
+  createStyles,
   Text,
   ActionIcon,
   Box,
@@ -13,135 +13,14 @@ import {
 import Image from "next/image";
 import { ReactElement, useState } from "react";
 import { useBreakPoints } from "@/hooks";
-import moment from "moment";
 import { useUser, useTheme } from "@/hooks";
-import {
-  Settings,
-  User,
-  Users,
-  Message,
-  Code,
-  Sun,
-  Moon,
-} from "@/constants/icons";
+import { Sun, Moon } from "@/constants/icons";
 import { images } from "@/constants";
 import Link from "next/link";
+import { navItems } from "@/constants/layoutItems";
 
-const navItems = [
-  {
-    value: "chats",
-    icon: <Message size={22} />,
-    divider: false,
-  },
-  {
-    value: "teams",
-    icon: <Users size={22} />,
-    divider: false,
-  },
-  // {
-  //   value: 'my-task',
-  //   icon: <Bookmark size={22} />,
-  //   divider: false
-  // },
-  {
-    value: "code",
-    icon: <Code size={22} />,
-    divider: false,
-  },
-  // {
-  //   value: 'notification',
-  //   icon: <Bell size={22} />,
-  //   divider: false
-  // },
-  {
-    value: "settings",
-    icon: <Settings size={22} />,
-    divider: true,
-  },
-];
-
-const subs = [
-  {
-    value: "User 11",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "user",
-  },
-  {
-    value: "Group 1",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "group",
-    channels: [],
-  },
-  {
-    value: "User 2",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "user",
-  },
-  {
-    value: "User 1",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "user",
-  },
-  {
-    value: "Group 1",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "group",
-    channels: [],
-  },
-  {
-    value: "User 2",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "user",
-  },
-  {
-    value: "User 1",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "user",
-  },
-  {
-    value: "Group 1",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "group",
-    channels: [],
-  },
-  {
-    value: "User 2",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "user",
-  },
-  {
-    value: "User 1",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "user",
-  },
-  {
-    value: "Group 1",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "group",
-    channels: [],
-  },
-  {
-    value: "User 2",
-    image: "/assets/images/logo.svg",
-    description: "this is description",
-    type: "user",
-  },
-];
-
-const CustomNavbar = () => {
+const DesktopNav = () => {
   const { colors, toggleColorScheme, colorScheme } = useTheme();
-  const { lg } = useBreakPoints();
   const { user } = useUser();
   const [activeItem, setActiveItem] = useState(navItems[0].value);
   const mantineTheme = useMantineTheme();
@@ -215,7 +94,7 @@ const CustomNavbar = () => {
                   <ActionIcon
                     size={30}
                     radius={12}
-                    // onClick={() => setActiveItem(item.value)}
+                    onClick={() => setActiveItem(item.value)}
                     // @ts-ignore
                     sx={{
                       color:
@@ -294,4 +173,4 @@ const CustomNavbar = () => {
   );
 };
 
-export default CustomNavbar;
+export default DesktopNav;

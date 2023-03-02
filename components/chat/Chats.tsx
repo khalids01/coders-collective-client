@@ -25,8 +25,6 @@ import { CircleDashed, Search, Filter, Code } from "@/constants/icons";
 import { CompactText } from "@/components/common/sub";
 import { Div } from "@/components/common/sub";
 
-import withHydration from "@/HOC/withHydration";
-
 interface Chat {
   avatar: string;
   lastMessage: string;
@@ -112,6 +110,7 @@ const ChatItem = ({
 
 const Chats = () => {
   const mantineTheme = useMantineTheme();
+  const { md } = useBreakPoints();
   const { chatLayout } = useLayout();
   const { colors } = useTheme();
   const { user } = useUser();
@@ -124,6 +123,7 @@ const Chats = () => {
 
     setScrollHeight(height - firstHeight);
   }, [firstHeight]);
+
   return (
     <Stack
       ref={ref}
@@ -136,16 +136,11 @@ const Chats = () => {
         height: "100%",
         maxHeight: "100vh",
         overflow: "hidden",
-        maxWidth: 400,
+        maxWidth: md ? "auto" : 400,
         backgroundColor: colors.background.default,
       }}
     >
-      <Box
-        ref={first}
-        pt={28}
-        px={16}
-        // sx={{ boxShadow: `0 0 16px ${colors.background.paper}` }}
-      >
+      <Box ref={first} pt={md ? 10 : 28} px={16}>
         <Group position="apart" align={"center"}>
           <Text weight={700} size={28} color={colors.text.primary}>
             Chats
@@ -194,26 +189,13 @@ const Chats = () => {
           />
         </Box>
 
-        {/* <Group>
-          <Button variant="subtle">
-            <Text inline color={colors.text.secondary}>
-              <Archive size={24} />
-            </Text>
-            <Text ml={10} size={15} weight={500}>
-              Archived
-            </Text>
-          </Button>
-        </Group> */}
         <Divider color={colors.divider} mt={16} />
       </Box>
-      <ScrollArea
-        // maxHeight={scrollHeight}
+      <ScrollArea.Autosize
+        maxHeight={md ? scrollHeight : scrollHeight - 20}
         offsetScrollbars
         pl={16}
         pr={4}
-        style={{
-          maxHeight: scrollHeight,
-        }}
       >
         <Text
           mb={16}
@@ -248,7 +230,7 @@ const Chats = () => {
             }}
           />
         </Stack>
-      </ScrollArea>
+      </ScrollArea.Autosize>
     </Stack>
   );
 };

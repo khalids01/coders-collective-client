@@ -91,3 +91,47 @@ main {
 .contain {
   object-fit: contain;
 }
+
+.bg-paper {
+  background-color: var(--bg-paper);
+}
+.bg-default {
+  background-color: var(--bg-default);
+}
+.bg-neutral {
+  background-color: var(--bg-neutral);
+}
+.bg-lighter {
+  background-color: var(--bg-lighter);
+}
+.text-primary {
+  background-color: var(--text-primary);
+}
+
+.text-secondary {
+  background-color: var(--text-secondary);
+}
+
+.text-muted {
+  background-color: var(--text-muted);
+}
+
+.text-disabled {
+  background-color: var(--text-disabled);
+}
+
+.badgeBg {
+  background-color: var(--badgeBg);
+}
+
+.card-active {
+  background-color: var(--card-active);
+}
+
+.card-focus {
+  background-color: var(--card-focus);
+}
+
+.card-text {
+  background-color: var(--card-text);
+}

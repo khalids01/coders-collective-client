@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocalStorage } from '@mantine/hooks'
 
-type LayoutType = 'chat'
+
 
 interface CommonProps {
     height: string | number;
@@ -57,10 +57,15 @@ const useLayout = () => {
         }
     })
 
+    useEffect(() => {
+
+
+    }, [])
+
 
     return {
         chatLayout,
-        setChatLayout
+        setChatLayout,
     }
 }
 

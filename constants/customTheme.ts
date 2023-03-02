@@ -43,7 +43,7 @@ const COMMON = {
     }
 }
 
-const colors = {
+export const cssColors = {
     light: {
         ...COMMON,
         mode: 'light',
@@ -54,4 +54,57 @@ const colors = {
     },
 }
 
-export default colors
+export const colors = {
+    light: {
+        ...COMMON,
+        mode: 'light',
+        text: {
+            primary: '#030303',
+            secondary: '#666666',
+            disabled: '#828282',
+            muted: '#707070'
+        },
+        background: {
+            paper: '#ddf1f7',
+            default: '#ecf5ff',
+            neutral: '#f3f6fe',
+            lighter: '#e3eeff'
+        },
+        card: {
+            active: '#5cc7f1',
+            focus: '#508be9',
+            text: 'white'
+        },
+        shadows: {
+            paper: '#bac8d3d5',
+            default: '#f0f4fa',
+            neutral: '#f8faff'
+        }
+    },
+    dark: {
+        ...COMMON,
+        mode: 'dark',
+        text: {
+            primary: '#f4fafd',
+            secondary: '#d2d2df',
+            disabled: '#545456',
+            muted: '#3c3c3c'
+        },
+        background: {
+            paper: '#0e1520',
+            default: '#171e28',
+            neutral: '#1b212b',
+            lighter: '#233043'
+        },
+        card: {
+            active: '#4783a8',
+            focus: '#4376c9',
+            text: 'white'
+        },
+        shadows: {
+            paper: '#2d476ecc',
+            default: '#191f30',
+            neutral: '#20232b'
+        }
+    },
+}
