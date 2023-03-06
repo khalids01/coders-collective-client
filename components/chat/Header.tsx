@@ -3,6 +3,8 @@ import Image from "next/image";
 import moment from "moment";
 import { Call, Video, Info } from "@/constants/icons";
 import { useTheme, useUser } from "@/hooks";
+import { useDispatch } from "react-redux";
+import { showChatInfo } from "@/redux/slices/chatLayoutProps";
 
 const ChatHeader = () => {
   const { user } = useUser();

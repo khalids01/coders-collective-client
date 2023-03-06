@@ -20,9 +20,9 @@ const Div = ({
   w = "auto",
   wrap,
   rounded = 0,
-  justifyContent = "unset",
-  items = "unset",
-  placeItems = "unset",
+  justifyContent = "auto",
+  items = "auto",
+  placeItems = "auto",
   bg = "transparent",
   children,
   gap = 0,
@@ -43,6 +43,7 @@ const Div = ({
         flexWrap: wrap ? "wrap" : "nowrap",
         rowGap: gap,
         columnGap: gap,
+        ...props.sx
       }}
     >
       {children}

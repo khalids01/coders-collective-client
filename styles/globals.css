@@ -16,6 +16,7 @@
   --blue: #2098f5;
   --divider: rgba(145, 158, 171, 0.24);
   --badgeBg: white;
+  --dTeal: #40d2af;
 
   --landing-text-header: rgb(243, 244, 246);
   --landing-text-subScription: rgb(17, 24, 39);
@@ -47,6 +48,7 @@
 
 .dark {
   --badgeBg: rgb(225, 227, 226);
+  --dTeal: #64ffda;
 
   --text-primary: #f4fafd;
   --text-secondary: #d2d2df;
@@ -105,19 +107,19 @@ main {
   background-color: var(--bg-lighter);
 }
 .text-primary {
-  background-color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .text-secondary {
-  background-color: var(--text-secondary);
+  color: var(--text-secondary);
 }
 
 .text-muted {
-  background-color: var(--text-muted);
+  color: var(--text-muted);
 }
 
 .text-disabled {
-  background-color: var(--text-disabled);
+  color: var(--text-disabled);
 }
 
 .badgeBg {
@@ -134,4 +136,15 @@ main {
 
 .card-text {
   background-color: var(--card-text);
+}
+
+.teal-on-hover{
+  transition: all 0.3s;
+  background-color: transparent !important;
+}
+
+.teal-on-hover:hover{
+  color: var(--dTeal);
+  text-shadow: 0 0 5px var(--dTeal);
+
 }

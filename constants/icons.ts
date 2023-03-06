@@ -7,10 +7,17 @@ export { IconBrandGithub as Github } from "@tabler/icons";
 export { IconUsers as Users } from "@tabler/icons";
 export { IconHome as Home } from "@tabler/icons";
 export { IconMessage as Message } from "@tabler/icons";
-export { IconCircleDashed as CircleDashed } from '@tabler/icons'
-export { IconSearch as Search } from '@tabler/icons'
-export { IconFilter as Filter } from '@tabler/icons'
-export { IconCode as Code } from '@tabler/icons'
-export { IconSun as Sun } from '@tabler/icons'
-export { IconMoonStars as Moon } from '@tabler/icons'
-export { IconBell as Bell } from '@tabler/icons'
+export { IconCircleDashed as CircleDashed } from "@tabler/icons";
+export { IconSearch as Search } from "@tabler/icons";
+export { IconFilter as Filter } from "@tabler/icons";
+export { IconCode as Code } from "@tabler/icons";
+export { IconSun as Sun } from "@tabler/icons";
+export { IconMoonStars as Moon } from "@tabler/icons";
+export { IconBell as Bell } from "@tabler/icons";
+export { IconSend as Send } from "@tabler/icons";
+export { IconMoodSmile as SmileEmoji } from "@tabler/icons";
+export { IconDotsVertical as DotsY } from "@tabler/icons";
+export { IconEdit as RichTextEdiror } from "@tabler/icons";
+export { IconFileZip as ZipFile } from "@tabler/icons";
+export { IconPhoto as Photo } from "@tabler/icons";
+
