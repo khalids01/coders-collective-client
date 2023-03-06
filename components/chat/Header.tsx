@@ -2,9 +2,7 @@ import { Group, ActionIcon, Text, Stack } from "@mantine/core";
 import Image from "next/image";
 import moment from "moment";
 import { Call, Video, Info } from "@/constants/icons";
-import { useTheme, useUser } from "@/hooks";
-import { useDispatch } from "react-redux";
-import { showChatInfo } from "@/redux/slices/chatLayoutProps";
+import { useTheme, useUser, useLayout } from "@/hooks";
 
 const ChatHeader = () => {
   const { user } = useUser();

@@ -148,3 +148,8 @@ main {
   text-shadow: 0 0 5px var(--dTeal);
 
 }
+
+.circle {
+  border-radius: 999px;
+  aspect-ratio: 1/1;
+}

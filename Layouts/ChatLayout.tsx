@@ -10,6 +10,7 @@ import ChatNavbar from "@/components/chat/nav";
 import ChatsSection from "@/components/chat/Chats";
 import MessageForm from "@/components/chat/MessageForm";
 import { useBreakPoints, useLayout } from "@/hooks";
+import ChatInfo from "@/components/chat/info";
 
 const useStyle = createStyles(() => {
   return {
@@ -19,13 +20,16 @@ const useStyle = createStyles(() => {
       gridTemplateRows: "100%",
       height: "100%",
     },
+    withInfo: {
+      gridTemplateColumns: `80px 350px auto 280px`,
+    },
   };
 });
 
 const ChatLayout = ({ children }: { children: any }) => {
   const { classes } = useStyle();
   const { md } = useBreakPoints();
-  const { chatLayout } = useLayout();
+  const { showChatInfo } = useLayout();
 
   if (md) {
     return (
@@ -54,10 +58,13 @@ const ChatLayout = ({ children }: { children: any }) => {
   }
 
   return (
-    <div className={classes.layout}>
+    <div
+      className={`${classes.layout} ${showChatInfo ? classes.withInfo : ""}`}
+    >
       <ChatNavbar />
       <ChatsSection />
       {children}
+      {showChatInfo ? <ChatInfo /> : null}
     </div>
   );
 };
