@@ -111,7 +111,6 @@ const ChatItem = ({
 const Chats = () => {
   const mantineTheme = useMantineTheme();
   const { md } = useBreakPoints();
-  const { chatLayout } = useLayout();
   const { colors } = useTheme();
   const { user } = useUser();
   const { ref, height } = useElementSize();

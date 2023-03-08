@@ -138,18 +138,30 @@ main {
   background-color: var(--card-text);
 }
 
-.teal-on-hover{
+.teal-on-hover {
   transition: all 0.3s;
   background-color: transparent !important;
 }
 
-.teal-on-hover:hover{
+.teal-on-hover:hover {
   color: var(--dTeal);
   text-shadow: 0 0 5px var(--dTeal);
-
 }
 
 .circle {
   border-radius: 999px;
   aspect-ratio: 1/1;
+}
+
+.border-l {
+  border-left: 1px solid var(--divider);
+}
+.border-r {
+  border-right: 1px solid var(--divider);
+}
+.border-top {
+  border-top: 1px solid var(--divider);
+}
+.border-b {
+  border-bottom: 1px solid var(--divider);
 }

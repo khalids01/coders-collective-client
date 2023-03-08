@@ -2,11 +2,18 @@ import { Group, ActionIcon, Text, Stack } from "@mantine/core";
 import Image from "next/image";
 import moment from "moment";
 import { Call, Video, Info } from "@/constants/icons";
-import { useTheme, useUser, useLayout } from "@/hooks";
+import { useTheme, useUser } from "@/hooks";
+import { showChatInfo } from "@/redux/slices/chatLayoutProps";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const ChatHeader = () => {
   const { user } = useUser();
   const { colors, colorScheme } = useTheme();
+  const dispatch = useDispatch();
+  const { showInfo } = useSelector(
+    (state: RootState) => state.chatLayout.chatInfo
+  );
 
   return (
     <Group
@@ -56,9 +63,17 @@ const ChatHeader = () => {
         <ActionIcon variant="transparent" radius={50} h={40} w={40}>
           <Video size={24} stroke={1.5} />
         </ActionIcon>
-        <ActionIcon variant="transparent" radius={50} h={40} w={40}>
-          <Info size={24} stroke={1.5} />
-        </ActionIcon>
+        {!showInfo ? (
+          <ActionIcon
+            onClick={() => dispatch(showChatInfo(!showInfo))}
+            variant="transparent"
+            radius={50}
+            h={40}
+            w={40}
+          >
+            <Info size={24} stroke={1.5} />
+          </ActionIcon>
+        ) : null}
       </Group>
     </Group>
   );

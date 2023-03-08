@@ -20,4 +20,13 @@ export { IconDotsVertical as DotsY } from "@tabler/icons";
 export { IconEdit as RichTextEdiror } from "@tabler/icons";
 export { IconFileZip as ZipFile } from "@tabler/icons";
 export { IconPhoto as Photo } from "@tabler/icons";
+export { IconStar as Star } from "@tabler/icons";
+export { IconChevronRight as Right } from "@tabler/icons";
+export { IconChevronLeft as Left } from "@tabler/icons";
+export { IconChevronDown as Down } from "@tabler/icons";
+export { IconChevronUp as Up } from "@tabler/icons";
+export { IconSquareRotatedOff as Block } from "@tabler/icons";
+export { IconTrash as Trash } from "@tabler/icons";
+
+
 

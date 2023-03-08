@@ -9,8 +9,10 @@ import {
 import ChatNavbar from "@/components/chat/nav";
 import ChatsSection from "@/components/chat/Chats";
 import MessageForm from "@/components/chat/MessageForm";
-import { useBreakPoints, useLayout } from "@/hooks";
+import { useBreakPoints } from "@/hooks";
+import { useSelector } from "react-redux";
 import ChatInfo from "@/components/chat/info";
+import type { RootState } from "@/redux/store";
 
 const useStyle = createStyles(() => {
   return {
@@ -21,7 +23,7 @@ const useStyle = createStyles(() => {
       height: "100%",
     },
     withInfo: {
-      gridTemplateColumns: `80px 350px auto 280px`,
+      gridTemplateColumns: `80px 350px auto 350px`,
     },
   };
 });
@@ -29,7 +31,9 @@ const useStyle = createStyles(() => {
 const ChatLayout = ({ children }: { children: any }) => {
   const { classes } = useStyle();
   const { md } = useBreakPoints();
-  const { showChatInfo } = useLayout();
+  const { showInfo } = useSelector(
+    (state: RootState) => state.chatLayout.chatInfo
+  );
 
   if (md) {
     return (
@@ -58,13 +62,11 @@ const ChatLayout = ({ children }: { children: any }) => {
   }
 
   return (
-    <div
-      className={`${classes.layout} ${showChatInfo ? classes.withInfo : ""}`}
-    >
+    <div className={`${classes.layout} ${showInfo ? classes.withInfo : ""}`}>
       <ChatNavbar />
       <ChatsSection />
       {children}
-      {showChatInfo ? <ChatInfo /> : null}
+      {showInfo ? <ChatInfo /> : null}
     </div>
   );
 };
