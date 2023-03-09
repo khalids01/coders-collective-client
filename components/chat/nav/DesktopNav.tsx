@@ -24,7 +24,6 @@ const DesktopNav = () => {
   const { user } = useUser();
   const [activeItem, setActiveItem] = useState(navItems[0].value);
   const mantineTheme = useMantineTheme();
-  const [opened, setOpened] = useState(false);
 
   return (
     <nav

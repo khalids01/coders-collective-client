@@ -30,7 +30,7 @@ const useStyle = createStyles(() => {
 
 const ChatLayout = ({ children }: { children: any }) => {
   const { classes } = useStyle();
-  const { md } = useBreakPoints();
+  const { md, lg } = useBreakPoints();
   const { showInfo } = useSelector(
     (state: RootState) => state.chatLayout.chatInfo
   );
@@ -62,7 +62,7 @@ const ChatLayout = ({ children }: { children: any }) => {
   }
 
   return (
-    <div className={`${classes.layout} ${showInfo ? classes.withInfo : ""}`}>
+    <div className={`${classes.layout} ${showInfo && !lg ? classes.withInfo : ""}`}>
       <ChatNavbar />
       <ChatsSection />
       {children}
