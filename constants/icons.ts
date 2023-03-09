@@ -27,6 +27,11 @@ export { IconChevronDown as Down } from "@tabler/icons";
 export { IconChevronUp as Up } from "@tabler/icons";
 export { IconSquareRotatedOff as Block } from "@tabler/icons";
 export { IconTrash as Trash } from "@tabler/icons";
+export { IconMessageOff as MessageOff } from "@tabler/icons";
+export { IconPencil as Edit } from "@tabler/icons";
+export { IconCornerUpLeftDouble as Reply } from "@tabler/icons";
+export { IconLogout as Logout } from "@tabler/icons";
+export { IconLogin as LogIn } from "@tabler/icons";
 
 
 

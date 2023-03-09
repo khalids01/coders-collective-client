@@ -6,12 +6,21 @@ import {
   ScrollArea,
   UnstyledButton,
   Modal,
+  Menu,
 } from "@mantine/core";
 import Image from "next/image";
 import moment from "moment";
 import { useLayout, useTheme } from "@/hooks";
 import { Div } from "../common/sub";
 import { useEffect, useState } from "react";
+import {
+  DotsY,
+  Trash,
+  MessageOff,
+  Edit,
+  Reply,
+  SmileEmoji,
+} from "@/constants/icons";
 
 const messages = [
   {
@@ -63,6 +72,51 @@ const messages = [
     images: ["/images/coding.jpg", "/images/coding.jpg", "/images/coding.jpg"],
   },
 ];
+
+const MessageItemMenu = ({
+  id,
+  type,
+}: {
+  id: string | number;
+  type: "other" | "me";
+}) => {
+  const { colors } = useTheme();
+
+  return (
+    <Menu
+      shadow={"md"}
+      width={200}
+      position={type === "me" ? "left-end" : "right-end"}
+      styles={{
+        dropdown: {
+          background: colors.background.default,
+        },
+
+        item: {
+          color: colors.text.primary,
+          fontSize: 16,
+        },
+      }}
+    >
+      <Menu.Target>
+        <ActionIcon>
+          <DotsY size={20} />
+        </ActionIcon>
+      </Menu.Target>
+      <Menu.Dropdown>
+        <Menu.Item icon={<Edit size={17} />}>Edit</Menu.Item>
+        <Menu.Divider />
+        <Menu.Item icon={<Reply size={17} />}>Reply</Menu.Item>
+        <Menu.Divider />
+        <Menu.Item icon={<SmileEmoji size={17} />}>React to message</Menu.Item>
+        <Menu.Divider />
+        <Menu.Item icon={<Trash size={17} />}>Delete</Menu.Item>
+        <Menu.Divider />
+        <Menu.Item icon={<MessageOff size={17} />}>Unsend</Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
+  );
+};
 
 const ImageModal = ({
   opened,
@@ -123,8 +177,6 @@ const Dialogues = () => {
     setAllImages(newArr as string[]);
   }, [image]);
 
-  // console.log(allImages);
-
   return (
     <ScrollArea
       style={{
@@ -145,9 +197,9 @@ const Dialogues = () => {
           return (
             <Stack
               key={index}
-              className="rounded-xl w-4/5"
               sx={{
                 margin: obj.type === "other" ? "0 auto 0 0" : "0 0 0 auto",
+                maxWidth: "70%",
               }}
             >
               <Text
@@ -162,62 +214,69 @@ const Dialogues = () => {
               >
                 {obj.time}
               </Text>
-              <Text
-                size={14}
-                color={obj.type === "other" ? colors.text.primary : "white"}
-                p="10px 20px"
-                sx={{
-                  borderRadius: 16,
-                  letterSpacing: 1.05,
-                  backgroundColor:
-                    obj.type === "other"
-                      ? colors.background.lighter
-                      : colors.card.focus,
-                  lineHeight: 1.6,
-                  maxWidth: "80%",
-                  marginLeft: obj.type === "other" ? 0 : "auto",
-                }}
-              >
-                {obj.text}
-              </Text>
-              <Div
-                d="flex"
-                wrap
-                gap={16}
-                justifyContent={
-                  obj.type === "other" ? "flex-start" : "flex-end"
-                }
-              >
-                {obj?.images
-                  ? obj?.images?.map((src: string, index: number) => {
-                      return (
-                        <UnstyledButton
-                          key={index}
-                          onClick={() => {
-                            setImage(src);
-                            setOpened(!opened);
-                          }}
-                          sx={{
-                            display: "inline-block",
-                            transition: "all 0.2s",
-                            "&:hover": {
-                              scale: "104%",
-                            },
-                          }}
-                        >
-                          <Image
-                            src={src}
-                            alt={"Image"}
-                            width={100}
-                            height={100}
-                            className="cover"
-                            style={{ borderRadius: 12 }}
-                          />
-                        </UnstyledButton>
-                      );
-                    })
-                  : null}
+              <Div d="flex">
+                {obj.type === "other" ? (
+                  <MessageItemMenu type={obj.type} id={index} />
+                ) : null}
+                <Text
+                  size={14}
+                  color={obj.type === "other" ? colors.text.primary : "white"}
+                  p="10px 20px"
+                  sx={{
+                    borderRadius: 16,
+                    letterSpacing: 1.05,
+                    backgroundColor:
+                      obj.type === "other"
+                        ? colors.background.lighter
+                        : colors.card.focus,
+                    lineHeight: 1.6,
+                    marginLeft: obj.type === "other" ? 0 : "auto",
+                  }}
+                >
+                  {obj.text}
+                </Text>
+                {obj.type !== "other" ? (
+                  <MessageItemMenu type={"me"} id={index} />
+                ) : null}
               </Div>
+              {obj?.images ? (
+                <Div
+                  d="flex"
+                  wrap
+                  gap={16}
+                  justifyContent={
+                    obj.type === "other" ? "flex-start" : "flex-end"
+                  }
+                >
+                  {obj?.images?.map((src: string, index: number) => {
+                    return (
+                      <UnstyledButton
+                        key={index}
+                        onClick={() => {
+                          setImage(src);
+                          setOpened(!opened);
+                        }}
+                        sx={{
+                          display: "inline-block",
+                          transition: "all 0.2s",
+                          "&:hover": {
+                            scale: "104%",
+                          },
+                        }}
+                      >
+                        <Image
+                          src={src}
+                          alt={"Image"}
+                          width={100}
+                          height={100}
+                          className="cover"
+                          style={{ borderRadius: 12 }}
+                        />
+                      </UnstyledButton>
+                    );
+                  })}
+                </Div>
+              ) : null}
             </Stack>
           );
         })}

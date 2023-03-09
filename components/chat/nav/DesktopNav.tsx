@@ -18,6 +18,7 @@ import { Sun, Moon } from "@/constants/icons";
 import { images } from "@/constants";
 import Link from "next/link";
 import { navItems } from "@/constants/layoutItems";
+import UserAvatar from "./UserAvatar";
 
 const DesktopNav = () => {
   const { colors, toggleColorScheme, colorScheme } = useTheme();
@@ -155,17 +156,7 @@ const DesktopNav = () => {
             //   },
             // }}
           />
-          <Avatar radius={50}>
-            {user?.userName ? (
-              <Image
-                src={images.k}
-                alt={user?.userName as string}
-                height={48}
-                width={48}
-                className="cover"
-              />
-            ) : null}
-          </Avatar>
+          <UserAvatar />
         </Stack>
       </Stack>
     </nav>

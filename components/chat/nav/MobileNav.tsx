@@ -26,6 +26,7 @@ import { images } from "@/constants";
 import Link from "next/link";
 import Logo from "@/components/common/sub/Logo";
 import { navItems } from "@/constants/layoutItems";
+import UserAvatar from "./UserAvatar";
 
 const useStyles = createStyles((theme, { colors }: { colors: ColorsType }) => {
   return {
@@ -194,17 +195,7 @@ const MobileNav = () => {
               //   },
               // }}
             />
-            <Avatar radius={50}>
-              {user?.userName ? (
-                <Image
-                  src={images.k}
-                  alt={user?.userName as string}
-                  height={48}
-                  width={48}
-                  className="cover"
-                />
-              ) : null}
-            </Avatar>
+            <UserAvatar/>
           </Group>
         </Stack>
       </Drawer>
