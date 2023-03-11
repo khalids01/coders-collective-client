@@ -130,11 +130,10 @@ const ImageModal = ({
   return (
     <Modal
       styles={{
-        modal: {
+        root: {
           height: "100%",
         },
       }}
-      overflow="outside"
       size={"90%"}
       opened={opened}
       onClose={() => setOpened(!opened)}

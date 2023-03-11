@@ -96,8 +96,8 @@ const MobileNav = () => {
         withCloseButton={false}
         onClose={() => setOpened(!opened)}
         classNames={{
-          // header: classes.header,
-          drawer: classes.drawer,
+          // header: classes.header,          
+          content: classes.drawer,
           body: classes.body,
         }}
       >

@@ -191,7 +191,7 @@ const Chats = () => {
         <Divider color={colors.divider} mt={16} />
       </Box>
       <ScrollArea.Autosize
-        maxHeight={md ? scrollHeight : scrollHeight - 20}
+        mah={md ? scrollHeight : scrollHeight - 20}
         offsetScrollbars
         pl={16}
         pr={4}

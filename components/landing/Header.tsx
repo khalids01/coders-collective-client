@@ -154,9 +154,9 @@ const MobileNav = () => {
             </Group>
           }
           classNames={{
-            drawer: classes.drawer,
+            content: classes.drawer,
             title: classes.drawerTitle,
-            closeButton: classes.drawerCloseButton,
+            close: classes.drawerCloseButton,
           }}
         >
           <Stack spacing={30} px={30} pt={30}>

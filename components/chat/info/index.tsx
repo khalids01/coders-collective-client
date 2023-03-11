@@ -24,7 +24,7 @@ const Info = () => {
 
   return (
     <ScrollArea.Autosize
-      maxHeight={"100vh"}
+      mah={"100vh"}
       sx={{ height: "100%" }}
       styles={{
         root: {
@@ -124,7 +124,7 @@ const LgScreenInfo = () => {
       withCloseButton={false}
       onClose={() => dispatch(showChatInfo(!showInfo))}
       styles={{
-        drawer:{
+        content:{
           backgroundColor: colors.background.default
         }
       }}

@@ -5,6 +5,7 @@ const endpoints = {
         base: BASE,
         auth: {
             login: BASE + '/login',
+            logout: BASE + '/logout',
             signup: BASE + '/signup',
             forgot_password: BASE + '/forgot-password',
         },
