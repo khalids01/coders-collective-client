@@ -42,29 +42,31 @@ const useStyles = createStyles((theme) => {
 });
 
 const Hero = () => {
-  const { sm, md, lg } = useBreakPoints();
+  const { sm, md, lg, xl } = useBreakPoints();
   const { colors } = useTheme();
 
   const { classes } = useStyles();
 
   return (
     <section>
-      <Container size="xl" px={20} py={lg ? 40 : 80}>
+      <Container size="xl" px={20} py={lg ? 40 : 80} mt={'6%'}>
         <Stack align="center" spacing={sm ? 20 : 24} pb={sm ? 20 : 40}>
           <Title
             color={colors.landingPage.text.header}
-            size={sm ? 24 : md ? 32 : 48}
+            size={sm ? 36 : md ? 46 : xl ?  60 : 70}
             align="center"
+            weight={700}
+            order={1}
           >
             {process.env.NEXT_PUBLIC_NAME}
           </Title>
           <Text
             color={colors.landingPage.text.textDisabled}
-            size={sm ? 14 : 16}
+            size={sm ? 14 : lg ? 18 : 20}
             mt={-10}
             align="center"
             sx={{
-              maxWidth: 350,
+              maxWidth: sm ? 300 : md ? 350 : 450,
               marginInline: "auto",
             }}
           >

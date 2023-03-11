@@ -3,9 +3,6 @@ import {
   TextInput,
   PasswordInput,
   Button,
-  Stack,
-  Anchor,
-  Checkbox,
   Group,
   Text,
   Paper,
@@ -18,7 +15,8 @@ import { useTheme } from "@/hooks";
 import Link from "next/link";
 import { endpoints } from "@/constants";
 
-const Signup = () => {
+
+const SignUp = () => {
   const { colors } = useTheme();
 
   const form = useForm({
@@ -43,10 +41,11 @@ const Signup = () => {
               Join our community!
             </Title>
 
-            <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+            <Paper withBorder shadow="md" p={30} mt={30} radius="md" bg={colors.background.paper}>
               <TextInput label="Name" placeholder="Full Name" required />
               <TextInput
                 label="Email"
+                color={'red'}
                 placeholder="you@mantine.dev"
                 required
                 mt="md"
@@ -70,7 +69,7 @@ const Signup = () => {
                 </Text>
               </Group>
               <Button fullWidth mt="xl">
-                Signup
+                Sign up
               </Button>
             </Paper>
           </Container>
@@ -80,4 +79,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignUp;

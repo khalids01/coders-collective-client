@@ -1,7 +1,7 @@
 import { useUser, useToken } from ".";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import loginService from "@/services/auth/login";
-import signupService from "@/services/auth/signup";
+import signUpService from "@/services/auth/signup";
 import logoutService from "@/services/auth/logout";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import { reactQueryKeys } from "@/constants";
@@ -14,7 +14,7 @@ const useAuth = () => {
   const { clearUserData, setUser } = useUser();
 
   // signup mutation
-  const { mutate: credentialSignupMutation } = useMutation(signupService, {
+  const { mutate: credentialSignupMutation } = useMutation(signUpService, {
     onMutate: () => {
       showNotification({
         id: "signup-request",

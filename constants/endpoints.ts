@@ -1,14 +1,18 @@
+const BASE = '/api/v1/coders-collective'
+
 const endpoints = {
     server: {
+        base: BASE,
         auth: {
-            signup: '/signup',
-            login: '/login',
-            logout: '/logout',
-            resetPassword: '/reset-password',
-            verifyEmail: '/verify-email',
+            login: BASE + '/login',
+            signup: BASE + '/signup',
+            forgot_password: BASE + '/forgot-password',
+        },
+        user: {
+            me: BASE + '/users/me'
         },
         fileUpload: {
-            image: '/upload-image',
+            image: BASE + '/upload-image',
         }
     },
     client: {

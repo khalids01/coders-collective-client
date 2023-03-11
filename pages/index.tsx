@@ -22,7 +22,7 @@ export default function Home() {
       </Head>
       <main>
         <section
-          style={{ backgroundColor: colors.landingPage.background.header }}
+          style={{ backgroundColor: colors.landingPage.background.header, minHeight: '100svh' }}
         >
           <Header />
           <Hero />

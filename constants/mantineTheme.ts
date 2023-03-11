@@ -8,7 +8,8 @@ const mantineTheme: MantineThemeOverride = {
                 input: {
                     height: 'auto'
                 }
-            }
+            },
+
         },
         Button: {
             styles: {
