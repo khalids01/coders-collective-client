@@ -1,25 +1,25 @@
-const BASE = '/api/v1/coders-collective'
 
 const endpoints = {
     server: {
-        base: BASE,
+        base: process.env.NEXT_PUBLIC_BASE_URL,
         auth: {
-            login: BASE + '/login',
-            logout: BASE + '/logout',
-            signup: BASE + '/signup',
-            forgot_password: BASE + '/forgot-password',
+            login:  '/login',
+            logout:  '/logout',
+            signup:  '/signup',
+            forgot_password:  '/forgot-password',
         },
         user: {
-            me: BASE + '/users/me'
+            me:  '/users/me'
         },
         fileUpload: {
-            image: BASE + '/upload-image',
+            image:  '/upload-image',
         }
     },
     client: {
         login: '/auth/login',
         signup: '/auth/signup',
-        dashboard: '/dashboard'
+        dashboard: '/dashboard',
+        chat: '/chat'
     }
 }
 

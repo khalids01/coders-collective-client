@@ -7,7 +7,7 @@ const expirationDate = new Date();
 expirationDate.setTime(expirationDate.getTime() + (7 * 24 * 60 * 60 * 1000))
 
 const OPTIONS: CookieSetOptions = { path: "/", sameSite: true, expires: expirationDate };
-const KEY = "message";
+const KEY = "coders_collective";
 
 export const storeToken = (token: string) => {
   cookies.set(KEY, token, OPTIONS);

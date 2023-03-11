@@ -4,7 +4,7 @@ import loginService from "@/services/auth/login";
 import signUpService from "@/services/auth/signup";
 import logoutService from "@/services/auth/logout";
 import { showNotification, updateNotification } from "@mantine/notifications";
-import { reactQueryKeys } from "@/constants";
+import { endpoints, reactQueryKeys } from "@/constants";
 import { AxiosError, AxiosResponse } from "axios";
 import { useRouter } from "next/router";
 
@@ -14,91 +14,92 @@ const useAuth = () => {
   const { clearUserData, setUser } = useUser();
 
   // signup mutation
-  const { mutate: credentialSignupMutation } = useMutation(signUpService, {
-    onMutate: () => {
-      showNotification({
-        id: "signup-request",
-        title: "Please wait!",
-        message: "Processing your request.",
-        loading: true,
-      });
-    },
-    onSuccess: (data: AxiosResponse) => {
-      setToken(data?.data?.token);
-      setUser(data?.data?.user);
-      updateNotification({
-        id: "signup-request",
-        title: "Welcome!",
-        message: "Successfully Signed up.",
-        color: "teal",
-      });
-      router.push("/dashboard/messenger");
-    },
-    onError: (err: AxiosError) => {
-      console.log("signup error : ", err?.response?.data);
-
-      updateNotification({
-        id: "signup-request",
-        title: "Error!",
-        message: "Signup failed.",
-        color: "red",
-      });
-
-      // @ts-ignore
-      err?.response?.data?.error?.message?.forEach((msg: string) => {
+  const { mutate: credentialSignupMutation, isLoading: signupLoading } =
+    useMutation(signUpService, {
+      onMutate: () => {
         showNotification({
-          id: "signup-request-failed",
-          title: msg || "Error",
+          id: "signup-request",
+          title: "Please wait!",
+          message: "Processing your request.",
+          loading: true,
+        });
+      },
+      onSuccess: (data: AxiosResponse) => {
+        setToken(data?.data?.token);
+        // setUser(data?.data?.user);
+        updateNotification({
+          id: "signup-request",
+          title: "Success!",
+          message: data?.data?.message || "Success!",
+          color: "teal",
+        });
+        router.push(endpoints.client.chat);
+      },
+      onError: (err: AxiosError) => {
+        updateNotification({
+          id: "signup-request",
+          // @ts-ignore
+          title: err.response?.data?.message || "Error!",
           message: "",
           color: "red",
         });
-      });
-    },
-  });
+
+        // @ts-ignore
+        err?.response?.data?.errors?.forEach((msg: string) => {
+          showNotification({
+            id: "signup-request-failed",
+            title: msg || "Error",
+            message: "",
+            color: "red",
+          });
+        });
+      },
+    });
 
   // login mutation
-  const { mutate: credentialLoginMutation } = useMutation(loginService, {
-    onMutate: () => {
-      showNotification({
-        id: "login-request",
-        title: "Please wait!",
-        message: "Processing your request.",
-        loading: true,
-      });
-    },
-    onSuccess: (data) => {
-      setToken(data?.data?.token);
-      setUser(data?.data?.user);
-      updateNotification({
-        id: "login-request",
-        title: "Welcome!",
-        message: "Successfully logged in.",
-        color: "teal",
-      });
-      router.push("/dashboard/messenger");
-    },
-    onError: (err) => {
-      updateNotification({
-        id: "login-request",
-        title: "Error!",
-        message: "Login failed.",
-        color: "red",
-      });
-
-      // @ts-ignore
-      err?.response?.data?.error?.message?.forEach((msg: string) => {
+  const { mutate: credentialLoginMutation, isLoading: loginLoading } =
+    useMutation(loginService, {
+      onMutate: () => {
         showNotification({
-          id: "login-request-failed",
-          title: msg || "Error",
-          message: "",
+          id: "login-request",
+          title: "Please wait!",
+          message: "Processing your request.",
+          loading: true,
+        });
+      },
+      onSuccess: (data) => {
+        setToken(data?.data?.token);
+        setUser(data?.data?.user);
+        updateNotification({
+          id: "login-request",
+          title: "Welcome!",
+          message: "Successfully logged in.",
+          color: "teal",
+        });
+        router.push(endpoints.client.chat);
+      },
+      onError: (err) => {
+        updateNotification({
+          id: "login-request",
+          title: "Error!",
+          message: "Login failed.",
           color: "red",
         });
-      });
-    },
-  });
+
+        // @ts-ignore
+        err?.response?.data?.error?.message?.forEach((msg: string) => {
+          showNotification({
+            id: "login-request-failed",
+            title: msg || "Error",
+            message: "",
+            color: "red",
+          });
+        });
+      },
+    });
 
   // logout query
-  const { refetch: logoutRequest } = useQuery(
+  const { refetch: logoutRequest, isLoading: logoutLoading } = useQuery(
     [reactQueryKeys.logout],
     () => {
       return logoutService();
@@ -126,28 +127,13 @@ const useAuth = () => {
     }
   );
 
-  const credentialSignup = ({ formData }: { formData: FormData }): void => {
-    credentialSignupMutation(formData);
-  };
-
-  const credentialLogin = ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }): void => {
-    credentialLoginMutation({ email, password });
-  };
-
-  const logout = (): void => {
-    logoutRequest();
-  };
-
   return {
-    logout,
-    credentialLogin,
-    credentialSignup,
+    logout: logoutRequest,
+    credentialLogin: credentialLoginMutation,
+    credentialSignup: credentialSignupMutation,
+    signupLoading,
+    loginLoading,
+    logoutLoading,
   };
 };
 

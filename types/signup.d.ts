@@ -1,8 +1,8 @@
-interface SignupRequest {
-    userName: string;
-    email: string;
-    password: string;
-    avatar: string;
+export interface SignupRequest {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
 }
 
-export default SignupRequest
+export default SignupRequest;

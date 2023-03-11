@@ -1,28 +1,16 @@
-import { retrieveToken } from '@/utils/tokenStore'
-import axios from 'axios'
+import { retrieveToken } from "@/utils/tokenStore";
+import axios, { AxiosInstance } from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
-const instance = axios.create({
-    baseURL,
-    headers: {
-        common: {
-            'Content-Type': 'application/json'
-        }
-    }
-})
+const api = axios.create({
+  baseURL,
+});
 
-instance.interceptors.request.use(
-    (config) => {
-        const token = retrieveToken()
-        if (token) {
-            config.headers.common['Authorization'] = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error)
-    }
-)
+api.defaults.headers.common["Content-Type"] = "application/json";
 
-export default instance;
+if(retrieveToken()){
+    api.defaults.headers.common["Authorization"] = retrieveToken()
+}
+
+export default api;

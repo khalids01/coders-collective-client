@@ -9,9 +9,6 @@ const mantineTheme: MantineThemeOverride = {
                     height: 'auto'
                 }
             },
-
-            
-
         },
         Button: {
             styles: {
