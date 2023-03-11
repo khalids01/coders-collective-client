@@ -10,6 +10,8 @@ const mantineTheme: MantineThemeOverride = {
                 }
             },
 
+            
+
         },
         Button: {
             styles: {
