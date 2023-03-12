@@ -39,11 +39,11 @@ const Login = () => {
       email: "",
       password: "",
     },
-    validate: zodResolver(schema)
+    validate: zodResolver(schema),
   });
 
   const handleSubmit = (values: typeof form.values) => {
-    credentialLogin(values)
+    credentialLogin(values);
   };
 
   return (
@@ -71,13 +71,30 @@ const Login = () => {
               </Text>
             </Text>
 
-            <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-              <TextInput label="Email" placeholder="you@mantine.dev" required />
+            <Paper
+              withBorder
+              shadow="md"
+              p={30}
+              mt={30}
+              radius="md"
+              pos={"relative"}
+              bg={colors.background.paper}
+            >
+              <LoadingOverlay visible={loginLoading} />
+              <TextInput
+                classNames={{ input: "bg-default" }}
+                label="Email"
+                placeholder="you@mantine.dev"
+                required
+                {...form.getInputProps("email")}
+              />
               <PasswordInput
                 label="Password"
                 placeholder="Your password"
                 required
                 mt="md"
+                classNames={{ input: "bg-default" }}
+                {...form.getInputProps("password")}
               />
               <Group position="apart" mt="lg">
                 <Checkbox label="Remember me" sx={{ lineHeight: 1 }} />
@@ -90,7 +107,7 @@ const Login = () => {
                   Forgot password
                 </Text>
               </Group>
-              <Button fullWidth mt="xl">
+              <Button type="submit" fullWidth mt="xl">
                 Login
               </Button>
             </Paper>

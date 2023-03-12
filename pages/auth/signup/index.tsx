@@ -81,6 +81,9 @@ const SignUp = () => {
                 label="First Name"
                 placeholder="First Name"
                 required
+                classNames={
+                  {input: 'bg-default'}
+                }
               />
               <TextInput
                 mt="md"
@@ -88,6 +91,9 @@ const SignUp = () => {
                 label="Last Name"
                 placeholder="Last Name"
                 required
+                classNames={
+                  {input: 'bg-default'}
+                }
               />
 
               <TextInput
@@ -97,6 +103,9 @@ const SignUp = () => {
                 type={"email"}
                 mt="md"
                 {...form.getInputProps("email")}
+                classNames={
+                  {input: 'bg-default'}
+                }
               />
               <PasswordInput
                 label="Password"
@@ -104,6 +113,9 @@ const SignUp = () => {
                 required
                 mt="md"
                 {...form.getInputProps("password")}
+                classNames={
+                  {input: 'bg-default'}
+                }
               />
               <Group position="right" mt="lg">
                 <Text color="dimmed" size="sm" align="center" mt={5}>

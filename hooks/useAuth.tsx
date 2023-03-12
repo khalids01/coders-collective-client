@@ -69,7 +69,7 @@ const useAuth = () => {
       },
       onSuccess: (data) => {
         setToken(data?.data?.token);
-        setUser(data?.data?.user);
+        // setUser(data?.data?.user);
         updateNotification({
           id: "login-request",
           title: "Welcome!",
@@ -78,23 +78,17 @@ const useAuth = () => {
         });
         router.push(endpoints.client.chat);
       },
-      onError: (err) => {
+      onError: (err: AxiosError) => {
+        console.log(err.response?.data)
         updateNotification({
           id: "login-request",
-          title: "Error!",
-          message: "Login failed.",
+        // @ts-ignore
+          title: err.response?.data?.message || "Error!",
+        // @ts-ignore
+          message: err.response?.data?.errors[0],
           color: "red",
         });
 
-        // @ts-ignore
-        err?.response?.data?.error?.message?.forEach((msg: string) => {
-          showNotification({
-            id: "login-request-failed",
-            title: msg || "Error",
-            message: "",
-            color: "red",
-          });
-        });
       },
     });
 
