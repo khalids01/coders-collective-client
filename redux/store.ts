@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import ChatLayoutSlice from "./slices/chatLayoutProps";
+import ChatSlice from "./slices/chatSlice";
 
 export const store = configureStore({
     reducer: {
-        chatLayout: ChatLayoutSlice
+        chatLayout: ChatLayoutSlice,
+        chat: ChatSlice
     }
 })
 

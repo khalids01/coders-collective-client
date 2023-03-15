@@ -3,10 +3,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import loginService from "@/services/auth/login";
 import signUpService from "@/services/auth/signup";
 import logoutService from "@/services/auth/logout";
+import { resetPasswordRequest } from "@/services/auth/reset-password";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import { endpoints, reactQueryKeys } from "@/constants";
 import { AxiosError, AxiosResponse } from "axios";
 import { useRouter } from "next/router";
+import { tokenDecode } from "@/utils/tokenDecode";
+import { DecodedToken } from "@/types";
 
 const useAuth = () => {
   const router = useRouter();
@@ -26,14 +29,16 @@ const useAuth = () => {
       },
       onSuccess: (data: AxiosResponse) => {
         setToken(data?.data?.token);
-        // setUser(data?.data?.user);
-        updateNotification({
-          id: "signup-request",
-          title: "Success!",
-          message: data?.data?.message || "Success!",
-          color: "teal",
-        });
-        router.push(endpoints.client.chat);
+        if (tokenDecode(data?.data?.token)) {
+          setUser(tokenDecode(data?.data?.token) as DecodedToken);
+          updateNotification({
+            id: "signup-request",
+            title: "Success!",
+            message: data?.data?.message || "Success!",
+            color: "teal",
+          });
+          router.push(endpoints.client.chat);
+        }
       },
       onError: (err: AxiosError) => {
         updateNotification({
@@ -69,26 +74,27 @@ const useAuth = () => {
       },
       onSuccess: (data) => {
         setToken(data?.data?.token);
-        // setUser(data?.data?.user);
-        updateNotification({
-          id: "login-request",
-          title: "Welcome!",
-          message: "Successfully logged in.",
-          color: "teal",
-        });
-        router.push(endpoints.client.chat);
+        if (tokenDecode(data?.data?.token)) {
+          setUser(tokenDecode(data?.data?.token) as DecodedToken);
+          router.push(endpoints.client.chat);
+          updateNotification({
+            id: "login-request",
+            title: "Welcome!",
+            message: "Successfully logged in.",
+            color: "teal",
+          });
+        }
       },
       onError: (err: AxiosError) => {
-        console.log(err.response?.data)
+        console.log(err.response?.data);
         updateNotification({
           id: "login-request",
-        // @ts-ignore
+          // @ts-ignore
           title: err.response?.data?.message || "Error!",
-        // @ts-ignore
+          // @ts-ignore
           message: err.response?.data?.errors[0],
           color: "red",
         });
-
       },
     });
 
@@ -106,9 +112,10 @@ const useAuth = () => {
         showNotification({
           id: "logout",
           title: "Logged out.",
-          message: "Redirect to homepage",
-          color: "purple",
+          message: "",
+          color: "blue",
         });
+        router.push("/");
       },
       onError(err) {
         showNotification({
@@ -120,6 +127,13 @@ const useAuth = () => {
       },
     }
   );
+
+  const {
+    refetch: passwordResetRequest,
+    isLoading: passwordResetRequestLoading,
+  } = useQuery([reactQueryKeys.forgetPasswordRequest], () => {
+    return resetPasswordRequest;
+  });
 
   return {
     logout: logoutRequest,

@@ -6,7 +6,7 @@ import {
   Container,
   createStyles,
 } from "@mantine/core";
-import { useBreakPoints, useTheme } from "@/hooks";
+import { useBreakPoints, useTheme, useToken } from "@/hooks";
 import basicInfo from "@/constants/basicInfo";
 import Link from "next/link";
 import { endpoints } from "@/constants";
@@ -44,16 +44,17 @@ const useStyles = createStyles((theme) => {
 const Hero = () => {
   const { sm, md, lg, xl } = useBreakPoints();
   const { colors } = useTheme();
+  const { isLoggedIn } = useToken();
 
   const { classes } = useStyles();
 
   return (
     <section>
-      <Container size="xl" px={20} py={lg ? 40 : 80} mt={'6%'}>
+      <Container size="xl" px={20} py={lg ? 40 : 80} mt={"6%"}>
         <Stack align="center" spacing={sm ? 20 : 24} pb={sm ? 20 : 40}>
           <Title
             color={colors.landingPage.text.header}
-            size={sm ? 36 : md ? 46 : xl ?  60 : 70}
+            size={sm ? 36 : md ? 46 : xl ? 60 : 70}
             align="center"
             weight={700}
             order={1}
@@ -72,14 +73,25 @@ const Hero = () => {
           >
             {basicInfo.subHeadline}
           </Text>
-          <Button
-            variant="outline"
-            component={Link}
-            href={endpoints.client.signup}
-            className={classes.join}
-          >
-            Join community
-          </Button>
+          {isLoggedIn ? (
+            <Button
+              variant="outline"
+              component={Link}
+              href={endpoints.client.chat}
+              className={classes.join}
+            >
+              Connect with people
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              component={Link}
+              href={endpoints.client.signup}
+              className={classes.join}
+            >
+              Join community
+            </Button>
+          )}
         </Stack>
       </Container>
     </section>

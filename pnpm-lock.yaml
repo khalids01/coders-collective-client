@@ -32,6 +32,7 @@ specifiers:
   embla-carousel-react: ^7.0.9
   emoji-mart: ^5.5.2
   framer-motion: ^9.0.5
+  jwt-decode: ^3.1.2
   moment: ^2.29.4
   next: ^13.2.4
   next-sitemap: ^4.0.1
@@ -75,6 +76,7 @@ dependencies:
   embla-carousel-react: 7.0.9_react@18.2.0
   emoji-mart: 5.5.2
   framer-motion: 9.0.5_biqbaboplfbrettd7655fr4n2y
+  jwt-decode: 3.1.2
   moment: 2.29.4
   next: 13.2.4_wiv434v7erz4aedd5whhdwmpv4
   react: 18.2.0
@@ -1567,6 +1569,10 @@ packages:
 
   /json-parse-even-better-errors/2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
+    dev: false
+
+  /jwt-decode/3.1.2:
+    resolution: {integrity: sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==}
     dev: false
 
   /klona/2.0.6:

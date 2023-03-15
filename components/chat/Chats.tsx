@@ -19,7 +19,7 @@ import {
 } from "@mantine/core";
 import { motion } from "framer-motion";
 import { useElementSize } from "@mantine/hooks";
-import { useBreakPoints, useLayout, useTheme, useUser } from "@/hooks";
+import { useBreakPoints, useTheme, useUser, useChat } from "@/hooks";
 
 import { CircleDashed, Search, Filter, Code } from "@/constants/icons";
 import { CompactText } from "@/components/common/sub";
@@ -116,6 +116,7 @@ const Chats = () => {
   const { ref, height } = useElementSize();
   const [scrollHeight, setScrollHeight] = useState(200);
   const { ref: first, height: firstHeight } = useElementSize();
+  const { friends } = useChat();
 
   useEffect(() => {
     if (!height || !firstHeight) return;

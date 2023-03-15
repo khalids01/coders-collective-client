@@ -13,16 +13,6 @@ export const storeUser = (user: User): void => {
 }
 
 export const retrieveUser = (): User | null => {
-    return {
-        _id: '1',
-        userName: 'Khalid Khan',
-        avatar: '/images/k.png',
-        createdAt: Date(),
-        email: 'programmerkhalid@outlook.com',
-        is_active: true,
-        role: 'Admin',
-        updatedAt: Date(),
-    }
     try {
         const user = cookies.get(KEY);
         if (user) {

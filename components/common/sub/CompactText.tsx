@@ -8,6 +8,7 @@ interface Props {
   withDots?: boolean;
   withToolTip?: boolean;
   color?: string;
+  size?: number;
 }
 
 const CompactText = ({
@@ -16,11 +17,20 @@ const CompactText = ({
   withDots = true,
   withToolTip = true,
   color,
+  size = 16,
 }: Props) => {
-  const { colors, colorScheme } = useTheme();
+  const { colors } = useTheme();
 
   if (text.length < length) {
-    return <span>{compact(text, length, withDots)}</span>;
+    return (
+      <Text
+        size={size}
+        color={color ? color : colors.text.primary}
+        component={"span"}
+      >
+        {text}
+      </Text>
+    );
   }
 
   if (withToolTip) {
@@ -39,7 +49,11 @@ const CompactText = ({
           </Text>
         }
       >
-        <Text color={color ? color : colors.text.primary} component={"span"}>
+        <Text
+          size={size}
+          color={color ? color : colors.text.primary}
+          component={"span"}
+        >
           {compact(text, length, withDots)}
         </Text>
       </Tooltip>

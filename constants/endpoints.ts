@@ -6,13 +6,16 @@ const endpoints = {
             login:  '/login',
             logout:  '/logout',
             signup:  '/signup',
-            forgot_password:  '/forgot-password',
+            reset_password:  '/reset-password',
         },
         user: {
             me:  '/users/me'
         },
         fileUpload: {
             image:  '/upload-image',
+        },
+        chat: {
+            friends: '/friends'
         }
     },
     client: {
