@@ -2,11 +2,12 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { MantineProvider, ColorSchemeProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider,  } from "@tanstack/react-query";
 import { useTheme } from "@/hooks";
 import overRiddenMantineThemeProps from "@/constants/mantineTheme";
 import { useState, useEffect } from "react";
 import { Provider as ReduxStoreProvider } from "react-redux";
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 import { store } from "@/redux/store";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -25,6 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return isMounted ? (
     <ReduxStoreProvider store={store}>
       <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={false}/>
         <ColorSchemeProvider
           colorScheme={colorScheme}
           toggleColorScheme={toggleColorScheme}

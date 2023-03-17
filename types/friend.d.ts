@@ -5,4 +5,5 @@ export default interface Friend {
     email: string;
     active: string;
     joined: string;
+    avatar: string;
 }

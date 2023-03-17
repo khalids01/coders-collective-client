@@ -28,7 +28,7 @@ const ChatHeader = () => {
         {user?.avatar ? (
           <Image
             src={user.avatar}
-            alt={user.userName}
+            alt={user.first_name}
             width={50}
             height={50}
             className="contain"

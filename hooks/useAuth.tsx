@@ -9,7 +9,7 @@ import { endpoints, reactQueryKeys } from "@/constants";
 import { AxiosError, AxiosResponse } from "axios";
 import { useRouter } from "next/router";
 import { tokenDecode } from "@/utils/tokenDecode";
-import { DecodedToken } from "@/types";
+import { User } from "@/types";
 
 const useAuth = () => {
   const router = useRouter();
@@ -30,7 +30,7 @@ const useAuth = () => {
       onSuccess: (data: AxiosResponse) => {
         setToken(data?.data?.token);
         if (tokenDecode(data?.data?.token)) {
-          setUser(tokenDecode(data?.data?.token) as DecodedToken);
+          setUser(tokenDecode(data?.data?.token) as User);
           updateNotification({
             id: "signup-request",
             title: "Success!",
@@ -75,7 +75,7 @@ const useAuth = () => {
       onSuccess: (data) => {
         setToken(data?.data?.token);
         if (tokenDecode(data?.data?.token)) {
-          setUser(tokenDecode(data?.data?.token) as DecodedToken);
+          setUser(tokenDecode(data?.data?.token) as User);
           router.push(endpoints.client.chat);
           updateNotification({
             id: "login-request",
@@ -133,7 +133,11 @@ const useAuth = () => {
     isLoading: passwordResetRequestLoading,
   } = useQuery([reactQueryKeys.forgetPasswordRequest], () => {
     return resetPasswordRequest;
-  });
+  },
+  {
+    enabled: false
+  }
+  );
 
   return {
     logout: logoutRequest,

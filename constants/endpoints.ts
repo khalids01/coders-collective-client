@@ -9,13 +9,13 @@ const endpoints = {
             reset_password:  '/reset-password',
         },
         user: {
-            me:  '/users/me'
+            me:  '/users/me',
         },
         fileUpload: {
             image:  '/upload-image',
         },
         chat: {
-            friends: '/friends'
+            friends: '/users/me/friends',
         }
     },
     client: {

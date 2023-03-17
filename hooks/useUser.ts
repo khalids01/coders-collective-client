@@ -1,6 +1,9 @@
+import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from "react";
 import { User } from "../types";
 import { storeUser, retrieveUser, removeUser } from '../utils/userStore'
+import { reactQueryKeys } from '@/constants';
+import { me } from '@/services/user/me';
 
 export default function useUser() {
     const [accessUser, setAccessUser] = useState<User | null>(null)
@@ -9,6 +12,14 @@ export default function useUser() {
         const user = retrieveUser()
         setAccessUser(user)
     }, [])
+
+    const {refetch: fetchUser, isLoading: isUserLoading} = useQuery([reactQueryKeys.users.me], ()=> me(), {
+        enabled: false,
+        onSuccess(data){
+            console.log(data.data)
+
+        }
+    })
 
     const setUser = (user: User): void => {
         if (user) {
@@ -20,11 +31,15 @@ export default function useUser() {
         removeUser()
     }
 
-    const revalidateUser = (): void => { }
+    const revalidateUser = () => {
+        fetchUser()
+    }
 
     return {
         user: accessUser,
         setUser,
-        clearUserData
+        clearUserData,
+        revalidateUser,
+        isUserLoading
     }
 }

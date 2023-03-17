@@ -1,8 +1,7 @@
-import { Avatar, Box, Menu, UnstyledButton, Text } from "@mantine/core";
+import { Menu, UnstyledButton, Text } from "@mantine/core";
 import { useUser, useTheme, useAuth } from "@/hooks";
-import Image from "next/image";
 import { User, Logout } from "@/constants/icons";
-import { CompactText } from "@/components/common/sub";
+import { CompactText, ProfileImage } from "@/components/common/sub";
 
 const UserAvatar = () => {
   const { colors } = useTheme();
@@ -23,29 +22,13 @@ const UserAvatar = () => {
     >
       <Menu.Target>
         <UnstyledButton>
-          <Avatar radius={50}>
-            {user?.avatar ? (
-              <Image
-                src={user.avatar}
-                alt={user?.first_name as string}
-                height={48}
-                width={48}
-                className="cover"
-              />
-            ) : (
-              <Box
-                bg="var(--card-focus)"
-                display={"grid"}
-                p={10}
-                sx={{ placeContent: "center", borderRadius: 100 }}
-              >
-                <Text component="span" color="var(--card-text)" pt={2}>
-                  {user?.first_name[0].toUpperCase()}
-                  {user?.last_name[0].toUpperCase()}
-                </Text>
-              </Box>
-            )}
-          </Avatar>
+          {user?._id ? (
+            <ProfileImage
+              first_name={user.first_name}
+              last_name={user.last_name}
+              avatar={user.avatar}
+            />
+          ) : null}
         </UnstyledButton>
       </Menu.Target>
 

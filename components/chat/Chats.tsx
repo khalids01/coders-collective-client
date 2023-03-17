@@ -16,28 +16,23 @@ import {
   ScrollArea,
   Badge,
   useMantineTheme,
+  Center,
 } from "@mantine/core";
 import { motion } from "framer-motion";
 import { useElementSize } from "@mantine/hooks";
 import { useBreakPoints, useTheme, useUser, useChat } from "@/hooks";
 
 import { CircleDashed, Search, Filter, Code } from "@/constants/icons";
-import { CompactText } from "@/components/common/sub";
+import { CompactText, ProfileImage } from "@/components/common/sub";
 import { Div } from "@/components/common/sub";
-
-interface Chat {
-  avatar: string;
-  lastMessage: string;
-  time: string;
-  name: string;
-}
+import Friend from "@/types/friend";
 
 const ChatItem = ({
   active = false,
-  chat,
+  friend,
 }: {
   active?: boolean;
-  chat: Chat;
+  friend: Friend;
 }) => {
   const { colors } = useTheme();
   const { md } = useBreakPoints();
@@ -62,21 +57,17 @@ const ChatItem = ({
         },
       }}
     >
-      <Avatar radius={100}>
-        <Image
-          src={"/images/k.png"}
-          alt={"user"}
-          width={40}
-          height={40}
-          className="cover"
-        />
-      </Avatar>
+      <ProfileImage
+        first_name={friend.first_name}
+        last_name={friend.last_name}
+        avatar={friend.avatar}
+      />
       <Stack align={"stretch"} spacing={4}>
         <Group position="apart">
           <Text weight={600}>
             <CompactText
               color={active ? "white" : undefined}
-              text={chat.name}
+              text={`${friend.first_name} ${friend.last_name}`}
               length={md ? 6 : 10}
             />
           </Text>
@@ -88,7 +79,7 @@ const ChatItem = ({
           <Text size={14}>
             <CompactText
               color={active ? "white" : undefined}
-              text={chat.lastMessage}
+              text={"Last message"}
               length={md ? 6 : 10}
             />
           </Text>
@@ -112,7 +103,7 @@ const Chats = () => {
   const mantineTheme = useMantineTheme();
   const { md } = useBreakPoints();
   const { colors } = useTheme();
-  const { user } = useUser();
+  const { user , revalidateUser} = useUser();
   const { ref, height } = useElementSize();
   const [scrollHeight, setScrollHeight] = useState(200);
   const { ref: first, height: firstHeight } = useElementSize();
@@ -120,7 +111,7 @@ const Chats = () => {
 
   useEffect(() => {
     if (!height || !firstHeight) return;
-
+    revalidateUser()
     setScrollHeight(height - firstHeight);
   }, [firstHeight]);
 
@@ -146,7 +137,7 @@ const Chats = () => {
             Chats
           </Text>
           <UnstyledButton pt={8}>
-            {user?.is_active ? (
+            {user?.active ? (
               <Div
                 mb={10}
                 h={15}
@@ -207,18 +198,15 @@ const Chats = () => {
           Pinned
         </Text>
         <Stack spacing={18}>
-          {Array.from({ length: 10 }, (_, i) => (
-            <ChatItem
-              chat={{
-                avatar: "/images/k.png",
-                lastMessage: "lorem ipsum dolor",
-                time: "8:20",
-                name: "Khalid Khan",
-              }}
-              active={i === 1}
-              key={i}
-            />
-          ))}
+          {friends && Object.values(friends)?.length > 0 ? (
+            Object.values(friends)?.map((friend, index) => (
+              <ChatItem key={index} friend={friend} active={index === 1} />
+            ))
+          ) : (
+            <Center py={40}>
+              <Text>No Friends to show</Text>
+            </Center>
+          )}
           <Divider
             mb="xs"
             label={<Text color={colors.text.secondary}>End</Text>}

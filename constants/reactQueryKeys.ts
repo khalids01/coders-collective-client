@@ -1,7 +1,10 @@
 const queryKeys = {
     logout: 'logout',
     forgetPasswordRequest: 'forget-password-request',
-    friends: 'friends'
+    friends: 'friends',
+    users:{
+        me: 'me'
+    }
 }
 
 export default queryKeys;

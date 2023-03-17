@@ -10,7 +10,7 @@ const api = axios.create({
 api.defaults.headers.common["Content-Type"] = "application/json";
 
 if(retrieveToken()){
-    api.defaults.headers.common["Authorization"] = retrieveToken()
+    api.defaults.headers.common["Authorization"] = `Bearer ${retrieveToken()}`
 }
 
 export default api;

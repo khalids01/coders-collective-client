@@ -1,13 +1,6 @@
 import Head from "next/head";
 import { Header, Hero, Subscription, Footer } from "../components/landing";
 import { useTheme } from "@/hooks";
-import { GetStaticPropsContext } from "next";
-
-export const getStaticProps = (context: GetStaticPropsContext) => {
-  return {
-    props: {},
-  };
-};
 
 export default function Home() {
   const { colors } = useTheme();
