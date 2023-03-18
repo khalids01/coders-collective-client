@@ -16,7 +16,8 @@ const useChat = () => {
 
   const { data } = useQuery([queryKeys.friends], () => getFriends(), {
     onSuccess(data) {
-      const friendsArr = data.data?.friends
+      console.log(data.data?.data)
+      const friendsArr = data.data?.data?.friends
       dispatch(setFriendsAction(friendsArr));
     },
   });

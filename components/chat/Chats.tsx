@@ -103,7 +103,7 @@ const Chats = () => {
   const mantineTheme = useMantineTheme();
   const { md } = useBreakPoints();
   const { colors } = useTheme();
-  const { user , revalidateUser} = useUser();
+  const { user } = useUser();
   const { ref, height } = useElementSize();
   const [scrollHeight, setScrollHeight] = useState(200);
   const { ref: first, height: firstHeight } = useElementSize();
@@ -111,7 +111,6 @@ const Chats = () => {
 
   useEffect(() => {
     if (!height || !firstHeight) return;
-    revalidateUser()
     setScrollHeight(height - firstHeight);
   }, [firstHeight]);
 

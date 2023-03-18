@@ -7,13 +7,11 @@ import {
   Stack,
   Divider,
   Switch,
-  Avatar,
   useMantineTheme,
 } from "@mantine/core";
 import Image from "next/image";
 import { ReactElement, useState } from "react";
-import { useBreakPoints } from "@/hooks";
-import { useUser, useTheme } from "@/hooks";
+import { useTheme } from "@/hooks";
 import { Sun, Moon } from "@/constants/icons";
 import { images } from "@/constants";
 import Link from "next/link";
@@ -22,7 +20,6 @@ import UserAvatar from "./UserAvatar";
 
 const DesktopNav = () => {
   const { colors, toggleColorScheme, colorScheme } = useTheme();
-  const { user } = useUser();
   const [activeItem, setActiveItem] = useState(navItems[0].value);
   const mantineTheme = useMantineTheme();
 

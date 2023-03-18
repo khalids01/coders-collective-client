@@ -13,13 +13,12 @@ export default function useUser() {
         setAccessUser(user)
     }, [])
 
-    const {refetch: fetchUser, isLoading: isUserLoading} = useQuery([reactQueryKeys.users.me], ()=> me(), {
-        enabled: false,
-        onSuccess(data){
-            console.log(data.data)
+    // const {refetch: fetchUser, isLoading: isUserLoading} = useQuery([reactQueryKeys.users.me], ()=> me(), {
+    //     enabled: false,
+    //     onSuccess(data){
 
-        }
-    })
+    //     }
+    // })
 
     const setUser = (user: User): void => {
         if (user) {
@@ -31,15 +30,15 @@ export default function useUser() {
         removeUser()
     }
 
-    const revalidateUser = () => {
-        fetchUser()
-    }
+    // const revalidateUser = () => {
+    //     fetchUser()
+    // }
 
     return {
         user: accessUser,
         setUser,
         clearUserData,
-        revalidateUser,
-        isUserLoading
+        // revalidateUser,
+        // isUserLoading
     }
 }
