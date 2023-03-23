@@ -1,19 +1,19 @@
 import { Group, ActionIcon, Text, Stack } from "@mantine/core";
-import Image from "next/image";
 import moment from "moment";
 import { Call, Video, Info } from "@/constants/icons";
-import { useTheme, useUser } from "@/hooks";
+import { useTheme } from "@/hooks";
 import { showChatInfo } from "@/redux/slices/chatLayoutProps";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import { ProfileImage } from "../common/sub";
 
 const ChatHeader = () => {
-  const { user } = useUser();
   const { colors, colorScheme } = useTheme();
   const dispatch = useDispatch();
   const { showInfo } = useSelector(
     (state: RootState) => state.chatLayout.chatInfo
   );
+  const { activeChat } = useSelector((state: RootState) => state.chat);
 
   return (
     <Group
@@ -25,18 +25,14 @@ const ChatHeader = () => {
       }}
     >
       <Group position="left" sx={{ width: "max-content" }}>
-        {user?.avatar ? (
-          <Image
-            src={user.avatar}
-            alt={user.first_name}
-            width={50}
-            height={50}
-            className="contain"
-          />
-        ) : null}
+        <ProfileImage
+          avatar={activeChat?.avatar}
+          first_name={activeChat?.first_name}
+          last_name={activeChat?.last_name}
+        />
         <Stack spacing={0}>
           <Text color={colors.text.primary} size={18} weight={500}>
-            Someone
+            {activeChat?.first_name} {activeChat?.last_name}
           </Text>
           <Text color={colors.text.secondary} size={14} weight={300}>
             Last Seen {moment(Date.now()).calendar()}

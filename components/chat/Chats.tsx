@@ -26,22 +26,25 @@ import { CircleDashed, Search, Filter, Code } from "@/constants/icons";
 import { CompactText, ProfileImage } from "@/components/common/sub";
 import { Div } from "@/components/common/sub";
 import Friend from "@/types/friend";
+import { useSelector, useDispatch } from "react-redux";
+import { setActiveChat } from "@/redux/slices/chatSlice";
+import { RootState } from "@/redux/store";
 
-const ChatItem = ({
-  active = false,
-  friend,
-}: {
-  active?: boolean;
-  friend: Friend;
-}) => {
+const ChatItem = ({ friend }: { friend: Friend }) => {
   const { colors } = useTheme();
   const { md } = useBreakPoints();
+  const dispatch = useDispatch();
+
+  // @ts-ignore
+  const { _id: id } = useSelector((state: RootState) => state.chat.activeChat);
 
   return (
-    <Box
+    <UnstyledButton
       mx={4}
+      onClick={() => dispatch(setActiveChat(friend))}
       sx={{
-        backgroundColor: active ? colors.card.active : colors.background.paper,
+        backgroundColor:
+          id === friend._id ? colors.card.focus : colors.background.paper,
         padding: "16px 25px 16px 16px",
         display: "grid",
         gridTemplateColumns: "60px auto",
@@ -50,7 +53,7 @@ const ChatItem = ({
         boxShadow: `0 0 12px ${colors.shadows.default}`,
         borderRadius: 8,
         // border: `1px solid ${active ? colors.teal : "transparent"}`,
-        transition: "scale 0.3s",
+        transition: "all 0.3s",
         "&:hover": {
           scale: "101%",
           boxShadow: `0 0 20px ${colors.shadows.default}`,
@@ -66,19 +69,22 @@ const ChatItem = ({
         <Group position="apart">
           <Text weight={600}>
             <CompactText
-              color={active ? "white" : undefined}
+              color={id === friend._id ? "white" : undefined}
               text={`${friend.first_name} ${friend.last_name}`}
               length={md ? 6 : 10}
             />
           </Text>
-          <Text color={active ? "white" : colors.text.primary} size={12}>
+          <Text
+            color={id === friend._id ? "white" : colors.text.primary}
+            size={12}
+          >
             9:36
           </Text>
         </Group>
         <Group position="apart">
           <Text size={14}>
             <CompactText
-              color={active ? "white" : undefined}
+              color={id === friend._id ? "white" : undefined}
               text={"Last message"}
               length={md ? 6 : 10}
             />
@@ -86,21 +92,24 @@ const ChatItem = ({
           <Badge
             py={5}
             px={6}
-            bg={active ? "var(--badgeBg)" : colors.background.default}
+            bg={
+              id === friend._id ? "var(--badgeBg)" : colors.background.default
+            }
             sx={{
-              color: active ? "black" : "var(--blue)",
+              color: id === friend._id ? "black" : "var(--blue)",
             }}
           >
             {Math.floor(Math.random() * 5) + 1}
           </Badge>
         </Group>
       </Stack>
-    </Box>
+    </UnstyledButton>
   );
 };
 
 const Chats = () => {
   const mantineTheme = useMantineTheme();
+  const dispatch = useDispatch();
   const { md } = useBreakPoints();
   const { colors } = useTheme();
   const { user } = useUser();
@@ -109,10 +118,12 @@ const Chats = () => {
   const { ref: first, height: firstHeight } = useElementSize();
   const { friends } = useChat();
 
+
   useEffect(() => {
     if (!height || !firstHeight) return;
     setScrollHeight(height - firstHeight);
   }, [firstHeight]);
+
 
   return (
     <Stack
@@ -197,9 +208,9 @@ const Chats = () => {
           Pinned
         </Text>
         <Stack spacing={18}>
-          {friends && Object.values(friends)?.length > 0 ? (
+          {friends ? (
             Object.values(friends)?.map((friend, index) => (
-              <ChatItem key={index} friend={friend} active={index === 1} />
+              <ChatItem key={index} friend={friend} />
             ))
           ) : (
             <Center py={40}>

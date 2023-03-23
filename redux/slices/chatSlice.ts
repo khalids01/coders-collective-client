@@ -1,13 +1,23 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import type Friend from "@/types/friend";
+import type {Friend, ActiveChatItem} from "@/types";
 
-interface Chats {
+interface chats {
   friends: Friend[];
+  activeChat: ActiveChatItem
 }
 
-const initialState: Chats = {
+const initialState: chats = {
   friends: [],
+  activeChat: {
+    _id: '',
+    first_name: '',
+    last_name: '',
+    active: false,
+    avatar: '',
+    email: '',
+    joined: '',
+  },
 };
 
 export const ChatSlice = createSlice({
@@ -15,14 +25,21 @@ export const ChatSlice = createSlice({
   initialState,
   reducers: {
     setFriends: (
-      state: Chats,
+      state: chats,
       action: PayloadAction<typeof initialState.friends>
     ) => {
       state.friends = { ...action.payload };
     },
+
+    setActiveChat: (
+      state: chats,
+      action: PayloadAction<typeof initialState.activeChat>
+    ) => {
+      state.activeChat = action.payload
+    },
   },
 });
 
-export const { setFriends } = ChatSlice.actions;
+export const { setFriends, setActiveChat } = ChatSlice.actions;
 
 export default ChatSlice.reducer;

@@ -3,7 +3,7 @@ export default interface Friend {
     first_name: string;
     last_name: string;
     email: string;
-    active: string;
+    active: boolean;
     joined: string;
     avatar: string;
 }

@@ -16,11 +16,13 @@ import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { Block, Call, Right, Star, Trash, Video } from "@/constants/icons";
 import { RootState } from "@/redux/store";
+import { ProfileImage } from "@/components/common/sub";
 
 const Info = () => {
   const { sendingTo } = useMessage();
   const dispatch = useDispatch();
   const { colors } = useTheme();
+  const { activeChat } = useSelector((state: RootState) => state.chat);
 
   return (
     <ScrollArea.Autosize
@@ -38,19 +40,18 @@ const Info = () => {
       </Group>
       <Stack px={20} py={20} spacing={0}>
         <Group>
-          <Image
-            src={sendingTo.avatar}
-            alt={sendingTo.name}
-            width={60}
-            height={60}
-            className="circle contain"
+          <ProfileImage
+            avatar={activeChat?.avatar}
+            first_name={activeChat?.first_name}
+            last_name={activeChat?.last_name}
+            size={60}
           />
           <Stack spacing={0}>
             <Text size={20} weight={600} color={colors.text.primary}>
-              {sendingTo.name}
+              {activeChat?.first_name} {activeChat?.last_name}
             </Text>
             <Text size={14} color={colors.text.primary}>
-              {sendingTo.mobile}
+              {activeChat?.email}
             </Text>
           </Stack>
         </Group>
@@ -116,7 +117,6 @@ const LgScreenInfo = () => {
   );
   const { colors } = useTheme();
 
-
   return (
     <Drawer
       position="right"
@@ -124,9 +124,9 @@ const LgScreenInfo = () => {
       withCloseButton={false}
       onClose={() => dispatch(showChatInfo(!showInfo))}
       styles={{
-        content:{
-          backgroundColor: colors.background.default
-        }
+        content: {
+          backgroundColor: colors.background.default,
+        },
       }}
     >
       <Info />

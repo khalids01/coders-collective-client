@@ -1,5 +1,5 @@
 import { retrieveToken } from "@/utils/tokenStore";
-import axios, { AxiosInstance } from "axios";
+import axios from "axios";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 

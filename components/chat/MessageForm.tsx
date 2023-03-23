@@ -10,19 +10,22 @@ import {
   ZipFile,
   Photo,
 } from "@/constants/icons";
-import data, {Skin} from "@emoji-mart/data";
+import data, { Skin } from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useState } from "react";
 
 const MessageForm = () => {
   const { colors, colorScheme } = useTheme();
 
-
   const form = useForm({
     initialValues: {
       message: "",
     },
   });
+
+  const sendMessage = () => {
+    console.log(form.values.message)
+  };
 
   return (
     <Div
@@ -47,9 +50,9 @@ const MessageForm = () => {
             closeOnItemClick={false}
             styles={{
               dropdown: {
-                padding: '0 !important',
+                padding: "0 !important",
                 borderRadius: 8,
-                border: 'none'
+                border: "none",
               },
             }}
           >
@@ -63,7 +66,9 @@ const MessageForm = () => {
               <Picker
                 theme={colorScheme}
                 data={data}
-                onEmojiSelect={(e:Skin)=>form.setFieldValue('message', form.values.message + e?.native)}
+                onEmojiSelect={(e: Skin) =>
+                  form.setFieldValue("message", form.values.message + e?.native)
+                }
               />
             </Menu.Dropdown>
           </Menu>
@@ -102,14 +107,14 @@ const MessageForm = () => {
             backgroundColor: colors.background.default,
             letterSpacing: 2,
             color: colors.text.primary,
-            fontSize: 16
+            fontSize: 16,
           },
           icon: {
             pointerEvents: "painted",
           },
         }}
       />
-      <ActionIcon className="teal-on-hover">
+      <ActionIcon onClick={() => sendMessage()} className="teal-on-hover">
         <Send />
       </ActionIcon>
     </Div>
