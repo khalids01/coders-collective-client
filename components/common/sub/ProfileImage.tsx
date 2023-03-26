@@ -25,6 +25,7 @@ const ProfileImage = ({ first_name, last_name, avatar, size }: Props) => {
           display={"grid"}
           p={10}
           w={size ? size : 48}
+          h={size ? size : 48}
           sx={{ placeContent: "center", borderRadius: 100 }}
         >
           <Text component="span" color="var(--card-text)" pt={2}>

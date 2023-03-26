@@ -5,6 +5,7 @@ import { setFriends as setFriendsAction, setActiveChat } from "@/redux/slices/ch
 import { RootState } from "@/redux/store";
 import Friend from "@/types/friend";
 import queryKeys from "@/constants/reactQueryKeys";
+import { sendMessage as sendMessageService } from "@/services/chat/message";
 
 const useChat = () => {
   const dispatch = useDispatch();
@@ -14,20 +15,29 @@ const useChat = () => {
     dispatch(setFriendsAction(friendsArr));
   };
 
-  const { data } = useQuery([queryKeys.friends], () => getFriends(), {
+  const {refetch: refetchFriends} = useQuery([queryKeys.friends], () => getFriends(), {
     onSuccess(data) {
-      // console.log(data.data?.data)
       const friendsArr = data.data?.data?.friends
       dispatch(setFriendsAction(friendsArr));
       dispatch(setActiveChat(friendsArr[0]))
     },
   });
 
-
+  const {mutate: sendMessage, isLoading: sendingMessage} = useMutation(sendMessageService, {
+    onSuccess: (data) => {
+      console.log(data)
+    },
+    onError: (error) => {
+      console.log(error)
+    }
+  })
 
   return {
+    refetchFriends,
     setFriends,
     friends,
+    sendMessage,
+    sendingMessage,
   };
 };
 

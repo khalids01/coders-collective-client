@@ -81,6 +81,7 @@ body,
 #__next {
   font-family: "nunito", sans-serif !important;
   height: 100%;
+  overflow: hidden;
 }
 main {
   min-height: 100vh;

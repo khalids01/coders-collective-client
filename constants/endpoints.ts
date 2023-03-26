@@ -10,12 +10,13 @@ const endpoints = {
         },
         user: {
             me:  '/users/me',
+            friends: '/users/me/friends',
         },
         fileUpload: {
             image:  '/upload-image',
         },
         chat: {
-            friends: '/users/me/friends',
+            send_message: '/send-message'
         }
     },
     client: {

@@ -17,7 +17,7 @@ export { IconBell as Bell } from "@tabler/icons";
 export { IconSend as Send } from "@tabler/icons";
 export { IconMoodSmile as SmileEmoji } from "@tabler/icons";
 export { IconDotsVertical as DotsY } from "@tabler/icons";
-export { IconEdit as RichTextEdiror } from "@tabler/icons";
+export { IconEdit as RichTextEditor } from "@tabler/icons";
 export { IconFileZip as ZipFile } from "@tabler/icons";
 export { IconPhoto as Photo } from "@tabler/icons";
 export { IconStar as Star } from "@tabler/icons";
