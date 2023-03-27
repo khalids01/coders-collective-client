@@ -9,6 +9,7 @@ interface Props {
 }
 
 const ProfileImage = ({ first_name, last_name, avatar, size }: Props) => {
+  
   return (
     <Avatar radius={50}>
       {avatar?.length > 0 ? (

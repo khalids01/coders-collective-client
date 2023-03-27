@@ -30,6 +30,10 @@ const SignUp = () => {
       .string()
       .min(2, { message: "Last name must be 2 or more character" })
       .max(10, { message: "Last name cannot be more then 10 characters" }),
+    user_name: z
+      .string()
+      .min(3, { message: "First name must be 3 or more character" })
+      .max(15, { message: "First name cannot be more then 15 characters" }),
     email: z.string().email({ message: "Invalid email" }),
     password: z
       .string()
@@ -44,6 +48,7 @@ const SignUp = () => {
     initialValues: {
       first_name: "",
       last_name: "",
+      user_name: "",
       email: "",
       password: "",
     },
@@ -61,7 +66,7 @@ const SignUp = () => {
           autoComplete={"off"}
           onSubmit={form.onSubmit((values) => handleSubmit(values))}
         >
-          <Container size={450} my={40}>
+          <Container size={450} pt={20} pb={40}>
             <Title align="center" color={colors.landingPage.text.header}>
               Join our community!
             </Title>
@@ -81,9 +86,7 @@ const SignUp = () => {
                 label="First Name"
                 placeholder="First Name"
                 required
-                classNames={
-                  {input: 'bg-default'}
-                }
+                classNames={{ input: "bg-default" }}
               />
               <TextInput
                 mt="md"
@@ -91,11 +94,16 @@ const SignUp = () => {
                 label="Last Name"
                 placeholder="Last Name"
                 required
-                classNames={
-                  {input: 'bg-default'}
-                }
+                classNames={{ input: "bg-default" }}
               />
-
+              <TextInput
+                mt="md"
+                {...form.getInputProps("user_name")}
+                label="User Name"
+                placeholder="@username"
+                required
+                classNames={{ input: "bg-default" }}
+              />
               <TextInput
                 label="Email"
                 placeholder="your.email@domain.com"
@@ -103,9 +111,7 @@ const SignUp = () => {
                 type={"email"}
                 mt="md"
                 {...form.getInputProps("email")}
-                classNames={
-                  {input: 'bg-default'}
-                }
+                classNames={{ input: "bg-default" }}
               />
               <PasswordInput
                 label="Password"
@@ -113,25 +119,25 @@ const SignUp = () => {
                 required
                 mt="md"
                 {...form.getInputProps("password")}
-                classNames={
-                  {input: 'bg-default'}
-                }
+                classNames={{ input: "bg-default" }}
               />
-              <Group position="right" mt="lg">
+              <Button type="submit" fullWidth mt="xl">
+                Sign up
+              </Button>
+              <Group position="right" mt={20}>
                 <Text color="dimmed" size="sm" align="center" mt={5}>
-                  Already have an account?{" "}
+                  Already have an account?
                   <Text
                     component={Link}
                     href={endpoints.client.login}
                     variant="link"
+                    color={'var(--blue)'}
+                    ml={8}
                   >
                     Login
                   </Text>
                 </Text>
               </Group>
-              <Button type="submit" fullWidth mt="xl">
-                Sign up
-              </Button>
             </Paper>
           </Container>
         </form>

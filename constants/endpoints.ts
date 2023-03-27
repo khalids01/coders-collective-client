@@ -7,6 +7,7 @@ const endpoints = {
             logout:  '/logout',
             signup:  '/signup',
             reset_password:  '/reset-password',
+            forget_password: '/forget-password'
         },
         user: {
             me:  '/users/me',
@@ -22,8 +23,9 @@ const endpoints = {
     client: {
         login: '/auth/login',
         signup: '/auth/signup',
+        forget_password: '/forget-password',
         dashboard: '/dashboard',
-        chat: '/chat'
+        chat: '/chat',
     }
 }
 

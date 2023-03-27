@@ -26,7 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return isMounted ? (
     <ReduxStoreProvider store={store}>
       <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false}/>
+        {/* <ReactQueryDevtools position="top-left" initialIsOpen={false}/> */}
         <ColorSchemeProvider
           colorScheme={colorScheme}
           toggleColorScheme={toggleColorScheme}

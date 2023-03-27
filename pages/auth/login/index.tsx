@@ -100,9 +100,10 @@ const Login = () => {
                 <Checkbox label="Remember me" sx={{ lineHeight: 1 }} />
                 <Text
                   component={Link}
-                  href={endpoints.client.signup}
-                  variant="link"
+                  href={endpoints.client.forget_password}
                   size="sm"
+                  variant="link"
+                  color="var(--blue)"
                 >
                   Forgot password
                 </Text>
@@ -110,6 +111,27 @@ const Login = () => {
               <Button type="submit" fullWidth mt="xl">
                 Login
               </Button>
+
+              <Group position="right" mt={20}>
+                <Text
+                  component={Link}
+                  href={endpoints.client.signup}
+                  variant="link"
+                  size="sm"
+                >
+                  {"Don't"} have an account yet?
+                  <Text
+                    ml={8}
+                    variant="link"
+                    color="var(--blue)"
+                    inline
+                    component={Link}
+                    href={endpoints.client.signup}
+                  >
+                    Sign Up
+                  </Text>
+                </Text>
+              </Group>
             </Paper>
           </Container>
         </form>

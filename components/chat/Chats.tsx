@@ -29,11 +29,19 @@ import Friend from "@/types/friend";
 import { useSelector, useDispatch } from "react-redux";
 import { setActiveChat } from "@/redux/slices/chatSlice";
 import { RootState } from "@/redux/store";
+import { useRouter } from "next/router";
+import { endpoints } from "@/constants";
 
 const ChatItem = ({ friend }: { friend: Friend }) => {
   const { colors } = useTheme();
   const { md } = useBreakPoints();
   const dispatch = useDispatch();
+  const router = useRouter()
+
+  const handleChatItemClick = () => {
+    dispatch(setActiveChat(friend))
+    router.push(`${endpoints.client.chat}/${friend._id}`)
+  } 
 
   // @ts-ignore
   const { _id: id } = useSelector((state: RootState) => state.chat.activeChat);
@@ -41,7 +49,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   return (
     <UnstyledButton
       mx={4}
-      onClick={() => dispatch(setActiveChat(friend))}
+      onClick={handleChatItemClick}
       sx={{
         backgroundColor:
           id === friend._id ? colors.card.focus : colors.background.paper,

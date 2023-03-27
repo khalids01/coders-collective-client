@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { Header, Hero, Subscription, Footer } from "../components/landing";
 import { useTheme } from "@/hooks";
+import { ScrollArea } from "@mantine/core";
 
 export default function Home() {
   const { colors } = useTheme();
@@ -14,13 +15,18 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <section
-          style={{ backgroundColor: colors.landingPage.background.header, minHeight: '100svh' }}
-        >
-          <Header />
-          <Hero />
-        </section>
-        <Subscription />
+        <ScrollArea h={"100svh"} offsetScrollbars>
+          <section
+            style={{
+              backgroundColor: colors.landingPage.background.header,
+              minHeight: "100svh",
+            }}
+          >
+            <Header />
+            <Hero />
+          </section>
+          <Subscription />
+        </ScrollArea>
         <Footer />
       </main>
     </>
