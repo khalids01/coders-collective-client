@@ -149,9 +149,9 @@ const Chats = () => {
         backgroundColor: colors.background.default,
       }}
     >
-      <Box ref={first} pt={md ? 10 : 28} px={16}>
+      <Box ref={first} pt={md ? 10 : 16} px={16}>
         <Group position="apart" align={"center"}>
-          <Text weight={700} size={28} color={colors.text.primary}>
+          <Text weight={700} size={26} color={colors.text.primary}>
             Chats
           </Text>
           <UnstyledButton pt={8}>

@@ -4,7 +4,7 @@ import { images } from "@/constants";
 
 const Logo = ({ size = 35 }: { size?: number }) => {
   return images.logoWhite && process.env.NEXT_PUBLIC_NAME ? (
-    <Link href="/">
+    <Link href="/" >
       <Image
         src={images.logoWhite}
         alt={process.env.NEXT_PUBLIC_NAME}

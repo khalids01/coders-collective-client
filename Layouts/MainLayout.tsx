@@ -1,18 +1,33 @@
-import CustomNavbar from "@/components/mainLayout/Navbar";
-import { Navbar, AppShell } from "@mantine/core";
+import { createStyles } from "@mantine/core";
+import MainNavbar from "@/components/mainLayout/nav";
 
-const MainLayout = ({ children }: { children: any }) => {
+
+const useStyle = createStyles((theme) => {
+  return {
+    layout: {
+      display: "grid",
+      gridTemplateColumns: `80px auto`,
+      gridTemplateRows: "100%",
+      height: "100%",
+      [theme.fn.smallerThan("md")]: {
+        gridTemplateColumns: `100%`,
+        gridTemplateRows: '60px auto'
+      },
+    },
+  };
+});
+
+const ChatLayout = ({ children }: { children: any }) => {
+  const { classes } = useStyle();
+
   return (
-    <AppShell
-      navbar={
-        <Navbar>
-          <CustomNavbar />
-        </Navbar>
-      }
+    <div
+      className={classes.layout}
     >
+      <MainNavbar />
       {children}
-    </AppShell>
+    </div>
   );
 };
 
-export default MainLayout;
+export default ChatLayout;

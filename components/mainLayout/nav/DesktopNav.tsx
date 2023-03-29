@@ -25,6 +25,7 @@ const DesktopNav = () => {
 
   return (
     <nav
+      className="nav main-nav desktop-nav"
       style={{
         backgroundColor: "transparent",
         borderRight: "none",
@@ -33,7 +34,7 @@ const DesktopNav = () => {
     >
       <Stack
         justify={"space-between"}
-        pt={20}
+        pt={16}
         sx={{
           backgroundColor: colors.background.paper,
           boxShadow: `0 0 2px ${colors.shadows.paper}`,

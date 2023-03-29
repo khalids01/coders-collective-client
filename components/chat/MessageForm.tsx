@@ -32,7 +32,7 @@ const MessageForm = () => {
   const { colors, colorScheme } = useTheme();
   const { sendMessage, sendingMessage } = useChat();
   const { user } = useUser();
-  const { _id } = useSelector((state: RootState) => state.chat.activeChat);
+  const { activeChat } = useSelector((state: RootState) => state.chat);
   const { classes } = useStyles();
 
   const form = useForm({
@@ -42,14 +42,12 @@ const MessageForm = () => {
   });
 
   const handleSendMessage = (values: typeof form.values) => {
-    if (values.message.trim()?.length === 0) return;
-
-    console.log(values)
+    if (values.message.trim()?.length === 0 || !activeChat?._id) return;
 
     sendMessage({
       message: values.message,
       senderName: `${user?.first_name as string} ${user?.last_name as string}` ,
-      receiverId: _id,
+      receiverId: activeChat?._id,
     });
   };
 

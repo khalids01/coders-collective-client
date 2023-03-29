@@ -32,6 +32,7 @@ export { IconPencil as Edit } from "@tabler/icons";
 export { IconCornerUpLeftDouble as Reply } from "@tabler/icons";
 export { IconLogout as Logout } from "@tabler/icons";
 export { IconLogin as LogIn } from "@tabler/icons";
+export {IconDashboard as Dashboard} from '@tabler/icons'
 
 
 

@@ -110,7 +110,7 @@ const Info = () => {
   );
 };
 
-const LgScreenInfo = () => {
+const SmallScreenInfo = () => {
   const dispatch = useDispatch();
   const { showInfo } = useSelector(
     (state: RootState) => state.chatLayout.chatInfo
@@ -136,13 +136,13 @@ const LgScreenInfo = () => {
 
 const ChatInfo = () => {
   const { lg } = useBreakPoints();
-  // if (lg) {
-  //   return <LgScreenInfo />;
-  // }
+  if (lg) {
+    return <SmallScreenInfo />;
+  }
 
   return (
     <aside className="bg-default border-l">
-      {lg ? <LgScreenInfo /> : <Info />}
+      {lg ? <SmallScreenInfo /> : <Info />}
     </aside>
   );
 };

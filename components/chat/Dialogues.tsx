@@ -7,6 +7,7 @@ import {
   UnstyledButton,
   Modal,
   Menu,
+  Box,
 } from "@mantine/core";
 import Image from "next/image";
 import moment from "moment";
@@ -138,23 +139,16 @@ const ImageModal = ({
       opened={opened}
       onClose={() => setOpened(!opened)}
     >
-      {/* <ScrollArea.Autosize maxHeight={"100%"}> */}
       {images?.map((image, index) => (
         <Image
           key={index}
           src={image}
           alt={image}
-          // height={600}
-          // width={600}
-          style={{
-            width: "100%",
-            minWidth: 400,
-          }}
-          fill
-          // className="contain"
+          height={500}
+          width={900}
+          className="contain"
         />
       ))}
-      {/* </ScrollArea.Autosize> */}
     </Modal>
   );
 };
@@ -178,8 +172,8 @@ const Dialogues = () => {
 
   return (
     <ScrollArea
+      h={`calc(100vh - ${chatLayout.conversation.form.height}px)`}
       style={{
-        maxHeight: `calc(100vh - ${chatLayout.conversation.form.height}px)`,
         borderTop: `1px solid ${colors.divider}`,
         borderBottom: `1px solid ${colors.divider}`,
       }}

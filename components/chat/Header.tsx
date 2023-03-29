@@ -20,6 +20,7 @@ const ChatHeader = () => {
       position="apart"
       py={10}
       px={10}
+      mih={70}
       sx={{
         backgroundColor: colors.background.default,
       }}

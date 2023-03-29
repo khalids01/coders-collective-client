@@ -1,73 +1,55 @@
-import {
-  createStyles,
-  useMantineTheme,
-  AppShell,
-  Header,
-  Footer,
-} from "@mantine/core";
-
-import ChatNavbar from "@/components/chat/nav";
-import ChatsSection from "@/components/chat/Chats";
-import MessageForm from "@/components/chat/MessageForm";
+import { AppShell, createStyles } from "@mantine/core";
+import type { ReactNode } from "react";
 import { useBreakPoints } from "@/hooks";
 import { useSelector } from "react-redux";
-import ChatInfo from "@/components/chat/info";
-import type { RootState } from "@/redux/store";
+import { RootState } from "@/redux/store";
 
-const useStyle = createStyles(() => {
-  return {
-    layout: {
-      display: "grid",
-      gridTemplateColumns: `80px 350px auto`,
-      gridTemplateRows: "100%",
-      height: "100%",
-    },
-    withInfo: {
-      gridTemplateColumns: `80px 350px auto 350px`,
-    },
-  };
-});
+interface ChatLayoutProps {
+  chats: ReactNode;
+  content: ReactNode;
+  rightSection: ReactNode;
+}
 
-const ChatLayout = ({ children }: { children: any }) => {
-  const { classes } = useStyle();
-  const { md, lg } = useBreakPoints();
+const useStyles = createStyles((theme) => ({
+  container: {
+    height: "100%",
+    width: "calc(100%-80px)",
+    alignItems: "stretch",
+    overflow: "hidden",
+    display: "grid",
+    gridTemplateColumns: "350px auto",
+    gridTemplateRows: "100%",
+  },
+  withInfo: {
+    [theme.fn.largerThan("md")]: {
+      gridTemplateColumns: `350px auto 350px`,
+    },
+  },
+  chats: {
+    width: 350,
+  },
+  content: {
+    width: "auto",
+  },
+  rightSection: {
+    width: 1,
+  },
+}));
+
+const ChatLayout = ({ chats, content, rightSection }: ChatLayoutProps) => {
+  const { classes } = useStyles();
   const { showInfo } = useSelector(
     (state: RootState) => state.chatLayout.chatInfo
   );
 
-  if (md) {
-    return (
-      <AppShell
-        fixed
-        header={
-          <Header height={80} fixed>
-            <ChatNavbar />
-          </Header>
-        }
-        footer={
-          <Footer height={100} fixed>
-            <MessageForm />
-          </Footer>
-        }
-        styles={{
-          main: {
-            paddingInline: 0,
-            background: "var(--bg-default)",
-          },
-        }}
-      >
-        <ChatsSection />
-      </AppShell>
-    );
-  }
-
   return (
-    <div className={`${classes.layout} ${showInfo && !lg ? classes.withInfo : ""}`}>
-      <ChatNavbar />
-      <ChatsSection />
-      {children}
-      {showInfo ? <ChatInfo /> : null}
-    </div>
+    <section
+      className={`${classes.container} ${showInfo ? classes.withInfo : ""}`}
+    >
+      <div className={classes.chats}>{chats}</div>
+      <div className={classes.content}>{content}</div>
+      {showInfo && rightSection}
+    </section>
   );
 };
 
