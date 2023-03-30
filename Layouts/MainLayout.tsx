@@ -1,6 +1,9 @@
 import { createStyles } from "@mantine/core";
 import MainNavbar from "@/components/mainLayout/nav";
-
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { changeActiveRoute } from "@/redux/slices/activeRouteSlice";
+import { withRouter, NextRouter } from "next/router";
 
 const useStyle = createStyles((theme) => {
   return {
@@ -17,8 +20,21 @@ const useStyle = createStyles((theme) => {
   };
 });
 
-const ChatLayout = ({ children }: { children: any }) => {
+interface WithRouterProps{
+  router: NextRouter,
+  children: any
+}
+
+
+const MainLayout = ({ children, router }: WithRouterProps) => {
   const { classes } = useStyle();
+  const dispatch = useDispatch()
+
+  useEffect(()=>{
+    dispatch(changeActiveRoute(router.pathname))
+  }, [])
+
+
 
   return (
     <div
@@ -30,4 +46,4 @@ const ChatLayout = ({ children }: { children: any }) => {
   );
 };
 
-export default ChatLayout;
+export default withRouter(MainLayout);

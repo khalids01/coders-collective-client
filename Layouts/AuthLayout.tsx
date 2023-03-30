@@ -1,7 +1,6 @@
 import { Container, Text, Group, ScrollArea } from "@mantine/core";
 import { useTheme } from "@/hooks";
 import { Logo } from "@/components/common/sub";
-import Link from "next/link";
 
 export default function AuthLayout({ children }: { children: any }) {
   const { colors } = useTheme();

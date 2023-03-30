@@ -2,15 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface ActiveRoute {
-  activeRoute:{
-    route: string
-  }
+    route: string;
+    chatRoute: string;
 }
 
 const initialState: ActiveRoute = {
-    activeRoute:{
-        route: '/dashboard'
-    }  
+        route: '/dashboard',
+        chatRoute: '/chat'
 };
 
 export const ActiveRouteSlice = createSlice({
@@ -19,14 +17,21 @@ export const ActiveRouteSlice = createSlice({
   reducers: {
     changeActiveRoute: (
       state: ActiveRoute,
-      action: PayloadAction<typeof initialState.activeRoute.route>
+      action: PayloadAction<typeof initialState.route>
     ) => {
-      state.activeRoute.route =  action.payload 
+      state.route =  action.payload 
     },
+
+    changeChatRoute: (
+      state: ActiveRoute,
+      action: PayloadAction<typeof initialState.chatRoute>
+    ) => {
+      state.chatRoute =  action.payload 
+    }
   
   },
 });
 
-export const { changeActiveRoute } = ActiveRouteSlice.actions;
+export const { changeActiveRoute, changeChatRoute } = ActiveRouteSlice.actions;
 
 export default ActiveRouteSlice.reducer;

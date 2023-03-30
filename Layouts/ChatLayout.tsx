@@ -1,13 +1,15 @@
-import { AppShell, createStyles } from "@mantine/core";
+import { createStyles } from "@mantine/core";
 import type { ReactNode } from "react";
-import { useBreakPoints } from "@/hooks";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import { NextRouter, withRouter } from "next/router";
+
 
 interface ChatLayoutProps {
   chats: ReactNode;
   content: ReactNode;
   rightSection: ReactNode;
+  router: NextRouter
 }
 
 const useStyles = createStyles((theme) => ({
@@ -36,11 +38,12 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const ChatLayout = ({ chats, content, rightSection }: ChatLayoutProps) => {
+const ChatLayout = ({ chats, content, rightSection, router }: ChatLayoutProps) => {
   const { classes } = useStyles();
   const { showInfo } = useSelector(
     (state: RootState) => state.chatLayout.chatInfo
   );
+
 
   return (
     <section
@@ -53,4 +56,4 @@ const ChatLayout = ({ chats, content, rightSection }: ChatLayoutProps) => {
   );
 };
 
-export default ChatLayout;
+export default withRouter(ChatLayout);
