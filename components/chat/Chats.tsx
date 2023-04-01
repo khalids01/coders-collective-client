@@ -26,25 +26,18 @@ import { CircleDashed, Search, Filter, Code } from "@/constants/icons";
 import { CompactText, ProfileImage } from "@/components/common/sub";
 import { Div } from "@/components/common/sub";
 import Friend from "@/types/friend";
-import { useSelector, useDispatch } from "react-redux";
-import { setActiveChat } from "@/redux/slices/chatSlice";
-import { RootState } from "@/redux/store";
 import { useRouter } from "next/router";
 import { endpoints } from "@/constants";
 
 const ChatItem = ({ friend }: { friend: Friend }) => {
   const { colors } = useTheme();
   const { md } = useBreakPoints();
-  const dispatch = useDispatch();
-  const router = useRouter()
+  const router = useRouter();
+  const { id } = router.query;
 
   const handleChatItemClick = () => {
-    dispatch(setActiveChat(friend))
-    router.push(`${endpoints.client.chat}/${friend._id}`)
-  } 
-
-  // @ts-ignore
-  const { _id: id } = useSelector((state: RootState) => state.chat.activeChat);
+    router.push(`${endpoints.client.chat}/${friend._id}`);
+  };
 
   return (
     <UnstyledButton
@@ -117,7 +110,6 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
 
 const Chats = () => {
   const mantineTheme = useMantineTheme();
-  const dispatch = useDispatch();
   const { md } = useBreakPoints();
   const { colors } = useTheme();
   const { user } = useUser();
@@ -126,12 +118,10 @@ const Chats = () => {
   const { ref: first, height: firstHeight } = useElementSize();
   const { friends } = useChat();
 
-
   useEffect(() => {
     if (!height || !firstHeight) return;
     setScrollHeight(height - firstHeight);
   }, [firstHeight]);
-
 
   return (
     <Stack

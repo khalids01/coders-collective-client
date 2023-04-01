@@ -1,32 +1,33 @@
-
 const endpoints = {
-    server: {
-        base: process.env.NEXT_PUBLIC_BASE_URL,
-        auth: {
-            login:  '/login',
-            logout:  '/logout',
-            signup:  '/signup',
-            reset_password:  '/reset-password',
-            forget_password: '/forget-password'
-        },
-        user: {
-            me:  '/users/me',
-            friends: '/users/me/friends',
-        },
-        fileUpload: {
-            image:  '/upload-image',
-        },
-        chat: {
-            send_message: '/send-message'
-        }
+  server: {
+    base: process.env.NEXT_PUBLIC_BASE_URL,
+    auth: {
+      login: "/login",
+      logout: "/logout",
+      signup: "/signup",
+      reset_password: "/reset-password",
+      forget_password: "/forget-password",
     },
-    client: {
-        login: '/auth/login',
-        signup: '/auth/signup',
-        forget_password: '/forget-password',
-        dashboard: '/dashboard',
-        chat: '/chat',
-    }
-}
+    user: {
+      me: "/users/me",
+      friends: "/users/me/friends",
+    },
+    fileUpload: {
+      image: "/upload-image",
+    },
+    chat: {
+      send_message: "/send-message",
+      chat_data: "/chat-data",
+      get_messages: "/get-messages",
+    },
+  },
+  client: {
+    login: "/auth/login",
+    signup: "/auth/signup",
+    forget_password: "/forget-password",
+    dashboard: "/dashboard",
+    chat: "/chat",
+  },
+};
 
 export default endpoints;

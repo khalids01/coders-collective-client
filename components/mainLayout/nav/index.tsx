@@ -108,7 +108,10 @@ const MobileNav = () => {
                   href: string;
                 },
                 index: number
-              ) => (
+              ) => {
+              const active = route.includes(item.href)
+                
+                return(
                 <Fragment key={index}>
                   <UnstyledButton
                     onClick={() => {
@@ -118,9 +121,9 @@ const MobileNav = () => {
                     className={classes.singleItem}
                     sx={{
                       color:
-                        item.href === route ? "white" : colors.text.primary,
+                        active ? "white" : colors.text.primary,
                       backgroundColor:
-                        (item.href === route
+                        (active
                           ? colors.card.focus
                           : "transparent") + " !important",
                     }}
@@ -131,14 +134,14 @@ const MobileNav = () => {
                       weight={600}
                       transform="capitalize"
                       color={
-                        route === item.href ? "white" : colors.text.primary
+                        active ? "white" : colors.text.primary
                       }
                     >
                       {item.value?.replace("-", " ")}
                     </Text>
                   </UnstyledButton>
                 </Fragment>
-              )
+              )}
             )}
           </Stack>
 
@@ -213,6 +216,7 @@ const DesktopNav = () => {
               },
               index: number
             ) => {
+              const active = route.includes(item.href)
               return (
                 <Box key={index}>
                   {item.divider ? (
@@ -239,9 +243,9 @@ const DesktopNav = () => {
                       }}
                       sx={{
                         color:
-                          item.href === route ? "white" : colors.text.primary,
+                          active ? "white" : colors.text.primary,
                         backgroundColor:
-                          (item.href === route
+                          (active
                             ? colors.card.focus
                             : "transparent") + " !important",
                         transition: "background 0.3s",

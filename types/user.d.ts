@@ -1,13 +1,19 @@
 
 interface User {
-    active: boolean;
-    avatar: string;
-    email: string;
-    exp: number;
+    _id: string;
     first_name: string;
     last_name: string;
+    user_name: string;
+    email: string;
+    bio: string;
+    description: string;
+    occupation: string;
+    skills: string [];
+    avatar: string;
+    cover: string;
+    active: boolean;
+    exp: number;
     iat: number;
-    _id: string;
 }
 
 export default User;
