@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import Image from "next/image";
 import moment from "moment";
-import { useLayout, useTheme } from "@/hooks";
+import { useBreakPoints, useLayout, useTheme } from "@/hooks";
 import { Div } from "../common/sub";
 import { useEffect, useState } from "react";
 import {
@@ -153,12 +153,13 @@ const ImageModal = ({
   );
 };
 
-const Dialogues = () => {
+const Dialogues = ({ receiverId }: { receiverId: string }) => {
   const { colors } = useTheme();
   const { chatLayout } = useLayout();
   const [opened, setOpened] = useState(false);
   const [image, setImage] = useState<string>("");
   const [allImages, setAllImages] = useState<string[]>([]);
+  const { md } = useBreakPoints();
 
   useEffect(() => {
     const imgs = messages.map((msg) => {
@@ -172,7 +173,6 @@ const Dialogues = () => {
 
   return (
     <ScrollArea
-      h={`calc(100vh - ${chatLayout.conversation.form.height}px)`}
       style={{
         borderTop: `1px solid ${colors.divider}`,
         borderBottom: `1px solid ${colors.divider}`,

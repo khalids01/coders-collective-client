@@ -1,19 +1,25 @@
-import { Group, ActionIcon, Text, Stack } from "@mantine/core";
+import { Group, ActionIcon, Text, Stack, Burger } from "@mantine/core";
 import moment from "moment";
 import { Call, Video, Info } from "@/constants/icons";
-import { useTheme } from "@/hooks";
+import { useBreakPoints, useTheme } from "@/hooks";
 import { showChatInfo } from "@/redux/slices/chatLayoutProps";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { ProfileImage } from "../common/sub";
+import { showMainNavDrawer } from "@/redux/slices/chatLayoutProps";
+import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
 
-const ChatHeader = () => {
+const ChatHeader = ({ receiverId }: { receiverId: string }) => {
   const { colors, colorScheme } = useTheme();
+  const { md } = useBreakPoints();
   const dispatch = useDispatch();
   const { showInfo } = useSelector(
     (state: RootState) => state.chatLayout.chatInfo
   );
-  const { activeChat } = useSelector((state: RootState) => state.chat);
+
+  const { show: showDrawer } = useSelector(
+    (state: RootState) => state.chatLayout.mainNavDrawer
+  );
 
   return (
     <Group
@@ -26,14 +32,10 @@ const ChatHeader = () => {
       }}
     >
       <Group position="left" sx={{ width: "max-content" }}>
-        <ProfileImage
-          avatar={activeChat?.avatar}
-          first_name={activeChat?.first_name}
-          last_name={activeChat?.last_name}
-        />
+        <ProfileImage avatar={""} first_name={"test"} last_name={"account"} />
         <Stack spacing={0}>
           <Text color={colors.text.primary} size={18} weight={500}>
-            {activeChat?.first_name} {activeChat?.last_name}
+            Test Name{/* {activeChat?.first_name} {activeChat?.last_name} */}
           </Text>
           <Text color={colors.text.secondary} size={14} weight={300}>
             Last Seen {moment(Date.now()).calendar()}
@@ -71,6 +73,15 @@ const ChatHeader = () => {
             <Info size={24} stroke={1.5} />
           </ActionIcon>
         ) : null}
+        {md && (
+          <>
+            <Burger
+              opened={showDrawer}
+              onClick={() => dispatch(showMainNavDrawer(!showDrawer))}
+            />
+            <MobileNavbarDrawer />
+          </>
+        )}
       </Group>
     </Group>
   );

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { changeActiveRoute } from "@/redux/slices/activeRouteSlice";
 import { withRouter, NextRouter } from "next/router";
+import { useBreakPoints } from "@/hooks";
 
 const useStyle = createStyles((theme) => {
   return {
@@ -11,36 +12,37 @@ const useStyle = createStyles((theme) => {
       display: "grid",
       gridTemplateColumns: `80px auto`,
       gridTemplateRows: "100%",
-      height: "100%",
+      height: "100vh",
       [theme.fn.smallerThan("md")]: {
         gridTemplateColumns: `100%`,
-        gridTemplateRows: '60px auto'
+        gridTemplateRows: "auto",
       },
     },
   };
 });
 
-interface WithRouterProps{
-  router: NextRouter,
-  children: any
+interface WithRouterProps {
+  router: NextRouter;
+  children: any;
+  showMainNav?: boolean;
 }
 
-
-const MainLayout = ({ children, router }: WithRouterProps) => {
+const MainLayout = ({
+  children,
+  router,
+  showMainNav = true,
+}: WithRouterProps) => {
   const { classes } = useStyle();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const { md } = useBreakPoints();
 
-  useEffect(()=>{
-    dispatch(changeActiveRoute(router.pathname))
-  }, [])
-
-
+  useEffect(() => {
+    dispatch(changeActiveRoute(router.pathname));
+  }, []);
 
   return (
-    <div
-      className={classes.layout}
-    >
-      <MainNavbar />
+    <div className={classes.layout}>
+      {showMainNav ? <MainNavbar /> : null}
       {children}
     </div>
   );

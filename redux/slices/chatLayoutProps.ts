@@ -16,6 +16,9 @@ interface ChatLayoutProps {
   chatInfo: {
     showInfo: boolean;
   };
+  mainNavDrawer: {
+    show: boolean;
+  };
 }
 
 const initialState: ChatLayoutProps = {
@@ -32,6 +35,9 @@ const initialState: ChatLayoutProps = {
   },
   chatInfo: {
     showInfo: false,
+  },
+  mainNavDrawer: {
+    show: false,
   },
 };
 
@@ -51,9 +57,16 @@ export const ChatLayoutSlice = createSlice({
     ) => {
       state.chatInfo = { ...state.chatInfo, showInfo: action.payload };
     },
+    showMainNavDrawer: (
+      state: ChatLayoutProps,
+      action: PayloadAction<typeof initialState.mainNavDrawer.show>
+    ) => {
+      state.mainNavDrawer.show = action.payload;
+    },
   },
 });
 
-export const { conversation, showChatInfo } = ChatLayoutSlice.actions;
+export const { conversation, showChatInfo, showMainNavDrawer } =
+  ChatLayoutSlice.actions;
 
 export default ChatLayoutSlice.reducer;

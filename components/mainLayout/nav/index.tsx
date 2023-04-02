@@ -26,10 +26,10 @@ import { navItems } from "@/constants/layoutItems";
 import UserAvatar from "./UserAvatar";
 import { Logo, ToggleTheme } from "@/components/common/sub";
 import { ColorsType } from "@/hooks/useTheme";
-import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import { showMainNavDrawer } from "@/redux/slices/chatLayoutProps";
 
 const useStyles = createStyles((theme, { colors }: { colors: ColorsType }) => {
   return {
@@ -67,12 +67,88 @@ const useStyles = createStyles((theme, { colors }: { colors: ColorsType }) => {
   };
 });
 
-const MobileNav = () => {
+export const MobileNavbarDrawer = () => {
   const { colors } = useTheme();
-  const [opened, { open, close }] = useDisclosure(false);
   const { classes } = useStyles({ colors });
   const router = useRouter();
-  const { route } = useSelector((state: RootState) => state.activeRoute);
+  const { show } = useSelector(
+    (state: RootState) => state.chatLayout.mainNavDrawer
+  );
+  const dispatch = useDispatch();
+
+  return (
+    <Drawer
+      opened={show}
+      onClose={() => dispatch(showMainNavDrawer(false))}
+      withCloseButton={false}
+      size={300}
+      closeOnEscape
+      styles={{
+        content: {
+          background: colors.background.paper,
+        },
+      }}
+    >
+      <Stack h="100vh" justify={"space-between"} pt={5} pb={40}>
+        <Stack>
+          {navItems.map(
+            (
+              item: {
+                value: string;
+                icon: ReactElement;
+                divider: boolean;
+                href: string;
+              },
+              index: number
+            ) => {
+              const active = router.asPath === item.href;
+              return (
+                <Fragment key={index}>
+                  <UnstyledButton
+                    onClick={() => {
+                      router.push(item.href);
+                      dispatch(showMainNavDrawer(false));
+                    }}
+                    className={classes.singleItem}
+                    sx={{
+                      color: active ? "white" : colors.text.primary,
+                      backgroundColor:
+                        (active ? colors.card.focus : "transparent") +
+                        " !important",
+                    }}
+                  >
+                    {item.icon}
+                    <Text
+                      size={16}
+                      weight={600}
+                      transform="capitalize"
+                      color={active ? "white" : colors.text.primary}
+                    >
+                      {item.value?.replace("-", " ")}
+                    </Text>
+                  </UnstyledButton>
+                </Fragment>
+              );
+            }
+          )}
+        </Stack>
+
+        <Group align={"center"} position="apart" spacing={24} px={5}>
+          <UserAvatar position="bottom-start" />
+          <ToggleTheme />
+        </Group>
+      </Stack>
+    </Drawer>
+  );
+};
+
+const MobileNav = () => {
+  const { colors } = useTheme();
+  const { classes } = useStyles({ colors });
+  const { show } = useSelector(
+    (state: RootState) => state.chatLayout.mainNavDrawer
+  );
+  const dispatch = useDispatch();
 
   return (
     <header
@@ -84,73 +160,8 @@ const MobileNav = () => {
       }}
     >
       <Logo size={30} />
-      <Burger opened={opened} onClick={open} />
-      <Drawer
-        opened={opened}
-        onClose={close}
-        withCloseButton={false}
-        size={300}
-        closeOnEscape
-        styles={{
-          content: {
-            background: colors.background.paper,
-          },
-        }}
-      >
-        <Stack h="100vh" justify={"space-between"} pt={5} pb={40}>
-          <Stack>
-            {navItems.map(
-              (
-                item: {
-                  value: string;
-                  icon: ReactElement;
-                  divider: boolean;
-                  href: string;
-                },
-                index: number
-              ) => {
-              const active = route.includes(item.href)
-                
-                return(
-                <Fragment key={index}>
-                  <UnstyledButton
-                    onClick={() => {
-                      router.push(item.href);
-                      close();
-                    }}
-                    className={classes.singleItem}
-                    sx={{
-                      color:
-                        active ? "white" : colors.text.primary,
-                      backgroundColor:
-                        (active
-                          ? colors.card.focus
-                          : "transparent") + " !important",
-                    }}
-                  >
-                    {item.icon}
-                    <Text
-                      size={16}
-                      weight={600}
-                      transform="capitalize"
-                      color={
-                        active ? "white" : colors.text.primary
-                      }
-                    >
-                      {item.value?.replace("-", " ")}
-                    </Text>
-                  </UnstyledButton>
-                </Fragment>
-              )}
-            )}
-          </Stack>
-
-          <Group align={"center"} position="apart" spacing={24} px={5}>
-            <UserAvatar position="bottom-start" />
-            <ToggleTheme />
-          </Group>
-        </Stack>
-      </Drawer>
+      <Burger opened={show} onClick={() => dispatch(showMainNavDrawer(true))} />
+      <MobileNavbarDrawer />
     </header>
   );
 };
@@ -216,7 +227,8 @@ const DesktopNav = () => {
               },
               index: number
             ) => {
-              const active = route.includes(item.href)
+              // const active = route.includes(item.href)
+              const active = item.href === route;
               return (
                 <Box key={index}>
                   {item.divider ? (
@@ -242,12 +254,10 @@ const DesktopNav = () => {
                         router.push(item.href);
                       }}
                       sx={{
-                        color:
-                          active ? "white" : colors.text.primary,
+                        color: active ? "white" : colors.text.primary,
                         backgroundColor:
-                          (active
-                            ? colors.card.focus
-                            : "transparent") + " !important",
+                          (active ? colors.card.focus : "transparent") +
+                          " !important",
                         transition: "background 0.3s",
                         aspectRatio: "1/1",
                         width: "max-content",

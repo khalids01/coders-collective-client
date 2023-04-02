@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import {
   Text,
   TextInput,
@@ -7,33 +6,71 @@ import {
   Stack,
   UnstyledButton,
   ActionIcon,
-  Tooltip,
-  Avatar,
-  Skeleton,
   Box,
-  Button,
+  Burger,
   Divider,
   ScrollArea,
   Badge,
   useMantineTheme,
   Center,
+  SegmentedControl,
+  createStyles,
 } from "@mantine/core";
-import { motion } from "framer-motion";
 import { useElementSize } from "@mantine/hooks";
 import { useBreakPoints, useTheme, useUser, useChat } from "@/hooks";
-
-import { CircleDashed, Search, Filter, Code } from "@/constants/icons";
+import { Plus } from "@/constants/icons";
+import { CircleDashed, Search, Filter, CheckIcon } from "@/constants/icons";
 import { CompactText, ProfileImage } from "@/components/common/sub";
 import { Div } from "@/components/common/sub";
 import Friend from "@/types/friend";
 import { useRouter } from "next/router";
 import { endpoints } from "@/constants";
+import { User } from "@/types";
+import { showMainNavDrawer } from "@/redux/slices/chatLayoutProps";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/redux/store";
+import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
+
+const DATA = [
+  { label: "Connections", value: "connections" },
+  { label: "Friends", value: "friends" },
+  { label: "Explore", value: "explore" },
+];
+
+const useStyle = createStyles((_, colors: any) => ({
+  chatItem: {
+    padding: "16px 25px 16px 16px",
+    display: "grid",
+    gridTemplateColumns: "60px auto",
+    alignItems: "center",
+    cursor: "pointer",
+    boxShadow: `0 0 12px ${colors.shadows.default}`,
+    borderRadius: 8,
+    // border: `1px solid ${active ? colors.teal : "transparent"}`,
+    transition: "all 0.3s",
+    "&:hover": {
+      scale: "101%",
+      boxShadow: `0 0 20px ${colors.shadows.default}`,
+    },
+  },
+
+  addBtn: {
+    color: colors.card.focus,
+    transition: "all 0.3s",
+    display: "grid",
+    placeItems: "center",
+    "&:hover": {
+      scale: "102%",
+    },
+  },
+}));
 
 const ChatItem = ({ friend }: { friend: Friend }) => {
   const { colors } = useTheme();
   const { md } = useBreakPoints();
   const router = useRouter();
   const { id } = router.query;
+  const { classes } = useStyle(colors);
 
   const handleChatItemClick = () => {
     router.push(`${endpoints.client.chat}/${friend._id}`);
@@ -43,22 +80,10 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
     <UnstyledButton
       mx={4}
       onClick={handleChatItemClick}
+      className={classes.chatItem}
       sx={{
         backgroundColor:
           id === friend._id ? colors.card.focus : colors.background.paper,
-        padding: "16px 25px 16px 16px",
-        display: "grid",
-        gridTemplateColumns: "60px auto",
-        alignItems: "center",
-        cursor: "pointer",
-        boxShadow: `0 0 12px ${colors.shadows.default}`,
-        borderRadius: 8,
-        // border: `1px solid ${active ? colors.teal : "transparent"}`,
-        transition: "all 0.3s",
-        "&:hover": {
-          scale: "101%",
-          boxShadow: `0 0 20px ${colors.shadows.default}`,
-        },
       }}
     >
       <ProfileImage
@@ -72,7 +97,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
             <CompactText
               color={id === friend._id ? "white" : undefined}
               text={`${friend.first_name} ${friend.last_name}`}
-              length={md ? 6 : 10}
+              length={md ? 20 : 30}
             />
           </Text>
           <Text
@@ -87,7 +112,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
             <CompactText
               color={id === friend._id ? "white" : undefined}
               text={"Last message"}
-              length={md ? 6 : 10}
+              length={md ? 20 : 30}
             />
           </Text>
           <Badge
@@ -108,6 +133,73 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   );
 };
 
+const AddConnection = ({ connection }: { connection: User }) => {
+  const { colors } = useTheme();
+  const { md } = useBreakPoints();
+  const router = useRouter();
+  const { id } = router.query;
+  const { classes } = useStyle(colors);
+  const [requestSent, setRequestSent] = useState(false);
+  const handleChatItemClick = () => {
+    router.push(`${endpoints.client.chat}/${connection._id}`);
+  };
+
+  return (
+    <Box
+      mx={4}
+      className={classes.chatItem}
+      sx={{
+        backgroundColor: colors.background.paper,
+      }}
+    >
+      <ProfileImage
+        first_name={connection.first_name}
+        last_name={connection.last_name}
+        avatar={connection.avatar}
+      />
+      <Group position="apart">
+        <Stack spacing={0}>
+          <Text weight={600}>
+            <CompactText
+              color={id === connection._id ? "white" : undefined}
+              text={`${connection.first_name} ${connection.last_name}`}
+              length={md ? 20 : 30}
+            />
+          </Text>
+          <Text size={14}>
+            <CompactText text={"Last message"} length={md ? 20 : 30} />
+          </Text>
+        </Stack>
+        <Group position="right">
+          {requestSent ? (
+            <UnstyledButton
+              className={classes.addBtn}
+              onClick={() => setRequestSent(!requestSent)}
+              h={30}
+              w={30}
+              p={0}
+              color={colors.card.focus}
+            >
+              <CheckIcon size={25} stroke={3} color="mediumaquamarine" />
+            </UnstyledButton>
+          ) : (
+            <UnstyledButton
+              className={classes.addBtn}
+              onClick={() => setRequestSent(!requestSent)}
+              h={30}
+              w={30}
+              p={0}
+              color={colors.card.focus}
+            >
+              <Plus size={25} />
+            </UnstyledButton>
+          )}
+        </Group>
+      </Group>
+    </Box>
+  );
+};
+
 const Chats = () => {
   const mantineTheme = useMantineTheme();
   const { md } = useBreakPoints();
@@ -117,6 +209,11 @@ const Chats = () => {
   const [scrollHeight, setScrollHeight] = useState(200);
   const { ref: first, height: firstHeight } = useElementSize();
   const { friends } = useChat();
+  const [chatSectionData, setChatSectionData] = useState(DATA[0].value);
+  const dispatch = useDispatch();
+  const { show } = useSelector(
+    (state: RootState) => state.chatLayout.mainNavDrawer
+  );
 
   useEffect(() => {
     if (!height || !firstHeight) return;
@@ -132,8 +229,7 @@ const Chats = () => {
       sx={{
         borderRight: `1px solid ${colors.divider}`,
         width: "100%",
-        height: "100%",
-        maxHeight: "100vh",
+        height: "100svh",
         overflow: "hidden",
         maxWidth: md ? "auto" : 400,
         backgroundColor: colors.background.default,
@@ -144,19 +240,30 @@ const Chats = () => {
           <Text weight={700} size={26} color={colors.text.primary}>
             Chats
           </Text>
-          <UnstyledButton pt={8}>
-            {user?.active ? (
-              <Div
-                mb={10}
-                h={15}
-                w={15}
-                rounded={30}
-                bg={mantineTheme.colors.green[5]}
-              />
-            ) : (
-              <CircleDashed size={24} />
+          <Group>
+            <UnstyledButton pt={8}>
+              {user?.active ? (
+                <Div
+                  mb={10}
+                  h={15}
+                  w={15}
+                  rounded={30}
+                  bg={mantineTheme.colors.green[5]}
+                />
+              ) : (
+                <CircleDashed size={24} />
+              )}
+            </UnstyledButton>
+            {md && (
+              <>
+                <Burger
+                  opened={show}
+                  onClick={() => dispatch(showMainNavDrawer(!show))}
+                />
+                <MobileNavbarDrawer />
+              </>
             )}
-          </UnstyledButton>
+          </Group>
         </Group>
 
         <Box my={20}>
@@ -190,31 +297,83 @@ const Chats = () => {
 
         <Divider color={colors.divider} mt={16} />
       </Box>
+      <SegmentedControl
+        color={colors.background.paper}
+        value={chatSectionData}
+        onChange={setChatSectionData}
+        my={16}
+        mx={20}
+        fullWidth
+        size="md"
+        data={DATA}
+        styles={{
+          root: {
+            backgroundColor: colors.background.paper,
+          },
+          indicator: {
+            backgroundColor: colors.card.focus,
+          },
+        }}
+      />
       <ScrollArea.Autosize
         mah={md ? scrollHeight : scrollHeight - 20}
         offsetScrollbars
         pl={16}
         pr={4}
       >
-        <Text
-          mb={16}
-          mt={16}
-          pl={4}
-          color={colors.blue}
-          sx={{ textShadow: `0 0 2px ${colors.teal}` }}
-        >
-          Pinned
-        </Text>
         <Stack spacing={18}>
-          {friends ? (
-            Object.values(friends)?.map((friend, index) => (
-              <ChatItem key={index} friend={friend} />
-            ))
-          ) : (
-            <Center py={40}>
-              <Text>No Friends to show</Text>
-            </Center>
-          )}
+          {(() => {
+            if (chatSectionData === "explore") {
+              return (
+                <>
+                  {friends ? (
+                    Object.values(friends)?.map((connection, index) => (
+                      <AddConnection key={index} connection={connection} />
+                    ))
+                  ) : (
+                    <Center py={40}>
+                      <Text>Nothing to show</Text>
+                    </Center>
+                  )}
+                </>
+              );
+            }
+
+            if (chatSectionData === "connections") {
+              return (
+                <>
+                  {friends ? (
+                    Object.values(friends)?.map((friend, index) => (
+                      <>
+                        <ChatItem key={index} friend={friend} />
+                      </>
+                    ))
+                  ) : (
+                    <Center py={40}>
+                      <Text>Nothing to show</Text>
+                    </Center>
+                  )}
+                </>
+              );
+            }
+
+            if (chatSectionData === "friends") {
+              return (
+                <>
+                  {friends ? (
+                    Object.values(friends)?.map((friend, index) => (
+                      <ChatItem key={index} friend={friend} />
+                    ))
+                  ) : (
+                    <Center py={40}>
+                      <Text>Nothing to show</Text>
+                    </Center>
+                  )}
+                </>
+              );
+            }
+          })()}
+
           <Divider
             mb="xs"
             label={<Text color={colors.text.secondary}>End</Text>}

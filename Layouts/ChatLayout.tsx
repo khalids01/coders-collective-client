@@ -2,14 +2,15 @@ import { createStyles } from "@mantine/core";
 import type { ReactNode } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { NextRouter, withRouter } from "next/router";
-
+import { withRouter, NextRouter } from "next/router";
+import { useBreakPoints } from "@/hooks";
 
 interface ChatLayoutProps {
   chats: ReactNode;
-  content: ReactNode;
+  content: ReactNode | null;
   rightSection: ReactNode;
-  router: NextRouter
+  showContent?: Boolean;
+  showChats?: Boolean;
 }
 
 const useStyles = createStyles((theme) => ({
@@ -21,6 +22,9 @@ const useStyles = createStyles((theme) => ({
     display: "grid",
     gridTemplateColumns: "350px auto",
     gridTemplateRows: "100%",
+    [theme.fn.smallerThan("md")]: {
+      display: "block",
+    },
   },
   withInfo: {
     [theme.fn.largerThan("md")]: {
@@ -29,31 +33,38 @@ const useStyles = createStyles((theme) => ({
   },
   chats: {
     width: 350,
+    [theme.fn.smallerThan("md")]: {
+      width: "100%",
+    },
   },
-  content: {
-    width: "auto",
-  },
+
   rightSection: {
     width: 1,
   },
 }));
 
-const ChatLayout = ({ chats, content, rightSection, router }: ChatLayoutProps) => {
+const ChatLayout = ({
+  chats,
+  content,
+  rightSection,
+  showContent = true,
+  showChats = true,
+}: ChatLayoutProps) => {
+  const { md } = useBreakPoints();
   const { classes } = useStyles();
   const { showInfo } = useSelector(
     (state: RootState) => state.chatLayout.chatInfo
   );
 
-
   return (
     <section
       className={`${classes.container} ${showInfo ? classes.withInfo : ""}`}
     >
-      <div className={classes.chats}>{chats}</div>
-      <div className={classes.content}>{content}</div>
+      {showChats ? <div className={classes.chats}>{chats}</div> : null}
+      {showContent ? content : null}
       {showInfo && rightSection}
     </section>
   );
 };
 
-export default withRouter(ChatLayout);
+export default ChatLayout;

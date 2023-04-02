@@ -11,8 +11,7 @@ import {
   Button,
   UnstyledButton,
 } from "@mantine/core";
-import { useBreakPoints, useMessage, useTheme } from "@/hooks";
-import Image from "next/image";
+import { useBreakPoints, useChat, useMessage, useTheme } from "@/hooks";
 import { useDispatch, useSelector } from "react-redux";
 import { Block, Call, Right, Star, Trash, Video } from "@/constants/icons";
 import { RootState } from "@/redux/store";
@@ -22,7 +21,6 @@ const Info = () => {
   const { sendingTo } = useMessage();
   const dispatch = useDispatch();
   const { colors } = useTheme();
-  const { activeChat } = useSelector((state: RootState) => state.chat);
 
   return (
     <ScrollArea.Autosize
@@ -41,17 +39,17 @@ const Info = () => {
       <Stack px={20} py={20} spacing={0}>
         <Group>
           <ProfileImage
-            avatar={activeChat?.avatar}
-            first_name={activeChat?.first_name}
-            last_name={activeChat?.last_name}
+            avatar={sendingTo?.avatar}
+            first_name={sendingTo?.first_name}
+            last_name={sendingTo?.last_name}
             size={60}
           />
           <Stack spacing={0}>
             <Text size={20} weight={600} color={colors.text.primary}>
-              {activeChat?.first_name} {activeChat?.last_name}
+              {sendingTo?.first_name} {sendingTo?.last_name}
             </Text>
             <Text size={14} color={colors.text.primary}>
-              {activeChat?.email}
+              {sendingTo?.email}
             </Text>
           </Stack>
         </Group>
@@ -76,7 +74,7 @@ const Info = () => {
             About
           </Title>
           <Text color={colors.text.secondary} size={16}>
-            {sendingTo.about}
+            {sendingTo.description}
           </Text>
         </Stack>
         <Divider size={1} />

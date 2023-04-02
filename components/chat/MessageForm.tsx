@@ -1,6 +1,6 @@
 import { Textarea, createStyles, ActionIcon, Menu } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useTheme, useUser } from "@/hooks";
+import { useMessage, useTheme, useUser } from "@/hooks";
 import { Div } from "@/components/common/sub";
 import {
   SmileEmoji,
@@ -12,9 +12,6 @@ import {
 } from "@/constants/icons";
 import data, { Skin } from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import { useChat } from "@/hooks";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 
 const useStyles = createStyles({
   form: {
@@ -28,11 +25,10 @@ const useStyles = createStyles({
   }
 });
 
-const MessageForm = () => {
+const MessageForm = ({receiverId} : {receiverId: string}) => {
   const { colors, colorScheme } = useTheme();
-  const { sendMessage, sendingMessage } = useChat();
+  const { sendMessage, sendingMessage } = useMessage();
   const { user } = useUser();
-  const { activeChat } = useSelector((state: RootState) => state.chat);
   const { classes } = useStyles();
 
   const form = useForm({
@@ -42,13 +38,13 @@ const MessageForm = () => {
   });
 
   const handleSendMessage = (values: typeof form.values) => {
-    if (values.message.trim()?.length === 0 || !activeChat?._id) return;
+    // if (values.message.trim()?.length === 0 || !activeChat?._id) return;
 
-    sendMessage({
-      message: values.message,
-      senderName: `${user?.first_name as string} ${user?.last_name as string}` ,
-      receiverId: activeChat?._id,
-    });
+    // sendMessage({
+    //   message: values.message,
+    //   senderName: `${user?.first_name as string} ${user?.last_name as string}` ,
+    //   receiverId: activeChat?._id,
+    // });
   };
 
   return (

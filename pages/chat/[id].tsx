@@ -8,13 +8,17 @@ import {
   MessageForm,
   Info,
 } from "@/components/chat/";
+import { withRouter, NextRouter } from "next/router";
+import { useBreakPoints } from "@/hooks";
 
-const Chat = () => {
+const Chat = ({ router }: { router: NextRouter }) => {
+  const {md} = useBreakPoints()
   return (
-    <MainLayout>
+    <MainLayout showMainNav={!md}>
       <ChatLayout
         chats={<Chats />}
         rightSection={<Info />}
+        showChats={!md}
         content={
           <Stack
             className="content"
@@ -23,12 +27,15 @@ const Chat = () => {
             sx={{
               maxHeight: "100svh",
               overflow: "hidden",
+              display: 'grid',
+              gridTemplateColumns: '100%',
+              gridTemplateRows: `70px 1fr 80px`
             }}
             spacing={0}
           >
-            <ChatHeader />
-            <Dialogues />
-            <MessageForm />
+            <ChatHeader receiverId={router.query?.id as string}/>
+            <Dialogues receiverId={router.query?.id as string}/>
+            <MessageForm receiverId={router.query?.id as string}/>
           </Stack>
         }
       />
@@ -36,4 +43,4 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default withRouter(Chat);
