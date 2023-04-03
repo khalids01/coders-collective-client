@@ -18,16 +18,17 @@ const useStyles = createStyles({
     width: "100%",
     display: "flex",
     alignItems: "center",
-    columnGap: 16
+    columnGap: 16,
   },
-  submit:{
-    rotate: '44deg'
-  }
+  submit: {
+    rotate: "44deg",
+  },
 });
 
-const MessageForm = ({receiverId} : {receiverId: string}) => {
+const MessageForm = ({ receiverId }: { receiverId: string }) => {
   const { colors, colorScheme } = useTheme();
-  const { sendMessage, sendingMessage } = useMessage();
+  const { sendMessage, sendingMessage, sentMessageSuccess, messages } =
+    useMessage({ receiverId });
   const { user } = useUser();
   const { classes } = useStyles();
 
@@ -38,13 +39,17 @@ const MessageForm = ({receiverId} : {receiverId: string}) => {
   });
 
   const handleSendMessage = (values: typeof form.values) => {
-    // if (values.message.trim()?.length === 0 || !activeChat?._id) return;
+    if (values.message.trim()?.length === 0 || !receiverId) return;
 
-    // sendMessage({
-    //   message: values.message,
-    //   senderName: `${user?.first_name as string} ${user?.last_name as string}` ,
-    //   receiverId: activeChat?._id,
-    // });
+    sendMessage({
+      message: values.message,
+      senderName: `${user?.first_name as string} ${user?.last_name as string}`,
+      receiverId,
+    });
+
+    if (sentMessageSuccess) {
+      form.reset();
+    }
   };
 
   return (
@@ -66,7 +71,6 @@ const MessageForm = ({receiverId} : {receiverId: string}) => {
           minRows={1}
           maxRows={4}
           sx={{ width: "100%" }}
-
           {...form.getInputProps("message")}
           rightSection={
             <Menu

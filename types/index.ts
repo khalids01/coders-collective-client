@@ -6,4 +6,5 @@ export type { default as CookieSetOptions } from "./cookieSetOptions";
 export type { default as DecodedToken } from "./decodedToken";
 export type { default as Friend } from "./friend";
 export type { default as ActiveChatItem } from "./activeChatItem";
-export type {default as ChatType} from './ChatType'
+export type { default as ChatType } from "./ChatType";
+export type { default as Message } from "./message";

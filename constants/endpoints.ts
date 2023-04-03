@@ -16,10 +16,12 @@ const endpoints = {
       image: "/upload-image",
     },
     chat: {
-      send_message: "/send-message",
       chat_data: "/chat-data",
-      get_messages: "/get-messages",
     },
+    message:{
+      send_message: '/send-message',
+      get_messages: '/get-messages',
+  }
   },
   client: {
     login: "/auth/login",

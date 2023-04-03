@@ -1,9 +1,5 @@
 import { createStyles } from "@mantine/core";
 import type { ReactNode } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import { withRouter, NextRouter } from "next/router";
-import { useBreakPoints } from "@/hooks";
 
 interface ChatLayoutProps {
   chats: ReactNode;
@@ -50,19 +46,14 @@ const ChatLayout = ({
   showContent = true,
   showChats = true,
 }: ChatLayoutProps) => {
-  const { md } = useBreakPoints();
   const { classes } = useStyles();
-  const { showInfo } = useSelector(
-    (state: RootState) => state.chatLayout.chatInfo
-  );
 
   return (
     <section
-      className={`${classes.container} ${showInfo ? classes.withInfo : ""}`}
+      className={`${classes.container}`}
     >
       {showChats ? <div className={classes.chats}>{chats}</div> : null}
       {showContent ? content : null}
-      {showInfo && rightSection}
     </section>
   );
 };

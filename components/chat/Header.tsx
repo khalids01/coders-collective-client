@@ -1,18 +1,20 @@
-import { Group, ActionIcon, Text, Stack, Burger } from "@mantine/core";
+import { Group, ActionIcon, Text, Stack, Burger, Drawer } from "@mantine/core";
 import moment from "moment";
 import { Call, Video, Info } from "@/constants/icons";
-import { useBreakPoints, useTheme } from "@/hooks";
+import { useBreakPoints, useTheme, useChat } from "@/hooks";
 import { showChatInfo } from "@/redux/slices/chatLayoutProps";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { ProfileImage } from "../common/sub";
 import { showMainNavDrawer } from "@/redux/slices/chatLayoutProps";
+import { Info as ChatInfo } from "./info";
 import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
 
 const ChatHeader = ({ receiverId }: { receiverId: string }) => {
   const { colors, colorScheme } = useTheme();
   const { md } = useBreakPoints();
   const dispatch = useDispatch();
+  const { chatData } = useChat({ id: receiverId, type: "user" });
   const { showInfo } = useSelector(
     (state: RootState) => state.chatLayout.chatInfo
   );
@@ -31,20 +33,22 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
         backgroundColor: colors.background.default,
       }}
     >
-      <Group position="left" sx={{ width: "max-content" }}>
-        <ProfileImage avatar={""} first_name={"test"} last_name={"account"} />
+      <Group position="left" spacing={md ? 10 : 20} sx={{ width: "max-content" }}>
+        <ProfileImage size={md ? 35 : 40} avatar={""} first_name={"test"} last_name={"account"} />
         <Stack spacing={0}>
-          <Text color={colors.text.primary} size={18} weight={500}>
-            Test Name{/* {activeChat?.first_name} {activeChat?.last_name} */}
+          <Text color={colors.text.primary} size={md ? 16 : 18} weight={500}>
+            {chatData?.type === "user"
+              ? `${chatData?.data?.first_name} ${chatData?.data?.first_name}`
+              : ""}
           </Text>
-          <Text color={colors.text.secondary} size={14} weight={300}>
-            Last Seen {moment(Date.now()).calendar()}
+          <Text color={colors.text.secondary} size={md ? 11 : 14} weight={400}>
+            {moment(Date.now()).calendar()}
           </Text>
         </Stack>
       </Group>
 
       <Group
-        spacing={20}
+        spacing={md ? 8 : 20}
         position="right"
         sx={{
           width: "max-content",
@@ -57,12 +61,12 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
         }}
       >
         <ActionIcon variant="transparent" radius={50} h={40} w={40}>
-          <Call size={24} stroke={1.5} />
+          <Call size={ md ? 20 : 24} stroke={1.5} />
         </ActionIcon>
         <ActionIcon variant="transparent" radius={50} h={40} w={40}>
-          <Video size={24} stroke={1.5} />
+          <Video size={ md ? 20 : 24} stroke={1.5} />
         </ActionIcon>
-        {!showInfo ? (
+        <>
           <ActionIcon
             onClick={() => dispatch(showChatInfo(!showInfo))}
             variant="transparent"
@@ -70,14 +74,27 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
             h={40}
             w={40}
           >
-            <Info size={24} stroke={1.5} />
+            <Info size={ md ? 20 : 24} stroke={1.5} />
           </ActionIcon>
-        ) : null}
+          <Drawer
+            position="right"
+            withCloseButton={false}
+            size={340}
+            opened={showInfo}
+            onClose={() => dispatch(showChatInfo(false))}
+          >
+            {chatData?.type === "user" ? (
+              <ChatInfo type={"user"} user={chatData.data} />
+            ) : null}
+          </Drawer>
+        </>
         {md && (
           <>
             <Burger
               opened={showDrawer}
               onClick={() => dispatch(showMainNavDrawer(!showDrawer))}
+              size='sm'
+              color={colors.text.secondary}
             />
             <MobileNavbarDrawer />
           </>

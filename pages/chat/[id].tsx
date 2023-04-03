@@ -25,6 +25,7 @@ const Chat = ({ router }: { router: NextRouter }) => {
             align="stretch"
             justify="space-between"
             sx={{
+              height: '100%',
               maxHeight: "100svh",
               overflow: "hidden",
               display: 'grid',

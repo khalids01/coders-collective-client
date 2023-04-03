@@ -11,9 +11,13 @@ export const sendMessage = ({
   receiverId: string;
   message: string;
 }): Promise<AxiosResponse<any, any>> => {
-  return api.post(endpoints.server.chat.send_message, {
+  return api.post(endpoints.server.message.send_message, {
     senderName,
     receiverId,
     message,
   });
+};
+
+export const getMessages = ({ receiverId }: { receiverId: string }) => {
+  return api.get(`${endpoints.server.message.get_messages}?receiverId=${receiverId}`);
 };

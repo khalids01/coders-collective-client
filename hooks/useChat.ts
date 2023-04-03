@@ -5,7 +5,6 @@ import { setFriends as setFriendsAction } from "@/redux/slices/chatSlice";
 import { RootState } from "@/redux/store";
 import Friend from "@/types/friend";
 import queryKeys from "@/constants/reactQueryKeys";
-import { sendMessage as sendMessageService } from "@/services/chat/message";
 import { getChatData } from "@/services/chat/chatData";
 import { ChatType } from "@/types";
 
@@ -14,7 +13,7 @@ interface Params {
   type?: ChatType | undefined;
 }
 
-const useChat = ({ id = '', type = 'user' }: Params = {}) => {
+const useChat = ({ id = "", type = "user" }: Params = {}) => {
   const dispatch = useDispatch();
 
   const { friends } = useSelector((state: RootState) => state.chat);
@@ -34,29 +33,25 @@ const useChat = ({ id = '', type = 'user' }: Params = {}) => {
     }
   );
 
- 
-
-  let chatDataQuery;
-
-  if (id?.length > 0) {
-    chatDataQuery = useQuery(
-      [queryKeys.chat + id],
-      () => getChatData({ id, type }),
-      {
-        enabled: id?.length > 0 && type?.length > 0,
-      }
-    );
-  }
+  const { data: chatData, refetch: refetchChatData } = useQuery(
+    [queryKeys.chat],
+    () => getChatData({ id, type }),
+    {
+      enabled: !!id && !!type,
+    }
+  );
 
   // const {refetch: refetchUsers} = useQuery([queryKeys.users.all] , ()=>getUsers())
+
 
   return {
     refetchFriends,
     setFriends,
     friends,
-    chatData: chatDataQuery?.data?.data,
-    refetchChatData: chatDataQuery?.refetch,
+    chatData: chatData?.data?.data,
+    refetchChatData,
   };
+
 };
 
 export default useChat;

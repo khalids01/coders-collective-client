@@ -5,22 +5,45 @@ import {
   Group,
   Stack,
   Title,
-  Drawer,
   CloseButton,
   Divider,
   Button,
   UnstyledButton,
 } from "@mantine/core";
-import { useBreakPoints, useChat, useMessage, useTheme } from "@/hooks";
-import { useDispatch, useSelector } from "react-redux";
+import { useTheme } from "@/hooks";
+import { useDispatch } from "react-redux";
 import { Block, Call, Right, Star, Trash, Video } from "@/constants/icons";
-import { RootState } from "@/redux/store";
 import { ProfileImage } from "@/components/common/sub";
+import { User } from "@/types";
 
-const Info = () => {
-  const { sendingTo } = useMessage();
+type Props =
+  | {
+      type: "user";
+      user: User;
+      group?: never;
+    }
+  | {
+      type: "group";
+      group: User;
+      user?: never;
+    };
+
+export const Info = ({ type, user }: Props) => {
   const dispatch = useDispatch();
   const { colors } = useTheme();
+
+  let details;
+
+  if (type === "user") {
+    details = {
+      avatar: user.avatar,
+      id: user._id,
+      name: `${user.first_name} ${user.last_name}`,
+      description: user.description,
+      contact: user.email,
+    };
+  }
+
 
   return (
     <ScrollArea.Autosize
@@ -39,17 +62,16 @@ const Info = () => {
       <Stack px={20} py={20} spacing={0}>
         <Group>
           <ProfileImage
-            avatar={sendingTo?.avatar}
-            first_name={sendingTo?.first_name}
-            last_name={sendingTo?.last_name}
+            avatar={details?.avatar}
+            first_name={details?.name as string}
             size={60}
           />
           <Stack spacing={0}>
             <Text size={20} weight={600} color={colors.text.primary}>
-              {sendingTo?.first_name} {sendingTo?.last_name}
+              {details?.name as string}
             </Text>
             <Text size={14} color={colors.text.primary}>
-              {sendingTo?.email}
+              {details?.contact as string}
             </Text>
           </Stack>
         </Group>
@@ -74,7 +96,7 @@ const Info = () => {
             About
           </Title>
           <Text color={colors.text.secondary} size={16}>
-            {sendingTo.description}
+            {details?.description}
           </Text>
         </Stack>
         <Divider size={1} />
@@ -107,41 +129,3 @@ const Info = () => {
     </ScrollArea.Autosize>
   );
 };
-
-const SmallScreenInfo = () => {
-  const dispatch = useDispatch();
-  const { showInfo } = useSelector(
-    (state: RootState) => state.chatLayout.chatInfo
-  );
-  const { colors } = useTheme();
-
-  return (
-    <Drawer
-      position="right"
-      opened={showInfo}
-      withCloseButton={false}
-      onClose={() => dispatch(showChatInfo(!showInfo))}
-      styles={{
-        content: {
-          backgroundColor: colors.background.default,
-        },
-      }}
-    >
-      <Info />
-    </Drawer>
-  );
-};
-
-const ChatInfo = () => {
-  const { lg } = useBreakPoints();
-  if (lg) {
-    return <SmallScreenInfo />;
-  }
-
-  return (
-    <aside className="bg-default border-l">
-      {lg ? <SmallScreenInfo /> : <Info />}
-    </aside>
-  );
-};
-export default ChatInfo;
