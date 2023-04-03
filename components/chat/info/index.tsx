@@ -28,7 +28,7 @@ type Props =
       user?: never;
     };
 
-export const Info = ({ type, user }: Props) => {
+const Info = ({ type, user }: Props) => {
   const dispatch = useDispatch();
   const { colors } = useTheme();
 
@@ -129,3 +129,4 @@ export const Info = ({ type, user }: Props) => {
     </ScrollArea.Autosize>
   );
 };
+export default Info

@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { ProfileImage } from "../common/sub";
 import { showMainNavDrawer } from "@/redux/slices/chatLayoutProps";
-import { Info as ChatInfo } from "./info";
+import { Info as ChatInfo } from "@/components/chat";
 import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
 
 const ChatHeader = ({ receiverId }: { receiverId: string }) => {

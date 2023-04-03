@@ -4,7 +4,6 @@ import type { ReactNode } from "react";
 interface ChatLayoutProps {
   chats: ReactNode;
   content: ReactNode | null;
-  rightSection: ReactNode;
   showContent?: Boolean;
   showChats?: Boolean;
 }
@@ -42,7 +41,6 @@ const useStyles = createStyles((theme) => ({
 const ChatLayout = ({
   chats,
   content,
-  rightSection,
   showContent = true,
   showChats = true,
 }: ChatLayoutProps) => {

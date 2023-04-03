@@ -17,7 +17,6 @@ const Chat = ({ router }: { router: NextRouter }) => {
     <MainLayout showMainNav={!md}>
       <ChatLayout
         chats={<Chats />}
-        rightSection={<Info />}
         showChats={!md}
         content={
           <Stack
