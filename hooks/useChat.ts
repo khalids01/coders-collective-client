@@ -34,7 +34,7 @@ const useChat = ({ id = "", type = "user" }: Params = {}) => {
   );
 
   const { data: chatData, refetch: refetchChatData } = useQuery(
-    [queryKeys.chat],
+    [queryKeys.chat + id],
     () => getChatData({ id, type }),
     {
       enabled: !!id && !!type,

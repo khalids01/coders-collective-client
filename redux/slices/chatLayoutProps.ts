@@ -30,7 +30,7 @@ const initialState: ChatLayoutProps = {
       height: "100%",
     },
     form: {
-      height: "100%",
+      height: 80,
     },
   },
   chatInfo: {
@@ -51,6 +51,12 @@ export const ChatLayoutSlice = createSlice({
     ) => {
       state.conversation = { ...state.conversation, ...action.payload };
     },
+    formHeight: (
+      state: ChatLayoutProps,
+      action: PayloadAction<typeof initialState.conversation.form.height>
+    ) => {
+      state.conversation.form.height = action.payload;
+    },
     showChatInfo: (
       state: ChatLayoutProps,
       action: PayloadAction<typeof initialState.chatInfo.showInfo>
@@ -66,7 +72,7 @@ export const ChatLayoutSlice = createSlice({
   },
 });
 
-export const { conversation, showChatInfo, showMainNavDrawer } =
+export const { conversation, showChatInfo, showMainNavDrawer, formHeight } =
   ChatLayoutSlice.actions;
 
 export default ChatLayoutSlice.reducer;

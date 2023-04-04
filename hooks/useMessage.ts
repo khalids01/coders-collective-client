@@ -20,7 +20,7 @@ const useMessage = ({ receiverId }: { receiverId: string }) => {
   });
 
   const { data: messages, refetch: refetchMessages } = useQuery(
-    [reactQueryKeys.messages],
+    [reactQueryKeys.messages + receiverId],
     () => getMessages({ receiverId }),
     {
       enabled: !!receiverId,

@@ -1,6 +1,7 @@
 import { Textarea, createStyles, ActionIcon, Menu } from "@mantine/core";
+import { useElementSize } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
-import { useMessage, useTheme, useUser } from "@/hooks";
+import { useBreakPoints, useMessage, useTheme, useUser } from "@/hooks";
 import { Div } from "@/components/common/sub";
 import {
   SmileEmoji,
@@ -12,6 +13,9 @@ import {
 } from "@/constants/icons";
 import data, { Skin } from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import { useDispatch } from "react-redux";
+import { formHeight } from "@/redux/slices/chatLayoutProps";
+import { useEffect } from "react";
 
 const useStyles = createStyles({
   form: {
@@ -26,11 +30,23 @@ const useStyles = createStyles({
 });
 
 const MessageForm = ({ receiverId }: { receiverId: string }) => {
+  const { height: inputHeight, ref } = useElementSize();
   const { colors, colorScheme } = useTheme();
-  const { sendMessage, sendingMessage, sentMessageSuccess, messages } =
-    useMessage({ receiverId });
+  const { sendMessage, sentMessageSuccess } = useMessage({ receiverId });
   const { user } = useUser();
   const { classes } = useStyles();
+  const dispatch = useDispatch();
+  const {md} = useBreakPoints()
+
+  useEffect(() => {
+    dispatch(formHeight(inputHeight));
+  }, [inputHeight]);
+
+  useEffect(() => {
+    if (sentMessageSuccess) {
+      form.reset();
+    }
+  }, [sentMessageSuccess]);
 
   const form = useForm({
     initialValues: {
@@ -46,10 +62,6 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
       senderName: `${user?.first_name as string} ${user?.last_name as string}`,
       receiverId,
     });
-
-    if (sentMessageSuccess) {
-      form.reset();
-    }
   };
 
   return (
@@ -64,10 +76,11 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
       <form
         className={classes.form}
         onSubmit={form.onSubmit((values) => handleSendMessage(values))}
+        ref={ref}
       >
         <Textarea
           autosize
-          py={16}
+          // py={md ? 0 : 16}
           minRows={1}
           maxRows={4}
           sx={{ width: "100%" }}

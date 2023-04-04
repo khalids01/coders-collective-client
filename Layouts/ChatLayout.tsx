@@ -21,11 +21,6 @@ const useStyles = createStyles((theme) => ({
       display: "block",
     },
   },
-  withInfo: {
-    [theme.fn.largerThan("md")]: {
-      gridTemplateColumns: `350px auto 350px`,
-    },
-  },
   chats: {
     width: 350,
     [theme.fn.smallerThan("md")]: {

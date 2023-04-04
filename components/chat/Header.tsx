@@ -1,6 +1,6 @@
 import { Group, ActionIcon, Text, Stack, Burger, Drawer } from "@mantine/core";
 import moment from "moment";
-import { Call, Video, Info } from "@/constants/icons";
+import { Call, Video, Info, Left } from "@/constants/icons";
 import { useBreakPoints, useTheme, useChat } from "@/hooks";
 import { showChatInfo } from "@/redux/slices/chatLayoutProps";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,10 +9,12 @@ import { ProfileImage } from "../common/sub";
 import { showMainNavDrawer } from "@/redux/slices/chatLayoutProps";
 import { Info as ChatInfo } from "@/components/chat";
 import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
+import { endpoints } from "@/constants";
+import Link from "next/link";
 
 const ChatHeader = ({ receiverId }: { receiverId: string }) => {
   const { colors, colorScheme } = useTheme();
-  const { md } = useBreakPoints();
+  const { md, xs } = useBreakPoints();
   const dispatch = useDispatch();
   const { chatData } = useChat({ id: receiverId, type: "user" });
   const { showInfo } = useSelector(
@@ -33,12 +35,26 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
         backgroundColor: colors.background.default,
       }}
     >
-      <Group position="left" spacing={md ? 10 : 20} sx={{ width: "max-content" }}>
-        <ProfileImage size={md ? 35 : 40} avatar={""} first_name={"test"} last_name={"account"} />
+      <Group
+        position="left"
+        spacing={xs ? 5 : md ? 10 : 20}
+        sx={{ width: "max-content" }}
+      >
+        {md ? (
+          <ActionIcon size={"sm"} component={Link} href={endpoints.client.chat}>
+            <Left />
+          </ActionIcon>
+        ) : null}
+        <ProfileImage
+          size={xs ? 30 : md ? 35 : 40}
+          avatar={""}
+          first_name={"test"}
+          last_name={"account"}
+        />
         <Stack spacing={0}>
           <Text color={colors.text.primary} size={md ? 16 : 18} weight={500}>
             {chatData?.type === "user"
-              ? `${chatData?.data?.first_name} ${chatData?.data?.first_name}`
+              ? `${chatData?.data?.first_name} ${chatData?.data?.last_name}`
               : ""}
           </Text>
           <Text color={colors.text.secondary} size={md ? 11 : 14} weight={400}>
@@ -48,8 +64,9 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
       </Group>
 
       <Group
-        spacing={md ? 8 : 20}
+        spacing={xs ? 5 : md ? 8 : 20}
         position="right"
+        align={"center"}
         sx={{
           width: "max-content",
           button: {
@@ -61,10 +78,10 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
         }}
       >
         <ActionIcon variant="transparent" radius={50} h={40} w={40}>
-          <Call size={ md ? 20 : 24} stroke={1.5} />
+          <Call size={xs ? 18 : md ? 20 : 24} stroke={1.5} />
         </ActionIcon>
         <ActionIcon variant="transparent" radius={50} h={40} w={40}>
-          <Video size={ md ? 20 : 24} stroke={1.5} />
+          <Video size={xs ? 18 : md ? 20 : 24} stroke={1.5} />
         </ActionIcon>
         <>
           <ActionIcon
@@ -74,7 +91,7 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
             h={40}
             w={40}
           >
-            <Info size={ md ? 20 : 24} stroke={1.5} />
+            <Info size={xs ? 18 : md ? 20 : 24} stroke={1.5} />
           </ActionIcon>
           <Drawer
             position="right"
@@ -93,7 +110,7 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
             <Burger
               opened={showDrawer}
               onClick={() => dispatch(showMainNavDrawer(!showDrawer))}
-              size='sm'
+              size="sm"
               color={colors.text.secondary}
             />
             <MobileNavbarDrawer />

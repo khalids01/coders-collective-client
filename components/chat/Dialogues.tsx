@@ -12,13 +12,7 @@ import {
 import Image from "next/image";
 import moment from "moment";
 import type { Message } from "@/types";
-import {
-  useBreakPoints,
-  useLayout,
-  useMessage,
-  useTheme,
-  useUser,
-} from "@/hooks";
+import { useBreakPoints, useMessage, useTheme, useUser } from "@/hooks";
 import { Div } from "../common/sub";
 import { useEffect, useState } from "react";
 import {
@@ -114,6 +108,7 @@ const SingleMessage = ({ message }: { message: Message }) => {
   const { colors } = useTheme();
   const [image, setImage] = useState<string>("");
   const [opened, setOpened] = useState(false);
+  const { md } = useBreakPoints();
 
   const me = user?._id === message.senderId;
 
@@ -128,6 +123,8 @@ const SingleMessage = ({ message }: { message: Message }) => {
     // setAllImages(newArr as string[]);
   }, [image]);
 
+  if(!user?._id) return <></>
+
   return (
     <Stack
       sx={{
@@ -138,16 +135,17 @@ const SingleMessage = ({ message }: { message: Message }) => {
       <Text
         sx={{
           display: "inline-block",
-          marginLeft: !me ? 5 : "auto !important",
+          textAlign: me ? "end" : "start",
         }}
         color="var(--textMuted)"
-        mb={-15}
-        ml={5}
-        size={14}
+        mb={-10}
+        mr={me ? 30 : 0}
+        ml={me ? 0 : 30}
+        size={md ? 11 : 14}
       >
-        {moment(message.updatedAt).toString()}
+        {moment(message.updatedAt).calendar()}
       </Text>
-      <Div d="flex">
+      <Div d="flex" items="center">
         {!me ? (
           <MessageItemMenu type={me ? "me" : "other"} id={message._id} />
         ) : null}
@@ -214,11 +212,10 @@ const SingleMessage = ({ message }: { message: Message }) => {
 const Dialogues = ({ receiverId }: { receiverId: string }) => {
   const { colors } = useTheme();
   const { messages } = useMessage({ receiverId });
-
-  const { chatLayout } = useLayout();
+  const { md } = useBreakPoints();
 
   return (
-    <ScrollArea.Autosize
+    <ScrollArea
       style={{
         borderTop: `1px solid ${colors.divider}`,
         borderBottom: `1px solid ${colors.divider}`,
@@ -226,7 +223,7 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
       }}
     >
       <Stack
-        px={20}
+        px={md ? 5 : 12}
         py={10}
         h={"100%"}
         sx={{
@@ -242,7 +239,7 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
             ))
           : null}
       </Stack>
-    </ScrollArea.Autosize>
+    </ScrollArea>
   );
 };
 

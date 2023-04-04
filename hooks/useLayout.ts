@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useLocalStorage } from "@mantine/hooks";
 
 interface CommonProps {
   height: string | number;
