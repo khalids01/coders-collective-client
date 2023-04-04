@@ -6,20 +6,14 @@ import {
   Tooltip,
   Stack,
   Divider,
-  Switch,
-  useMantineTheme,
-  CloseButton,
   Group,
   UnstyledButton,
   Drawer,
-  NavLink,
   Burger,
-  ScrollArea,
 } from "@mantine/core";
 import Image from "next/image";
-import { Fragment, ReactElement, useEffect, useState } from "react";
-import { useBreakPoints, useTheme, useUser } from "@/hooks";
-import { Sun, Moon } from "@/constants/icons";
+import { Fragment, ReactElement } from "react";
+import { useBreakPoints, useTheme } from "@/hooks";
 import { images } from "@/constants";
 import Link from "next/link";
 import { navItems } from "@/constants/layoutItems";
@@ -159,8 +153,8 @@ const MobileNav = () => {
         height: "100%",
       }}
     >
-      <Logo size={30} />
-      <Burger opened={show} onClick={() => dispatch(showMainNavDrawer(true))} />
+      <Logo size={26} />
+      <Burger size={'sm'} opened={show} onClick={() => dispatch(showMainNavDrawer(true))} />
       <MobileNavbarDrawer />
     </header>
   );

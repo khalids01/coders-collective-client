@@ -18,6 +18,12 @@ const useStyle = createStyles((theme) => {
         gridTemplateRows: "auto",
       },
     },
+
+    withNav: {
+      [theme.fn.smallerThan("md")]: {
+        gridTemplateRows: `70px auto !important`,
+      },
+    },
   };
 });
 
@@ -41,7 +47,7 @@ const MainLayout = ({
   }, []);
 
   return (
-    <div className={classes.layout}>
+    <div className={`${classes.layout} ${showMainNav ? classes.withNav : ""}`}>
       {showMainNav ? <MainNavbar /> : null}
       {children}
     </div>
