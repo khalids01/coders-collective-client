@@ -35,6 +35,7 @@ export { IconLogin as LogIn } from "@tabler/icons";
 export {IconDashboard as Dashboard} from '@tabler/icons'
 export {IconPlus as Plus} from '@tabler/icons'
 export {IconCheck as CheckIcon} from '@tabler/icons'
+export {IconUserCheck as ProfileView} from '@tabler/icons'
 
 
 
