@@ -19,5 +19,5 @@ export const sendMessage = ({
 };
 
 export const getMessages = ({ receiverId }: { receiverId: string }) => {
-  return api.get(`${endpoints.server.message.get_messages}?receiverId=${receiverId}`);
+  return api.get(`${endpoints.server.message.get_messages}/${receiverId}`);
 };

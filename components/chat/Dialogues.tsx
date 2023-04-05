@@ -14,7 +14,7 @@ import moment from "moment";
 import type { Message } from "@/types";
 import { useBreakPoints, useMessage, useTheme, useUser } from "@/hooks";
 import { Div } from "../common/sub";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DotsY,
   Trash,
@@ -122,6 +122,8 @@ const SingleMessage = ({ message }: { message: Message }) => {
     // const newArr = imgs.flat().filter((value) => value !== undefined);
     // setAllImages(newArr as string[]);
   }, [image]);
+
+  console.log(message)
 
   if(!user?._id) return <></>
 
@@ -233,9 +235,9 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
       >
         {messages?.data
           ? messages?.data?.map((m: Message, index: number) => (
-              <>
+              <React.Fragment key={index}>
                 <SingleMessage message={m} key={index} />
-              </>
+              </React.Fragment>
             ))
           : null}
       </Stack>

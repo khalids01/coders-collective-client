@@ -5,6 +5,9 @@ import { Chats, Info } from "@/components/chat/";
 import { useBreakPoints, useChat, useTheme } from "@/hooks";
 import { UserConnectCard } from "@/components/common/sub";
 import { NextRouter, withRouter } from "next/router";
+import { requireAuthentication } from "@/utils/requireAuthentication";
+import { GetServerSidePropsContext } from "next";
+
 
 const useStyle = createStyles((_, colors: any) => ({
   section: {
@@ -47,3 +50,7 @@ const Chat = ({ router }: { router: NextRouter }) => {
 };
 
 export default withRouter(Chat);
+
+export async function getServerSideProps(context: GetServerSidePropsContext){
+  return requireAuthentication(context)
+}

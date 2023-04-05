@@ -41,6 +41,9 @@ const useStyles = createStyles(() => {
         textShadow: "0 0 2px var(--teal)",
       },
     },
+    header: {
+      background: "var(--landing-bg-header)",
+    },
     callToAction: {
       border: `2px solid var(--landing-text-header)`,
       color: "var(--landing-text-header)",
@@ -150,13 +153,14 @@ const MobileNav = () => {
           title={
             <Group>
               <Logo size={25} />
-              {process.env.NEXT_PUBLIC_NAME}
+              <Text weight={600} size={17}>{process.env.NEXT_PUBLIC_NAME}</Text>
             </Group>
           }
           classNames={{
             content: classes.drawer,
             title: classes.drawerTitle,
             close: classes.drawerCloseButton,
+            header: classes.header,
           }}
         >
           <Stack spacing={30} px={30} pt={30}>

@@ -6,6 +6,7 @@ import { changeActiveRoute } from "@/redux/slices/activeRouteSlice";
 import { withRouter, NextRouter } from "next/router";
 import { useBreakPoints } from "@/hooks";
 
+
 const useStyle = createStyles((theme) => {
   return {
     layout: {

@@ -1,5 +1,6 @@
 import { GetServerSidePropsContext } from "next";
 import { parseToken } from "./tokenStore";
+import { endpoints } from "@/constants";
 
 export const requireAuthentication = async (
     context: GetServerSidePropsContext,
@@ -9,7 +10,7 @@ export const requireAuthentication = async (
     if (!session) {
         return {
             redirect: {
-                destination: "/auth/login",
+                destination: endpoints.client.login,
                 permanent: false,
             },
         };

@@ -1,5 +1,5 @@
 import { retrieveToken } from "@/utils/tokenStore";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -7,10 +7,13 @@ const api = axios.create({
   baseURL,
 });
 
-api.defaults.headers.common["Content-Type"] = "application/json";
 
-if(retrieveToken()){
-    api.defaults.headers.common["Authorization"] = `Bearer ${retrieveToken()}`
-}
+api.interceptors.request.use((config) => {
+  config.headers["Content-Type"] =  "application/json"
+  if (retrieveToken()) {
+    config.headers.Authorization = `Bearer ${retrieveToken()}`;
+  }
+  return config;
+});
 
 export default api;
