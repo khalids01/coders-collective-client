@@ -1,6 +1,7 @@
 const endpoints = {
   server: {
     base: process.env.NEXT_PUBLIC_BASE_URL,
+    image: '/images',
     auth: {
       login: "/login",
       logout: "/logout",

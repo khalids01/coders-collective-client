@@ -102,21 +102,20 @@ const useStyles = createStyles((theme, colors: ColorsType) => ({
 }));
 
 const DroppedImagesPreview = ({
-  files,
-  setFiles,
+  images,
+  setImages,
   size = 100,
 }: {
-  files: FileWithPath[];
-  setFiles: any;
+  images: FileWithPath[];
+  setImages: any;
   size?: number;
 }) => {
-  console.log(files);
   const { colors } = useTheme();
   const { classes } = useStyles(colors);
   return (
     <ScrollArea.Autosize mah={200}>
       <Box className={classes.preview}>
-        {files?.map((file: File, index: number) => {
+        {images?.map((file: File, index: number) => {
           const imageUrl = URL.createObjectURL(file);
           return (
             <Box
@@ -139,8 +138,8 @@ const DroppedImagesPreview = ({
                 size={size > 90 ? "md" : "sm"}
                 opacity={0}
                 onClick={() => {
-                  const newArr = files.filter((f) => f.name !== file.name);
-                  setFiles(newArr);
+                  const newArr = images.filter((f) => f.name !== file.name);
+                  setImages(newArr);
                 }}
               />
               <Image
@@ -157,7 +156,7 @@ const DroppedImagesPreview = ({
         })}
 
         <FileButton
-          onChange={(f) => setFiles([...files, ...f])}
+          onChange={(f) => setImages([...images, ...f])}
           multiple
           accept="image/png,image/jpeg"
         >
@@ -186,7 +185,7 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
   const dispatch = useDispatch();
   const { md } = useBreakPoints();
   const [opened, { open, close }] = useDisclosure(false);
-  const [files, setFiles] = useState<FileWithPath[] | []>([]);
+  const [images, setImages] = useState<FileWithPath[] | []>([]);
 
   useEffect(() => {
     dispatch(formHeight(inputHeight));
@@ -195,6 +194,7 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
   useEffect(() => {
     if (sentMessageSuccess) {
       form.reset();
+      setImages([])
     }
   }, [sentMessageSuccess]);
 
@@ -206,18 +206,28 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
   const handleFileSelect = (filesArr: FileWithPath[]) => {
     if (filesArr.length === 0) return;
 
-    let newArr = [...files, ...filesArr];
-    setFiles(newArr as FileWithPath[]);
+    let newArr = [...images, ...filesArr];
+    setImages(newArr as FileWithPath[]);
   };
 
   const handleSendMessage = (values: typeof form.values) => {
-    if (values.message.trim()?.length === 0 || !receiverId) return;
+    if (
+      (images.length === 0 && values.message.trim()?.length === 0) ||
+      !receiverId
+    ) {
+      return;
+    }
 
-    sendMessage({
-      message: values.message,
-      senderName: `${user?.first_name as string} ${user?.last_name as string}`,
-      receiverId,
-    });
+    const formData = new FormData();
+
+    formData.append("receiverId", receiverId);
+    formData.append("message", form.values.message);
+
+    for (let i = 0; i < images.length; i++) {
+      formData.append('images', images[i], images[i].name);
+    }
+
+    sendMessage(formData);
   };
 
   return (
@@ -286,10 +296,10 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
           </Box>
         </Dropzone>
 
-        {files.length > 0 ? (
+        {images.length > 0 ? (
           <DroppedImagesPreview
-            files={files as FileWithPath[]}
-            setFiles={setFiles}
+            images={images as FileWithPath[]}
+            setImages={setImages}
           />
         ) : null}
       </Modal>
@@ -298,11 +308,11 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
         onSubmit={form.onSubmit((values) => handleSendMessage(values))}
         ref={ref}
       >
-        {files.length > 0 ? (
+        {images.length > 0 ? (
           <Box py={12}>
             <DroppedImagesPreview
-              files={files as FileWithPath[]}
-              setFiles={setFiles}
+              images={images as FileWithPath[]}
+              setImages={setImages}
               size={60}
             />
           </Box>
@@ -379,7 +389,11 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
                     </Menu.Item>
                   </Menu.Dropdown>
                 </Menu>
-                <UnstyledButton onClick={open} display='grid' sx={{placeItems: 'center'}}>
+                <UnstyledButton
+                  onClick={open}
+                  display="grid"
+                  sx={{ placeItems: "center" }}
+                >
                   <Photo size={24} stroke={1.8} />
                 </UnstyledButton>
               </Group>
@@ -395,7 +409,6 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
               },
               icon: {
                 pointerEvents: "painted",
-
               },
             }}
           />

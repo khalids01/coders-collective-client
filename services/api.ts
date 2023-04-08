@@ -7,9 +7,12 @@ const api = axios.create({
   baseURL,
 });
 
-
 api.interceptors.request.use((config) => {
-  config.headers["Content-Type"] =  "application/json"
+  const contentType =
+    config.data instanceof FormData
+      ? "multipart/form-data"
+      : "application/json";
+  config.headers["Content-Type"] = contentType;
   if (retrieveToken()) {
     config.headers.Authorization = `Bearer ${retrieveToken()}`;
   }

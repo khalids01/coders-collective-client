@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: "standalone"
-}
+  output: "standalone",
+  images: {
+    domains: ["localhost"],
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

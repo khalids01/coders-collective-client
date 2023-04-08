@@ -11,10 +11,10 @@ import {
 } from "@mantine/core";
 import Image from "next/image";
 import moment from "moment";
-import type { Message } from "@/types";
+import type { ImageData, Message } from "@/types";
 import { useBreakPoints, useMessage, useTheme, useUser } from "@/hooks";
 import { Div } from "../common/sub";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   DotsY,
   Trash,
@@ -23,6 +23,9 @@ import {
   Reply,
   SmileEmoji,
 } from "@/constants/icons";
+import { endpoints } from "@/constants";
+import { useScrollIntoView } from "@mantine/hooks";
+import { useRouter } from "next/router";
 
 const MessageItemMenu = ({
   id,
@@ -76,29 +79,58 @@ const ImageModal = ({
 }: {
   opened: boolean;
   setOpened: any;
-  images: string[];
+  images: ImageData[];
 }) => {
+  const { xs, md, xl } = useBreakPoints();
+
   return (
     <Modal
+      fullScreen
       styles={{
         root: {
           height: "100%",
         },
+        content: {
+          overflow: "hidden",
+        },
+        body: {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          rowGap: 16,
+          height: "100%",
+          paddingTop: 20,
+        },
+        close: {
+          transform: "scale(1.3)",
+        },
       }}
-      size={"90%"}
+      size={"100%"}
       opened={opened}
       onClose={() => setOpened(!opened)}
     >
-      {images?.map((image, index) => (
-        <Image
-          key={index}
-          src={image}
-          alt={image}
-          height={500}
-          width={900}
-          className="contain"
-        />
-      ))}
+      {images?.map((image, index) => {
+        const NEW_WEIGHT = xs
+          ? 300
+          : md && image.width > 500
+          ? 550
+          : xl && image.width > 900
+          ? 992
+          : image.width > 1200
+          ? 1250
+          : 1080;
+        const NEW_HEIGHT = (NEW_WEIGHT / image.width) * image.height;
+        return (
+          <Image
+            key={index}
+            src={`${endpoints.server.base}${endpoints.server.image}/${image.src}`}
+            alt={image.src}
+            height={NEW_HEIGHT}
+            width={NEW_WEIGHT}
+            className="contain"
+          />
+        );
+      })}
     </Modal>
   );
 };
@@ -110,27 +142,17 @@ const SingleMessage = ({ message }: { message: Message }) => {
   const [opened, setOpened] = useState(false);
   const { md } = useBreakPoints();
 
-  const me = user?._id === message.senderId;
+  const me = user?._id === message.sender;
 
   const [allImages, setAllImages] = useState<string[]>([]);
-  useEffect(() => {
-    // const imgs = messages.map((msg) => {
-    //   if (msg.images) {
-    //     return msg.images;
-    //   }
-    // });
-    // const newArr = imgs.flat().filter((value) => value !== undefined);
-    // setAllImages(newArr as string[]);
-  }, [image]);
 
-  console.log(message)
-
-  if(!user?._id) return <></>
+  if (!user?._id) return <></>;
 
   return (
     <Stack
+      pr={8}
       sx={{
-        margin: user?._id === message.senderId ? "0 0 0 auto" : "0 auto 0 0",
+        margin: user?._id === message.sender ? "0 0 0 auto" : "0 auto 0 0",
         maxWidth: "70%",
       }}
     >
@@ -148,65 +170,87 @@ const SingleMessage = ({ message }: { message: Message }) => {
         {moment(message.updatedAt).calendar()}
       </Text>
       <Div d="flex" items="center">
-        {!me ? (
-          <MessageItemMenu type={me ? "me" : "other"} id={message._id} />
+        {message.message.text?.length > 0 ? (
+          <>
+            {!me ? (
+              <MessageItemMenu type={me ? "me" : "other"} id={message._id} />
+            ) : null}
+            <Text
+              size={14}
+              color={!me ? colors.text.primary : "white"}
+              p="10px 20px"
+              sx={{
+                borderRadius: 16,
+                letterSpacing: 1.05,
+                backgroundColor: !me
+                  ? colors.background.lighter
+                  : colors.card.focus,
+                lineHeight: 1.6,
+                marginLeft: !me ? 0 : "auto",
+              }}
+            >
+              {message.message.text}
+            </Text>
+            {me ? (
+              <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
+            ) : null}
+          </>
         ) : null}
-        <Text
-          size={14}
-          color={!me ? colors.text.primary : "white"}
-          p="10px 20px"
-          sx={{
-            borderRadius: 16,
-            letterSpacing: 1.05,
-            backgroundColor: !me
-              ? colors.background.lighter
-              : colors.card.focus,
-            lineHeight: 1.6,
-            marginLeft: !me ? 0 : "auto",
-          }}
-        >
-          {message.message.text}
-        </Text>
-        {me ? <MessageItemMenu type={"me"} id={me ? "me" : "other"} /> : null}
       </Div>
-      {message.message?.images ? (
-        <Div
-          d="flex"
-          wrap
-          gap={16}
-          justifyContent={!me ? "flex-start" : "flex-end"}
-        >
-          {message.message?.images?.map((src: string, index: number) => {
-            return (
-              <UnstyledButton
-                key={index}
-                onClick={() => {
-                  setImage(src);
-                  setOpened(!opened);
-                }}
-                sx={{
-                  display: "inline-block",
-                  transition: "all 0.2s",
-                  "&:hover": {
-                    scale: "104%",
-                  },
-                }}
-              >
-                <Image
-                  src={src}
-                  alt={"Image"}
-                  width={100}
-                  height={100}
-                  className="cover"
-                  style={{ borderRadius: 12 }}
-                />
-              </UnstyledButton>
-            );
-          })}
-        </Div>
-      ) : null}
+      <Div d="flex" justifyContent="flex-end">
+        {message.message.text?.length > 0 && !me ? (
+          <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
+        ) : null}
 
-      <ImageModal opened={opened} setOpened={setOpened} images={allImages} />
+        {message.message?.images ? (
+          <Div
+            d="flex"
+            wrap
+            gap={16}
+            justifyContent={!me ? "flex-start" : "flex-end"}
+          >
+            {message.message?.images?.map((img: any, index: number) => {
+              return (
+                <UnstyledButton
+                  key={index}
+                  onClick={() => {
+                    setImage(img.src);
+                    setOpened(!opened);
+                  }}
+                  sx={{
+                    display: "inline-block",
+                    transition: "all 0.2s",
+                    "&:hover": {
+                      scale: "104%",
+                    },
+                  }}
+                >
+                  <Image
+                    src={`${endpoints.server.base}${endpoints.server.image}/${img.src}`}
+                    alt={"Image"}
+                    width={100}
+                    height={100}
+                    className="cover"
+                    style={{ borderRadius: 12 }}
+                  />
+                </UnstyledButton>
+              );
+            })}
+          </Div>
+        ) : null}
+
+        {message.message.text?.length > 0 && me ? (
+          <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
+        ) : null}
+      </Div>
+
+      {message.message.images?.length > 0 ? (
+        <ImageModal
+          opened={opened}
+          setOpened={setOpened}
+          images={message.message.images as unknown as ImageData[]}
+        />
+      ) : null}
     </Stack>
   );
 };
@@ -215,33 +259,62 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
   const { colors } = useTheme();
   const { messages } = useMessage({ receiverId });
   const { md } = useBreakPoints();
+  const router = useRouter()
+  const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
+    axis: "y",
+    duration: 1,
+  });
+
+  // const targetRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () =>{
+    console.log('scroll')
+
+    targetRef?.current?.scrollTo({
+      top: targetRef?.current?.scrollHeight,
+      behavior: "smooth",
+    });
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+    // router.events.on('routeChangeComplete', scrollToBottom);
+
+    // Remove the event listener when the component unmounts
+    // return () => {
+      // router.events.off('hashChangeComplete', scrollToBottom);
+    // };
+  }, []);
 
   return (
-    <ScrollArea
-      style={{
-        borderTop: `1px solid ${colors.divider}`,
-        borderBottom: `1px solid ${colors.divider}`,
-        background: colors.background.neutral,
-      }}
-    >
-      <Stack
-        px={md ? 5 : 12}
-        py={10}
-        h={"100%"}
-        sx={{
+    <>
+      <ScrollArea
+        viewportRef={targetRef}
+        style={{
+          borderTop: `1px solid ${colors.divider}`,
+          borderBottom: `1px solid ${colors.divider}`,
           background: colors.background.neutral,
-          height: "100%",
         }}
       >
-        {messages?.data
-          ? messages?.data?.map((m: Message, index: number) => (
-              <React.Fragment key={index}>
-                <SingleMessage message={m} key={index} />
-              </React.Fragment>
-            ))
-          : null}
-      </Stack>
-    </ScrollArea>
+        <Stack
+          px={md ? 5 : 12}
+          py={10}
+          h={"100%"}
+          sx={{
+            background: colors.background.neutral,
+            height: "100%",
+          }}
+        >
+          {messages?.data
+            ? messages?.data?.map((m: Message, index: number) => (
+                <React.Fragment key={index}>
+                  <SingleMessage message={m} key={index} />
+                </React.Fragment>
+              ))
+            : null}
+        </Stack>
+      </ScrollArea>
+    </>
   );
 };
 
