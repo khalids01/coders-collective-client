@@ -17,7 +17,13 @@ import {
   createStyles,
 } from "@mantine/core";
 import { useElementSize } from "@mantine/hooks";
-import { useBreakPoints, useTheme, useUser, useChat } from "@/hooks";
+import {
+  useBreakPoints,
+  useTheme,
+  useUser,
+  useChat,
+  useMessage,
+} from "@/hooks";
 import { Plus } from "@/constants/icons";
 import { CircleDashed, Search, Filter, CheckIcon } from "@/constants/icons";
 import { CompactText, ProfileImage } from "@/components/common/sub";
@@ -30,9 +36,10 @@ import { showMainNavDrawer } from "@/redux/slices/chatLayoutProps";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
+import { SocketUser } from "@/hooks/useMessage";
+import { Carousel } from "@mantine/carousel";
 
 const DATA = [
-  { label: "Connections", value: "connections" },
   { label: "Friends", value: "friends" },
   { label: "Explore", value: "explore" },
 ];
@@ -64,6 +71,54 @@ const useStyle = createStyles((_, colors: any) => ({
     },
   },
 }));
+
+const ActiveUsers = () => {
+  const { activeUsers } = useChat();
+  const { user } = useUser();
+  const router = useRouter();
+  console.log({ activeUsers });
+  return (
+    <ScrollArea maw={300} ml={10} type="auto" offsetScrollbars>
+      <Group noWrap pb={8}>
+        {activeUsers
+          ? activeUsers?.map((item: SocketUser, index: number) => {
+              if (user?._id === item.userId) return null;
+
+              return (
+                <UnstyledButton
+                  key={index}
+                  onClick={() =>
+                    router.push(`${endpoints.client.chat}/${item.userId}`)
+                  }
+                  pos="relative"
+                >
+                  <Badge
+                    h={12}
+                    w={12}
+                    bg={"mediumturquoise"}
+                    pos={"absolute"}
+                    right={0}
+                    top={0}
+                    p={0}
+                    sx={{
+                      zIndex: 2,
+
+                    }}
+                  />
+                  <ProfileImage
+                    size={40}
+                    avatar={item.userInfo.avatar}
+                    first_name={item.userInfo.first_name}
+                    last_name={item.userInfo.last_name}
+                  />
+                </UnstyledButton>
+              );
+            })
+          : null}
+      </Group>
+    </ScrollArea>
+  );
+};
 
 const ChatItem = ({ friend }: { friend: Friend }) => {
   const { colors } = useTheme();
@@ -322,6 +377,7 @@ const Chats = () => {
         pr={4}
       >
         <Stack spacing={18}>
+          <ActiveUsers />
           {(() => {
             if (chatSectionData === "explore") {
               return (

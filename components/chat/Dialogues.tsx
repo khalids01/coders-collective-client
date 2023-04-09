@@ -268,8 +268,6 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
   // const targetRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () =>{
-    console.log('scroll')
-
     targetRef?.current?.scrollTo({
       top: targetRef?.current?.scrollHeight,
       behavior: "smooth",

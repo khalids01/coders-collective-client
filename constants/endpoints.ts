@@ -1,7 +1,7 @@
 const endpoints = {
   server: {
     base: process.env.NEXT_PUBLIC_BASE_URL,
-    image: '/images',
+    image: "/images",
     auth: {
       login: "/login",
       logout: "/logout",
@@ -19,10 +19,14 @@ const endpoints = {
     chat: {
       chat_data: "/chat-data",
     },
-    message:{
-      send_message: '/send-message',
-      get_messages: '/get-messages',
-  }
+    message: {
+      send_message: "/send-message",
+      get_messages: "/get-messages",
+    },
+    socketIo: {
+      addUser: "addUser",
+      getUser: "getUser",
+    },
   },
   client: {
     login: "/auth/login",
