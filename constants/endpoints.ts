@@ -26,6 +26,7 @@ const endpoints = {
     socketIo: {
       addUser: "addUser",
       getUser: "getUser",
+      sendMessage: 'sendMessage'
     },
   },
   client: {

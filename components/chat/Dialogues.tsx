@@ -257,9 +257,8 @@ const SingleMessage = ({ message }: { message: Message }) => {
 
 const Dialogues = ({ receiverId }: { receiverId: string }) => {
   const { colors } = useTheme();
-  const { messages } = useMessage({ receiverId });
+  const { messages } = useMessage();
   const { md } = useBreakPoints();
-  const router = useRouter()
   const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
     axis: "y",
     duration: 1,

@@ -1,26 +1,37 @@
-import { useEffect, useRef, useState } from "react";
+import { RootState } from "@/redux/store";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   sendMessage as sendMessageService,
   getMessages,
 } from "@/services/chat/message";
 import { reactQueryKeys } from "@/constants";
-import { io, Socket } from "socket.io-client";
-import useUser from "./useUser";
-import { endpoints } from "@/constants";
-import { User } from "@/types";
-import useChat from "./useChat";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setMessages as setMessagesAction,
+  setSendMessageData as setSendMessageDataAction,
+  setConverSationId as setConverSationIdAction,
+} from "@/redux/slices/conversationSlice";
+import { Message } from "@/types";
+import { SendMessageData } from "@/types/conversation";
 
-export interface SocketUser {
-  userId: string;
-  socketId: string;
-  userInfo: User;
-}
+const useMessage = () => {
+  const dispatch = useDispatch();
+  const { messages: liveMessages, sendMessageData, conversationId } = useSelector(
+    (state: RootState) => state.conversation
+  );
 
-const useMessage = ({ receiverId }: { receiverId: string }) => {
-  const { setActiveUsers } = useChat();
-  const { user } = useUser();
-  const socket = useRef<Socket>();
+  const setMessages = ({ messages }: { messages: Message[] }) => {
+    dispatch(setMessagesAction(messages));
+  };
+
+  const setSendMessageData = (data: SendMessageData) => {
+    dispatch(setSendMessageDataAction(data));
+  };
+
+  const setConverSationId = (id: string) => {
+    dispatch(setConverSationIdAction(id));
+  };
+
   const {
     mutate: sendMessage,
     isLoading: sendingMessage,
@@ -35,37 +46,12 @@ const useMessage = ({ receiverId }: { receiverId: string }) => {
   });
 
   const { data: messages, refetch: refetchMessages } = useQuery(
-    [reactQueryKeys.messages + receiverId],
-    () => getMessages({ receiverId }),
+    [reactQueryKeys.messages + conversationId],
+    () => getMessages({ receiverId: conversationId as string }),
     {
-      enabled: !!receiverId,
+      enabled: !!conversationId,
     }
   );
-
-  useEffect(() => {
-    if (!user?._id) return;
-
-    socket.current = io(process.env.NEXT_PUBLIC_WS || "http://localhost:3005");
-
-    socket.current.on("connect", () => {});
-    console.log("Socket Active", socket.current.active);
-    // socket.on("disconnect", () => {
-    //   console.log("Socket Disconnected from server");
-    // });
-
-    socket.current?.emit(endpoints.server.socketIo.addUser, user?._id, user);
-
-    socket.current?.on(
-      endpoints.server.socketIo.getUser,
-      (users: SocketUser[]) => {
-        setActiveUsers(users);
-      }
-    );
-
-    return () => {
-      socket.current?.disconnect();
-    };
-  }, [user?._id]);
 
   return {
     messages: messages?.data,
@@ -73,6 +59,12 @@ const useMessage = ({ receiverId }: { receiverId: string }) => {
     sendMessage,
     sendingMessage,
     sentMessageSuccess,
+    liveMessages,
+    sendMessageData,
+    setLiveMessages: setMessages,
+    setSendMessageData,
+    setConverSationId,
+    conversationId
   };
 };
 

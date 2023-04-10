@@ -179,7 +179,7 @@ const DroppedImagesPreview = ({
 const MessageForm = ({ receiverId }: { receiverId: string }) => {
   const { height: inputHeight, ref } = useElementSize();
   const { colors, colorScheme } = useTheme();
-  const { sendMessage, sentMessageSuccess } = useMessage({ receiverId });
+  const { sendMessage, sentMessageSuccess, setSendMessageData } = useMessage();
   const { user } = useUser();
   const { classes } = useStyles(colors);
   const dispatch = useDispatch();
@@ -194,7 +194,7 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
   useEffect(() => {
     if (sentMessageSuccess) {
       form.reset();
-      setImages([])
+      setImages([]);
     }
   }, [sentMessageSuccess]);
 
@@ -224,8 +224,17 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
     formData.append("message", form.values.message);
 
     for (let i = 0; i < images.length; i++) {
-      formData.append('images', images[i], images[i].name);
+      formData.append("images", images[i], images[i].name);
     }
+
+    setSendMessageData({
+      sender: user?._id as string,
+      receiver: receiverId,
+      message: {
+        text: form.values.message,
+        images: [],
+      },
+    });
 
     sendMessage(formData);
   };

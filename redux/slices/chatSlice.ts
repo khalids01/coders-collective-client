@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import type { Friend } from "@/types";
-import { SocketUser } from "@/hooks/useMessage";
+import { SocketUser } from "@/Layouts/MainLayout";
+
 
 interface chats {
   friends: Friend[];

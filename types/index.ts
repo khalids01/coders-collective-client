@@ -9,3 +9,4 @@ export type { default as ActiveChatItem } from "./activeChatItem";
 export type { default as ChatType } from "./ChatType";
 export type { default as Message } from "./message";
 export type { default as ImageData } from "./ImageData";
+export type { default as ConversationData } from "./conversation";

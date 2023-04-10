@@ -9,12 +9,18 @@ import {
   Info,
 } from "@/components/chat/";
 import { withRouter, NextRouter } from "next/router";
-import { useBreakPoints } from "@/hooks";
+import { useBreakPoints, useMessage } from "@/hooks";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import { useEffect } from "react";
 
 const Chat = ({ router }: { router: NextRouter }) => {
   const { md } = useBreakPoints();
+  const { setConverSationId, conversationId } = useMessage();
+
+  useEffect(() => {
+    setConverSationId(router.query.id as string);
+  }, [router.query?.id]);
 
   const { height } = useSelector(
     (state: RootState) => state.chatLayout.conversation.form

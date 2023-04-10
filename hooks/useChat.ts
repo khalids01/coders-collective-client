@@ -7,7 +7,7 @@ import Friend from "@/types/friend";
 import queryKeys from "@/constants/reactQueryKeys";
 import { getChatData } from "@/services/chat/chatData";
 import { ChatType } from "@/types";
-import { SocketUser } from "./useMessage";
+import { SocketUser } from "@/Layouts/MainLayout";
 
 interface Params {
   id?: string | undefined;

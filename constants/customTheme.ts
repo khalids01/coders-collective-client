@@ -71,7 +71,7 @@ export const colors = {
             lighter: '#e3eeff'
         },
         card: {
-            active: '#5cc7f1',
+            active: '#508be9',
             focus: '#508be9',
             text: 'white'
         },
@@ -97,7 +97,7 @@ export const colors = {
             lighter: '#233043'
         },
         card: {
-            active: '#4783a8',
+            active: '#4376c9',
             focus: '#4376c9',
             text: 'white'
         },
