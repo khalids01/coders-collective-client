@@ -7,25 +7,20 @@ import {
 import { reactQueryKeys } from "@/constants";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setMessages as setMessagesAction,
-  setSendMessageData as setSendMessageDataAction,
+  addANewMessage as addANewMessageAction,
   setConverSationId as setConverSationIdAction,
+  addMessages as addMessagesAction
 } from "@/redux/slices/conversationSlice";
 import { Message } from "@/types";
-import { SendMessageData } from "@/types/conversation";
 
 const useMessage = () => {
   const dispatch = useDispatch();
-  const { messages: liveMessages, sendMessageData, conversationId } = useSelector(
+  const { messages, roomId } = useSelector(
     (state: RootState) => state.conversation
   );
 
-  const setMessages = ({ messages }: { messages: Message[] }) => {
-    dispatch(setMessagesAction(messages));
-  };
-
-  const setSendMessageData = (data: SendMessageData) => {
-    dispatch(setSendMessageDataAction(data));
+  const addANewMessage = (message: Message) => {
+    dispatch(addANewMessageAction(message));
   };
 
   const setConverSationId = (id: string) => {
@@ -34,37 +29,37 @@ const useMessage = () => {
 
   const {
     mutate: sendMessage,
-    isLoading: sendingMessage,
-    isSuccess: sentMessageSuccess,
+    isLoading: sendMessageLoading,
+    isSuccess: sendMessageSuccess,
   } = useMutation(sendMessageService, {
     onSuccess: (data) => {
-      console.log(data);
+      dispatch(addANewMessageAction(data.data.data));
     },
     onError: (error) => {
       console.log(error);
     },
   });
 
-  const { data: messages, refetch: refetchMessages } = useQuery(
-    [reactQueryKeys.messages + conversationId],
-    () => getMessages({ receiverId: conversationId as string }),
+  const { refetch: refetchMessages } = useQuery(
+    [reactQueryKeys.messages + roomId],
+    () => getMessages({ receiverId: roomId as string }),
     {
-      enabled: !!conversationId,
+      enabled: !!roomId,
+      onSuccess({data}){
+        dispatch(addMessagesAction(data.data))
+      }
     }
   );
 
   return {
-    messages: messages?.data,
+    messages,
+    addANewMessage,
     refetchMessages,
     sendMessage,
-    sendingMessage,
-    sentMessageSuccess,
-    liveMessages,
-    sendMessageData,
-    setLiveMessages: setMessages,
-    setSendMessageData,
+    sendMessageLoading,
+    sendMessageSuccess,
     setConverSationId,
-    conversationId
+    roomId
   };
 };
 

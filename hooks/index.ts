@@ -6,3 +6,4 @@ export { default as useTheme } from "./useTheme";
 export { default as useLayout } from "./useLayout";
 export { default as useMessage } from "./useMessage";
 export { default as useChat } from "./useChat";
+export { default as useArray } from "./useArray";

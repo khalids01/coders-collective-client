@@ -51,7 +51,7 @@ const MainLayout = ({
   const dispatch = useDispatch();
   const { user } = useUser();
   const { setActiveUsers } = useChat();
-  const { sendMessageData } = useMessage();
+  const {  } = useMessage();
 
   useEffect(() => {
     dispatch(changeActiveRoute(router.pathname));
@@ -70,7 +70,7 @@ const MainLayout = ({
       setActiveUsers(users);
     });
 
-    socket.emit(endpoints.server.socketIo.sendMessage, sendMessageData);
+    // socket.emit(endpoints.server.socketIo.sendMessage, );
 
     return () => {
       socket.disconnect();

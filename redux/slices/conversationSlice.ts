@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { ConversationData } from "@/types";
+import type { ConversationData, Message } from "@/types";
 
 const initialState: ConversationData = {
   messages: {
@@ -14,37 +14,36 @@ const initialState: ConversationData = {
       images: [],
     },
   },
-  conversationId: null,
+  roomId: null,
 };
 
 export const ConversationSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    setMessages: (
+    addANewMessage: (
       state: ConversationData,
-      action: PayloadAction<typeof initialState.messages.data>
+      action: PayloadAction<Message>
+    ) => {
+      state.messages.data.push(action.payload);
+    },
+
+    addMessages: (
+      state: ConversationData,
+      action: PayloadAction<Message[]>
     ) => {
       state.messages.data = action.payload;
     },
 
-    setSendMessageData: (
-      state: ConversationData,
-      action: PayloadAction<typeof initialState.sendMessageData>
-    ) => {
-      state.sendMessageData = action.payload;
-    },
-
     setConverSationId: (
       state: ConversationData,
-      action: PayloadAction<typeof initialState.conversationId>
+      action: PayloadAction<typeof initialState.roomId>
     ) => {
-      state.conversationId = action.payload;
+      state.roomId = action.payload;
     },
   },
 });
 
-export const { setMessages, setSendMessageData, setConverSationId } =
-  ConversationSlice.actions;
+export const { addANewMessage, setConverSationId, addMessages } = ConversationSlice.actions;
 
 export default ConversationSlice.reducer;

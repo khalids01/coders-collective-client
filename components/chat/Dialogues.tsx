@@ -10,7 +10,6 @@ import {
   Box,
 } from "@mantine/core";
 import Image from "next/image";
-import moment from "moment";
 import type { ImageData, Message } from "@/types";
 import { useBreakPoints, useMessage, useTheme, useUser } from "@/hooks";
 import { Div } from "../common/sub";
@@ -25,7 +24,6 @@ import {
 } from "@/constants/icons";
 import { endpoints } from "@/constants";
 import { useScrollIntoView } from "@mantine/hooks";
-import { useRouter } from "next/router";
 
 const MessageItemMenu = ({
   id,
@@ -167,7 +165,7 @@ const SingleMessage = ({ message }: { message: Message }) => {
         ml={me ? 0 : 30}
         size={md ? 11 : 14}
       >
-        {moment(message.updatedAt).calendar()}
+        {/* {moment(message.updatedAt).calendar()} */}
       </Text>
       <Div d="flex" items="center">
         {message.message.text?.length > 0 ? (
@@ -198,7 +196,7 @@ const SingleMessage = ({ message }: { message: Message }) => {
         ) : null}
       </Div>
       <Div d="flex" justifyContent="flex-end">
-        {message.message.text?.length > 0 && !me ? (
+        {message.message.images?.length > 0 && !me ? (
           <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
         ) : null}
 
@@ -239,7 +237,7 @@ const SingleMessage = ({ message }: { message: Message }) => {
           </Div>
         ) : null}
 
-        {message.message.text?.length > 0 && me ? (
+        {message.message.images?.length > 0 && me ? (
           <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
         ) : null}
       </Div>
@@ -266,27 +264,19 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
 
   // const targetRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () =>{
-    targetRef?.current?.scrollTo({
-      top: targetRef?.current?.scrollHeight,
-      behavior: "smooth",
-    });
-  }
-
   useEffect(() => {
-    scrollToBottom()
+    scrollIntoView();
     // router.events.on('routeChangeComplete', scrollToBottom);
 
     // Remove the event listener when the component unmounts
     // return () => {
-      // router.events.off('hashChangeComplete', scrollToBottom);
+    // router.events.off('hashChangeComplete', scrollToBottom);
     // };
   }, []);
 
   return (
     <>
       <ScrollArea
-        viewportRef={targetRef}
         style={{
           borderTop: `1px solid ${colors.divider}`,
           borderBottom: `1px solid ${colors.divider}`,
@@ -309,6 +299,7 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
                 </React.Fragment>
               ))
             : null}
+          <div ref={targetRef} />
         </Stack>
       </ScrollArea>
     </>

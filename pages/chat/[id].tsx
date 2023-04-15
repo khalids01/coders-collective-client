@@ -16,9 +16,11 @@ import { useEffect } from "react";
 
 const Chat = ({ router }: { router: NextRouter }) => {
   const { md } = useBreakPoints();
-  const { setConverSationId, conversationId } = useMessage();
+  const { setConverSationId } = useMessage();
 
   useEffect(() => {
+    if(!String(router.query?.id).trim()) return ;
+    console.log('running')
     setConverSationId(router.query.id as string);
   }, [router.query?.id]);
 

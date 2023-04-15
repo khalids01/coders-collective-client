@@ -1,5 +1,5 @@
 import { Group, ActionIcon, Text, Stack, Burger, Drawer } from "@mantine/core";
-import moment from "moment";
+import dayjs from "dayjs";
 import { Call, Video, Info, Left } from "@/constants/icons";
 import { useBreakPoints, useTheme, useChat } from "@/hooks";
 import { showChatInfo } from "@/redux/slices/chatLayoutProps";
@@ -58,7 +58,7 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
               : ""}
           </Text>
           <Text color={colors.text.secondary} size={md ? 11 : 14} weight={400}>
-            {moment(Date.now()).calendar()}
+            {dayjs().format('MMM D h:mm')}
           </Text>
         </Stack>
       </Group>

@@ -15,7 +15,13 @@ import {
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useElementSize } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
-import { useBreakPoints, useMessage, useTheme, useUser } from "@/hooks";
+import {
+  useArray,
+  useBreakPoints,
+  useMessage,
+  useTheme,
+  useUser,
+} from "@/hooks";
 import { Div } from "@/components/common/sub";
 import Image from "next/image";
 import {
@@ -74,12 +80,9 @@ const useStyles = createStyles((theme, colors: ColorsType) => ({
     background: colors.background.lighter,
     border: "none",
     borderRadius: 6,
-    height: 200,
-    width: 200,
+    height: 70,
+    width: 70,
     marginBottom: 16,
-    marginInline: "auto",
-    display: "grid",
-    placeItems: "center",
     transition: "all 0.3s",
     "&:hover": {
       background: colors.background.neutral,
@@ -102,12 +105,14 @@ const useStyles = createStyles((theme, colors: ColorsType) => ({
 }));
 
 const DroppedImagesPreview = ({
-  images,
-  setImages,
+  array,
+  push,
+  remove,
   size = 100,
 }: {
-  images: FileWithPath[];
-  setImages: any;
+  array: FileWithPath[];
+  push: Function;
+  remove: Function;
   size?: number;
 }) => {
   const { colors } = useTheme();
@@ -115,154 +120,49 @@ const DroppedImagesPreview = ({
   return (
     <ScrollArea.Autosize mah={200}>
       <Box className={classes.preview}>
-        {images?.map((file: File, index: number) => {
-          const imageUrl = URL.createObjectURL(file);
-          return (
-            <Box
-              key={index}
-              className={classes.preview_img}
-              pos="relative"
-              sx={{
-                "&:hover": {
-                  button: {
-                    opacity: 1,
-                  },
-                },
-              }}
-            >
-              <CloseButton
-                pos={"absolute"}
-                variant="filled"
-                top={5}
-                left={5}
-                size={size > 90 ? "md" : "sm"}
-                opacity={0}
-                onClick={() => {
-                  const newArr = images.filter((f) => f.name !== file.name);
-                  setImages(newArr);
-                }}
-              />
-              <Image
-                alt={imageUrl}
-                src={imageUrl}
-                height={size}
-                width={size}
-                style={{
-                  borderRadius: 6,
-                }}
-              />
-            </Box>
-          );
-        })}
+        {array
+          ? array?.map((file: File, index: number) => {
+              const imageUrl = URL.createObjectURL(file);
+              return (
+                <Box
+                  key={index}
+                  className={classes.preview_img}
+                  pos="relative"
+                  sx={{
+                    "&:hover": {
+                      button: {
+                        opacity: 1,
+                      },
+                    },
+                  }}
+                >
+                  <CloseButton
+                    pos={"absolute"}
+                    variant="filled"
+                    top={5}
+                    left={5}
+                    size={size > 90 ? "md" : "sm"}
+                    opacity={0}
+                    onClick={() => {
+                      remove(index);
+                    }}
+                  />
+                  <Image
+                    alt={imageUrl}
+                    src={imageUrl}
+                    height={size}
+                    width={size}
+                    style={{
+                      borderRadius: 6,
+                    }}
+                  />
+                </Box>
+              );
+            })
+          : null}
 
-        <FileButton
-          onChange={(f) => setImages([...images, ...f])}
-          multiple
-          accept="image/png,image/jpeg"
-        >
-          {(props) => (
-            <UnstyledButton
-              {...props}
-              h={size}
-              w={size}
-              className={classes.addBtn}
-            >
-              <Plus size={30} />
-            </UnstyledButton>
-          )}
-        </FileButton>
-      </Box>
-    </ScrollArea.Autosize>
-  );
-};
-
-const MessageForm = ({ receiverId }: { receiverId: string }) => {
-  const { height: inputHeight, ref } = useElementSize();
-  const { colors, colorScheme } = useTheme();
-  const { sendMessage, sentMessageSuccess, setSendMessageData } = useMessage();
-  const { user } = useUser();
-  const { classes } = useStyles(colors);
-  const dispatch = useDispatch();
-  const { md } = useBreakPoints();
-  const [opened, { open, close }] = useDisclosure(false);
-  const [images, setImages] = useState<FileWithPath[] | []>([]);
-
-  useEffect(() => {
-    dispatch(formHeight(inputHeight));
-  }, [inputHeight]);
-
-  useEffect(() => {
-    if (sentMessageSuccess) {
-      form.reset();
-      setImages([]);
-    }
-  }, [sentMessageSuccess]);
-
-  const form = useForm({
-    initialValues: {
-      message: "",
-    },
-  });
-  const handleFileSelect = (filesArr: FileWithPath[]) => {
-    if (filesArr.length === 0) return;
-
-    let newArr = [...images, ...filesArr];
-    setImages(newArr as FileWithPath[]);
-  };
-
-  const handleSendMessage = (values: typeof form.values) => {
-    if (
-      (images.length === 0 && values.message.trim()?.length === 0) ||
-      !receiverId
-    ) {
-      return;
-    }
-
-    const formData = new FormData();
-
-    formData.append("receiverId", receiverId);
-    formData.append("message", form.values.message);
-
-    for (let i = 0; i < images.length; i++) {
-      formData.append("images", images[i], images[i].name);
-    }
-
-    setSendMessageData({
-      sender: user?._id as string,
-      receiver: receiverId,
-      message: {
-        text: form.values.message,
-        images: [],
-      },
-    });
-
-    sendMessage(formData);
-  };
-
-  return (
-    <Div
-      d={"flex"}
-      gap={10}
-      sx={{ display: "flex", alignItems: "center" }}
-      px={20}
-      h={"auto"}
-      bg={colors.background.paper}
-    >
-      <Modal
-        opened={opened}
-        onClose={close}
-        title={"Select Image"}
-        styles={{
-          header: {
-            background: colors.background.paper,
-          },
-          content: {
-            background: colors.background.paper,
-          },
-        }}
-      >
         <Dropzone
-          onDrop={handleFileSelect}
+          onDrop={(e) => push(...e)}
           maxSize={3 * 1024 ** 2}
           accept={IMAGE_MIME_TYPE}
           classNames={{
@@ -280,49 +180,83 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
             </Dropzone.Reject>
 
             <Dropzone.Idle>
-              <Image
-                alt="accept"
-                src="/images/drop.png"
-                width={90}
-                height={70}
-                className="object-contain"
-              />
+              <Plus size={30} />
             </Dropzone.Idle>
-
-            <div>
-              <Text
-                style={{ maxWidth: "25ch" }}
-                mt={15}
-                size={12}
-                align="center"
-              >
-                <span>Drop your images here, or select</span>
-                <Text component="span" pl={5} inline color="#00D4FF">
-                  click to browse
-                </Text>
-              </Text>
-            </div>
           </Box>
         </Dropzone>
+      </Box>
+    </ScrollArea.Autosize>
+  );
+};
 
-        {images.length > 0 ? (
-          <DroppedImagesPreview
-            images={images as FileWithPath[]}
-            setImages={setImages}
-          />
-        ) : null}
-      </Modal>
+const MessageForm = ({ receiverId }: { receiverId: string }) => {
+  const { height: inputHeight, ref } = useElementSize();
+  const { colors, colorScheme } = useTheme();
+  const { sendMessage, sendMessageSuccess } = useMessage();
+  const { classes } = useStyles(colors);
+  const dispatch = useDispatch();
+  // const [opened, { open, close }] = useDisclosure(false);
+  const [images, setImages] = useState<FileWithPath[] | []>([]);
+  const { array, push, clear, setArray, removeByIndex } = useArray([]);
+  useEffect(() => {
+    dispatch(formHeight(inputHeight));
+  }, [inputHeight]);
+
+  useEffect(() => {
+    if (sendMessageSuccess) {
+      form.reset();
+      setImages([]);
+    }
+  }, [sendMessageSuccess]);
+
+  const form = useForm({
+    initialValues: {
+      message: "",
+    },
+  });
+
+  const handleSendMessage = (values: typeof form.values) => {
+    if (
+      (array.length === 0 && values.message.trim()?.length === 0) ||
+      !receiverId
+    ) {
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("receiverId", receiverId);
+    formData.append("message", form.values.message);
+
+    for (let i = 0; i < array.length; i++) {
+      formData.append("images", array[i], array[i].name);
+    }
+
+    sendMessage(formData);
+  };
+
+  return (
+    <Div
+      d={"flex"}
+      gap={10}
+      sx={{ display: "flex", alignItems: "center" }}
+      px={20}
+      pb={array.length > 0 ? 20 : 0}
+      h={"auto"}
+      bg={colors.background.paper}
+    >
       <form
         className={classes.form}
         onSubmit={form.onSubmit((values) => handleSendMessage(values))}
         ref={ref}
       >
-        {images.length > 0 ? (
+        {array.length > 0 ? (
           <Box py={12}>
             <DroppedImagesPreview
-              images={images as FileWithPath[]}
-              setImages={setImages}
-              size={60}
+              array={array as FileWithPath[]}
+              push={push}
+              remove={removeByIndex}
+              size={70}
             />
           </Box>
         ) : null}
@@ -379,7 +313,7 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
                 >
                   <Menu.Target>
                     <ActionIcon p={"0x 10px"} className="teal-on-hover">
-                      <DotsY />
+                      <DotsY size={20} />
                     </ActionIcon>
                   </Menu.Target>
 
@@ -388,7 +322,7 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
                       Rich Text Editor
                     </Menu.Item>
                     <Menu.Item
-                      onClick={open}
+                      // onClick={open}
                       icon={<Photo size={16} stroke={1.8} />}
                     >
                       Image
@@ -398,13 +332,36 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
                     </Menu.Item>
                   </Menu.Dropdown>
                 </Menu>
-                <UnstyledButton
+                <FileButton
+                  onChange={(f: FileWithPath[]) => {
+                    if(f instanceof Array){
+                      if(array.length > 0){
+                        // @ts-ignore
+                        push(...f)
+                        return
+                      }
+                      
+                      setArray(f)
+                      return
+                    }
+                    push(f)
+                  }}
+                  multiple
+                  accept={"image/png,image/jpeg,image/jpg"}
+                >
+                  {(props) => (
+                    <UnstyledButton {...props} className={classes.addBtn}>
+                      <Photo size={22} stroke={1.8} />
+                    </UnstyledButton>
+                  )}
+                </FileButton>
+                {/* <UnstyledButton
                   onClick={open}
                   display="grid"
                   sx={{ placeItems: "center" }}
                 >
-                  <Photo size={24} stroke={1.8} />
-                </UnstyledButton>
+               
+                </UnstyledButton> */}
               </Group>
             }
             rightSectionWidth={50}
