@@ -30,7 +30,7 @@ import { showMainNavDrawer } from "@/redux/slices/chatLayoutProps";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
-import { SocketUser } from "@/Layouts/MainLayout";
+import { useSockets } from "@/context/socket.context";
 
 const DATA = [
   { label: "Friends", value: "friends" },
@@ -65,12 +65,11 @@ const useStyle = createStyles((_, colors: any) => ({
   },
 }));
 
-const SingleActiveUser = ({ user }: { user: SocketUser }) => {
+const SingleActiveUser = ({ user }: { user: User }) => {
   const router = useRouter();
-
   return (
     <UnstyledButton
-      onClick={() => router.push(`${endpoints.client.chat}/${user.userId}`)}
+      onClick={() => router.push(`${endpoints.client.chat}/${user._id}`)}
       pos="relative"
     >
       <Badge
@@ -87,19 +86,21 @@ const SingleActiveUser = ({ user }: { user: SocketUser }) => {
       />
       <ProfileImage
         size={40}
-        avatar={user.userInfo.avatar}
-        first_name={user.userInfo.first_name}
-        last_name={user.userInfo.last_name}
+        avatar={user.avatar}
+        first_name={user.first_name}
+        last_name={user.last_name}
       />
     </UnstyledButton>
   );
 };
 
 const ActiveUsers = () => {
-  const { activeUsers } = useChat();
-  const { user } = useUser();
+  const { activeFriends } = useSockets();
   const { colors } = useTheme();
-  if (activeUsers.length < 2) return <></>;
+  const {user} = useUser()
+  
+  if(activeFriends.length < 2) return <></>
+
   return (
     <ScrollArea
       maw={300}
@@ -117,12 +118,12 @@ const ActiveUsers = () => {
         Active
       </Text>
       <Group noWrap>
-        {activeUsers
-          ? activeUsers?.map((item: SocketUser, index: number) => {
-              if (user?._id === item.userId) return null;
+        {activeFriends
+          ? activeFriends?.map((item, index) => {
+            if(user?._id === item.user._id) return <></>
               return (
                 <React.Fragment key={index}>
-                  <SingleActiveUser user={item} />
+                  <SingleActiveUser user={item.user} />
                 </React.Fragment>
               );
             })

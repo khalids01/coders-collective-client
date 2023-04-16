@@ -1,12 +1,10 @@
 import { createStyles } from "@mantine/core";
 import MainNavbar from "@/components/mainLayout/nav";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { changeActiveRoute } from "@/redux/slices/activeRouteSlice";
 import { withRouter, NextRouter } from "next/router";
-import { useBreakPoints, useChat, useMessage, useUser } from "@/hooks";
-import { io, Socket } from "socket.io-client";
-import { endpoints } from "@/constants";
+import { useChat, useMessage, useUser } from "@/hooks";
 import { User } from "@/types";
 
 const useStyle = createStyles((theme) => {
@@ -58,23 +56,7 @@ const MainLayout = ({
   }, []);
 
   useEffect(() => {
-    if (!user?._id) return;
-
-    const socket = io(process.env.NEXT_PUBLIC_WS || "http://localhost:3005");
-
-    socket.on("connect", () => {});
-
-    socket.emit(endpoints.server.socketIo.addUser, user?._id, user);
-
-    socket.on(endpoints.server.socketIo.getUser, (users: SocketUser[]) => {
-      setActiveUsers(users);
-    });
-
-    // socket.emit(endpoints.server.socketIo.sendMessage, );
-
-    return () => {
-      socket.disconnect();
-    };
+    
   }, [user?._id]);
 
   return (

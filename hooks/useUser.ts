@@ -6,12 +6,7 @@ import { reactQueryKeys } from '@/constants';
 import { me } from '@/services/user/me';
 
 export default function useUser() {
-    const [accessUser, setAccessUser] = useState<User | null>(null)
-
-    useEffect(() => {
-        const user = retrieveUser()
-        setAccessUser(user)
-    }, [])
+    const [accessUser, setAccessUser] = useState<User | null>(retrieveUser())
 
     // const {refetch: fetchUser, isLoading: isUserLoading} = useQuery([reactQueryKeys.users.me], ()=> me(), {
     //     enabled: false,

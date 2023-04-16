@@ -20,7 +20,6 @@ const Chat = ({ router }: { router: NextRouter }) => {
 
   useEffect(() => {
     if(!String(router.query?.id).trim()) return ;
-    console.log('running')
     setConverSationId(router.query.id as string);
   }, [router.query?.id]);
 

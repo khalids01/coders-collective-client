@@ -34,6 +34,6 @@ export default function useToken() {
     setToken,
     hasToken,
     clearToken,
-    isLoggedIn: accessToken ? true : false,
+    isLoggedIn: !!retrieveToken(),
   };
 }
