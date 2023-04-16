@@ -196,8 +196,7 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
   const { classes } = useStyles(colors);
   const dispatch = useDispatch();
   // const [opened, { open, close }] = useDisclosure(false);
-  const [images, setImages] = useState<FileWithPath[] | []>([]);
-  const { array, push, clear, setArray, removeByIndex } = useArray([]);
+  const { array, push, pushFlattenArray, removeByIndex, clear } = useArray([]);
   useEffect(() => {
     dispatch(formHeight(inputHeight));
   }, [inputHeight]);
@@ -205,7 +204,7 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
   useEffect(() => {
     if (sendMessageSuccess) {
       form.reset();
-      setImages([]);
+      clear();
     }
   }, [sendMessageSuccess]);
 
@@ -333,20 +332,8 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
                   </Menu.Dropdown>
                 </Menu>
                 <FileButton
-                  onChange={(f: FileWithPath[]) => {
-                    if(f instanceof Array){
-                      if(array.length > 0){
-                        // @ts-ignore
-                        push(...f)
-                        return
-                      }
-                      
-                      setArray(f)
-                      return
-                    }
-                    push(f)
-                  }}
                   multiple
+                  onChange={(f: FileWithPath[]) => pushFlattenArray(f)}
                   accept={"image/png,image/jpeg,image/jpg"}
                 >
                   {(props) => (
@@ -355,13 +342,6 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
                     </UnstyledButton>
                   )}
                 </FileButton>
-                {/* <UnstyledButton
-                  onClick={open}
-                  display="grid"
-                  sx={{ placeItems: "center" }}
-                >
-               
-                </UnstyledButton> */}
               </Group>
             }
             rightSectionWidth={50}

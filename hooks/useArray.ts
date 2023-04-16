@@ -7,6 +7,10 @@ export default function useArray(defaultValue: any[]) {
     setArray((a) => [...a, element]);
   }
 
+  function pushFlattenArray(element: any[]){
+    setArray((a) => [...a, ...element]);
+  }
+
   function filter(callback: () => []) {
     setArray((a) => a.filter(callback));
   }
@@ -29,6 +33,7 @@ export default function useArray(defaultValue: any[]) {
     array,
     setArray,
     push,
+    pushFlattenArray,
     filter,
     clear,
     removeByIndex,
