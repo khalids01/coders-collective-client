@@ -38,7 +38,7 @@ const Chat = ({ router }: { router: NextRouter }) => {
             <section className={classes.section}>
               {Object.values(friends)?.length > 0
                 ? Object.values(friends)?.map((f, i) => (
-                    <UserConnectCard user={f} />
+                    <UserConnectCard key={i} user={f} />
                   ))
                 : null}
             </section>

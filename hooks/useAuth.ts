@@ -37,7 +37,7 @@ const useAuth = () => {
             message: data?.data?.message || "Success!",
             color: "teal",
           });
-          router.push(endpoints.client.dashboard);
+          router.push(endpoints.client.chat);
         }
       },
       onError: (err: AxiosError) => {
@@ -76,7 +76,7 @@ const useAuth = () => {
         setToken(data?.data?.token);
         if (tokenDecode(data?.data?.token)) {
           setUser(tokenDecode(data?.data?.token) as User);
-          router.push(endpoints.client.dashboard);
+          router.push(endpoints.client.chat);
           updateNotification({
             id: "login-request",
             title: "Welcome!",
@@ -115,7 +115,7 @@ const useAuth = () => {
           message: "",
           color: "blue",
         });
-        router.push("/");
+        router.push(endpoints.client.login);
       },
       onError(err) {
         showNotification({

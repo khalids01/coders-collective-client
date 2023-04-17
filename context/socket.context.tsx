@@ -3,7 +3,7 @@ import { useToken, useUser } from "@/hooks";
 import { Friend, Message, User } from "@/types";
 import { createContext, useContext, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
-import { retrieveToken } from "@/utils/tokenStore";
+import { boolean } from "zod";
 
 interface SocketUser {
   socketId: string;
@@ -22,7 +22,9 @@ interface Context {
   activeFriends: SocketUser[];
 }
 
-const socket = io(SOCKET_URL);
+const socket = io(SOCKET_URL, {
+  autoConnect: false,
+});
 
 const SocketContext = createContext<Context>({
   socket,
@@ -39,23 +41,32 @@ const SocketsProvider = (props: any) => {
   const [newFriend, setNewFriend] = useState<Friend>();
   const [activeFriends, setActiveFriends] = useState<SocketUser[]>([]);
 
-  useEffect(() => {
-    if (!isLoggedIn || !user?._id) {
-      socket.disconnect()
-      console.log("disconnect");
+  function handleSocket() {
+    if (!isLoggedIn) {
+      if (socket.connected) {
+        socket.close();
+      }
       return;
     }
+
+    if (!user?._id) {
+      return;
+    }
+
+    socket.connect();
 
     socket.emit(EVENTS.SERVER.ADD_ACTIVE_USER, user);
 
     socket.on(EVENTS.CLIENT.GET_ACTIVE_FRIENDS, (values) => {
       setActiveFriends(values);
     });
-  }, [socket, isLoggedIn]);
+  }
+
+  useEffect(() => {
+    handleSocket();
+  }, [isLoggedIn]);
 
   if (!isLoggedIn || !user?._id) {
-    console.log("disconnect");
-    socket.disconnect();
     return <>{props.children}</>;
   }
 
