@@ -3,7 +3,8 @@ import { useToken, useUser } from "@/hooks";
 import { Friend, Message, User } from "@/types";
 import { createContext, useContext, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
-import { boolean } from "zod";
+import { useDispatch } from "react-redux";
+import { addANewMessage } from "@/redux/slices/conversationSlice";
 
 interface SocketUser {
   socketId: string;
@@ -37,11 +38,10 @@ const SocketsProvider = (props: any) => {
   const { user } = useUser();
   const [username, setUserName] = useState();
   const [roomId, setRoomId] = useState();
-  const [newMessages, setNewMessages] = useState<Message[]>([]);
-  const [newFriend, setNewFriend] = useState<Friend>();
   const [activeFriends, setActiveFriends] = useState<SocketUser[]>([]);
-
+  const dispatch = useDispatch();
   function handleSocket() {
+    console.log('running')
     if (!isLoggedIn) {
       if (socket.connected) {
         socket.close();
@@ -60,6 +60,11 @@ const SocketsProvider = (props: any) => {
     socket.on(EVENTS.CLIENT.GET_ACTIVE_FRIENDS, (values) => {
       setActiveFriends(values);
     });
+    socket.off(EVENTS.SERVER.GET_CONVERSATION_NEW_MESSAGE);
+    socket.on(EVENTS.SERVER.GET_CONVERSATION_NEW_MESSAGE, (data) => {
+      dispatch(addANewMessage(data));
+    });
+    return
   }
 
   useEffect(() => {

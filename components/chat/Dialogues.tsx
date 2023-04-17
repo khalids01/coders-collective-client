@@ -24,6 +24,7 @@ import {
 } from "@/constants/icons";
 import { endpoints } from "@/constants";
 import { useScrollIntoView } from "@mantine/hooks";
+import { useRouter } from "next/router";
 
 const MessageItemMenu = ({
   id,
@@ -257,22 +258,22 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
   const { colors } = useTheme();
   const { messages } = useMessage();
   const { md } = useBreakPoints();
-  const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
-    axis: "y",
-    duration: 1,
-  });
+  const router = useRouter()
 
-  // const targetRef = useRef<HTMLDivElement>(null);
+  const targetRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    targetRef.current?.scrollIntoView({behavior: 'smooth'})
+  }
 
   useEffect(() => {
-    scrollIntoView();
-    // router.events.on('routeChangeComplete', scrollToBottom);
+    scrollToBottom();
+    router.events.on('routeChangeComplete', scrollToBottom);
 
-    // Remove the event listener when the component unmounts
-    // return () => {
-    // router.events.off('hashChangeComplete', scrollToBottom);
-    // };
-  }, []);
+    return () => {
+    router.events.off('hashChangeComplete', scrollToBottom);
+    };
+  }, [messages.data?.length]);
 
   return (
     <>
@@ -299,8 +300,8 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
                 </React.Fragment>
               ))
             : null}
-          <div ref={targetRef} />
         </Stack>
+        <div ref={targetRef} />
       </ScrollArea>
     </>
   );

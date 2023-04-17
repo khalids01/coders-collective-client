@@ -97,9 +97,9 @@ const SingleActiveUser = ({ user }: { user: User }) => {
 const ActiveUsers = () => {
   const { activeFriends } = useSockets();
   const { colors } = useTheme();
-  const {user} = useUser()
-  
-  if(activeFriends.length < 2) return <></>
+  const { user } = useUser();
+
+  if (activeFriends.length < 2) return <></>;
 
   return (
     <ScrollArea
@@ -120,12 +120,9 @@ const ActiveUsers = () => {
       <Group noWrap>
         {activeFriends
           ? activeFriends?.map((item, index) => {
-            if(user?._id === item.user._id) return <></>
-              return (
-                <React.Fragment key={index}>
-                  <SingleActiveUser user={item.user} />
-                </React.Fragment>
-              );
+              if (user?._id === item.user._id)
+                return <React.Fragment key={index} />;
+              return <SingleActiveUser key={index} user={item.user} />;
             })
           : null}
       </Group>

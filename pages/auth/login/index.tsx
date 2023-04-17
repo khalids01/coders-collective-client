@@ -114,9 +114,6 @@ const Login = () => {
 
               <Group position="right" mt={20}>
                 <Text
-                  component={Link}
-                  href={endpoints.client.signup}
-                  variant="link"
                   size="sm"
                 >
                   {"Don't"} have an account yet?

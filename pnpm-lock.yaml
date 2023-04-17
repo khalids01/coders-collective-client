@@ -47,8 +47,8 @@ dependencies:
     specifier: ^6.0.1
     version: 6.0.1(@mantine/core@6.0.1)(@mantine/hooks@6.0.1)(@tabler/icons-react@2.13.2)(@tiptap/extension-link@2.0.0-beta.218)(@tiptap/react@2.0.0-beta.218)(react@18.2.0)
   '@next/font':
-    specifier: 13.1.6
-    version: 13.1.6
+    specifier: ^13.3.0
+    version: 13.3.0
   '@reduxjs/toolkit':
     specifier: ^1.9.2
     version: 1.9.2(react-redux@8.0.5)(react@18.2.0)
@@ -605,8 +605,8 @@ packages:
   /@next/env@13.2.4:
     resolution: {integrity: sha512-+Mq3TtpkeeKFZanPturjcXt+KHfKYnLlX6jMLyCrmpq6OOs4i1GqBOAauSkii9QeKCMTYzGppar21JU57b/GEA==}
 
-  /@next/font@13.1.6:
-    resolution: {integrity: sha512-AITjmeb1RgX1HKMCiA39ztx2mxeAyxl4ljv2UoSBUGAbFFMg8MO7YAvjHCgFhD39hL7YTbFjol04e/BPBH5RzQ==}
+  /@next/font@13.3.0:
+    resolution: {integrity: sha512-xUv7VRUA2Zr6n/KJDILyv7/zGy9xKUsyQURaQqYr7lVxn0REScazwyZQzhSm+DnJoUyo+9DcFs2J3WsZXHUvQw==}
     dev: false
 
   /@next/swc-android-arm-eabi@13.2.4:

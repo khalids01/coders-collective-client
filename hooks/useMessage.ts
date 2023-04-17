@@ -12,9 +12,12 @@ import {
   addMessages as addMessagesAction
 } from "@/redux/slices/conversationSlice";
 import { Message } from "@/types";
+import { useSockets } from "@/context/socket.context";
+import { EVENTS } from "@/constants/socketConfig";
 
 
 const useMessage = () => {
+  const {socket} = useSockets()
   const dispatch = useDispatch();
   const { messages, roomId } = useSelector(
     (state: RootState) => state.conversation
@@ -35,6 +38,7 @@ const useMessage = () => {
   } = useMutation(sendMessageService, {
     onSuccess: (data) => {
       dispatch(addANewMessageAction(data.data.data));
+      socket.emit(EVENTS.SERVER.GET_CONVERSATION_NEW_MESSAGE, {message: data.data.data})
     },
     onError: (error) => {
       console.log(error);

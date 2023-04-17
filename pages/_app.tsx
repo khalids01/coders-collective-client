@@ -25,8 +25,8 @@ export default function App({ Component, pageProps }: AppProps) {
   }
 
   return isMounted ? (
-    <SocketProvider>
-      <ReduxStoreProvider store={store}>
+    <ReduxStoreProvider store={store}>
+      <SocketProvider>
         <QueryClientProvider client={queryClient}>
           {/* <ReactQueryDevtools position="top-left" initialIsOpen={false}/> */}
           <ColorSchemeProvider
@@ -49,7 +49,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </MantineProvider>
           </ColorSchemeProvider>
         </QueryClientProvider>
-      </ReduxStoreProvider>
-    </SocketProvider>
+      </SocketProvider>
+    </ReduxStoreProvider>
   ) : null;
 }
