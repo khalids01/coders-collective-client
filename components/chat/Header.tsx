@@ -47,9 +47,9 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
         ) : null}
         <ProfileImage
           size={xs ? 30 : md ? 35 : 40}
-          avatar={""}
-          first_name={"test"}
-          last_name={"account"}
+          avatar={chatData?.data?.avatar}
+          first_name={chatData?.data?.first_name}
+          last_name={chatData?.data?.last_name}
         />
         <Stack spacing={0}>
           <Text color={colors.text.primary} size={md ? 16 : 18} weight={500}>
@@ -58,7 +58,7 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
               : ""}
           </Text>
           <Text color={colors.text.secondary} size={md ? 11 : 14} weight={400}>
-            {dayjs().format('MMM D h:mm')}
+            {dayjs().format("MMM D h:mm")}
           </Text>
         </Stack>
       </Group>

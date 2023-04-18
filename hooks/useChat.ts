@@ -8,6 +8,7 @@ import queryKeys from "@/constants/reactQueryKeys";
 import { getChatData } from "@/services/chat/chatData";
 import { ChatType } from "@/types";
 import { SocketUser } from "@/Layouts/MainLayout";
+import { reactQueryKeys } from "@/constants";
 
 interface Params {
   id?: string | undefined;

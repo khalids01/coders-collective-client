@@ -13,7 +13,7 @@ import {
   Group,
 } from "@mantine/core";
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { useElementSize } from "@mantine/hooks";
+import { useDebouncedState, useElementSize } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import {
   useArray,
@@ -39,9 +39,10 @@ import data, { Skin } from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useDispatch } from "react-redux";
 import { formHeight } from "@/redux/slices/chatLayoutProps";
-import { useEffect, useState } from "react";
-import { useDisclosure } from "@mantine/hooks";
+import { useEffect, useRef } from "react";
 import { ColorsType } from "@/hooks/useTheme";
+import { useSockets } from "@/context/socket.context";
+import { EVENTS } from "@/constants/socketConfig";
 
 const useStyles = createStyles((theme, colors: ColorsType) => ({
   form: {
@@ -195,6 +196,10 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
   const { sendMessage, sendMessageSuccess } = useMessage();
   const { classes } = useStyles(colors);
   const dispatch = useDispatch();
+  const { socket } = useSockets();
+  const { user } = useUser();
+
+
   // const [opened, { open, close }] = useDisclosure(false);
   const { array, push, pushFlattenArray, removeByIndex, clear } = useArray([]);
   useEffect(() => {
@@ -205,6 +210,11 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
     if (sendMessageSuccess) {
       form.reset();
       clear();
+      socket.emit(EVENTS.CLIENT.TYPING_MESSAGE, {
+        sender: user?._id,
+        receiver: receiverId,
+        message: '',
+      });
     }
   }, [sendMessageSuccess]);
 
@@ -232,6 +242,15 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
     }
 
     sendMessage(formData);
+  };
+
+  const handleInputChange = (e: any) => {
+    form.setFieldValue("message", e.target.value);
+    socket.emit(EVENTS.CLIENT.TYPING_MESSAGE, {
+      sender: user?._id,
+      receiver: receiverId,
+      message: e.target.value,
+    });
   };
 
   return (
@@ -266,7 +285,7 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
             minRows={1}
             maxRows={4}
             sx={{ width: "100%" }}
-            {...form.getInputProps("message")}
+            onChange={handleInputChange}
             rightSection={
               <Menu
                 trigger="click"

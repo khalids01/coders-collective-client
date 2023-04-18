@@ -8,11 +8,18 @@ import {
   Modal,
   Menu,
   Box,
+  Loader,
 } from "@mantine/core";
 import Image from "next/image";
 import type { ImageData, Message } from "@/types";
-import { useBreakPoints, useMessage, useTheme, useUser } from "@/hooks";
-import { Div } from "../common/sub";
+import {
+  useBreakPoints,
+  useChat,
+  useMessage,
+  useTheme,
+  useUser,
+} from "@/hooks";
+import { Div, ProfileImage } from "../common/sub";
 import React, { useEffect, useRef, useState } from "react";
 import {
   DotsY,
@@ -23,8 +30,11 @@ import {
   SmileEmoji,
 } from "@/constants/icons";
 import { endpoints } from "@/constants";
-import { useScrollIntoView } from "@mantine/hooks";
 import { useRouter } from "next/router";
+import { useSockets } from "@/context/socket.context";
+import { EVENTS } from "@/constants/socketConfig";
+import dayjs from "dayjs";
+import calender from "dayjs/plugin/calendar";
 
 const MessageItemMenu = ({
   id,
@@ -135,15 +145,19 @@ const ImageModal = ({
 };
 
 const SingleMessage = ({ message }: { message: Message }) => {
+  dayjs.extend(calender);
   const { user } = useUser();
   const { colors } = useTheme();
   const [image, setImage] = useState<string>("");
   const [opened, setOpened] = useState(false);
   const { md } = useBreakPoints();
+  const { chatData } = useChat({ id: message.receiver });
 
   const me = user?._id === message.sender;
 
-  const [allImages, setAllImages] = useState<string[]>([]);
+  // const [allImages, setAllImages] = useState<string[]>([]);
+
+  const Options = () => {};
 
   if (!user?._id) return <></>;
 
@@ -155,6 +169,7 @@ const SingleMessage = ({ message }: { message: Message }) => {
         maxWidth: "70%",
       }}
     >
+      {/* Date */}
       <Text
         sx={{
           display: "inline-block",
@@ -164,10 +179,11 @@ const SingleMessage = ({ message }: { message: Message }) => {
         mb={-10}
         mr={me ? 30 : 0}
         ml={me ? 0 : 30}
-        size={md ? 11 : 14}
+        size={12}
       >
-        {/* {moment(message.updatedAt).calendar()} */}
+        {dayjs().calendar(dayjs(message.updatedAt))}
       </Text>
+      
       <Div d="flex" items="center">
         {message.message.text?.length > 0 ? (
           <>
@@ -196,9 +212,18 @@ const SingleMessage = ({ message }: { message: Message }) => {
           </>
         ) : null}
       </Div>
+
       <Div d="flex" justifyContent="flex-end">
         {message.message.images?.length > 0 && !me ? (
-          <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
+          <>
+            <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
+            <ProfileImage
+              size={30}
+              avatar={chatData?.data?.avatar}
+              first_name={chatData?.data?.first_name}
+              last_name={chatData?.data?.last_name}
+            />
+          </>
         ) : null}
 
         {message.message?.images ? (
@@ -258,22 +283,38 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
   const { colors } = useTheme();
   const { messages } = useMessage();
   const { md } = useBreakPoints();
-  const router = useRouter()
+  const router = useRouter();
+
+  const [typingMessage, setTypingMessage] = useState<{
+    sender: string;
+    receiver: string;
+    message: string;
+  }>();
+  const { socket } = useSockets();
 
   const targetRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    targetRef.current?.scrollIntoView({behavior: 'smooth'})
-  }
+    targetRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     scrollToBottom();
-    router.events.on('routeChangeComplete', scrollToBottom);
+    router.events.on("routeChangeComplete", scrollToBottom);
 
     return () => {
-    router.events.off('hashChangeComplete', scrollToBottom);
+      router.events.off("hashChangeComplete", scrollToBottom);
     };
   }, [messages.data?.length]);
+
+  useEffect(() => {
+    socket.on(
+      EVENTS.CLIENT.TYPING_MESSAGE_GET,
+      ({ sender, receiver, message }) => {
+        setTypingMessage({ sender, receiver, message });
+      }
+    );
+  }, []);
 
   return (
     <>
@@ -302,6 +343,11 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
             : null}
         </Stack>
         <div ref={targetRef} />
+        {typingMessage?.message && typingMessage.sender === receiverId ? (
+          <Group ml={20} pb={10}>
+            <Loader variant="dots" size={"md"} color={colors.text.secondary} />
+          </Group>
+        ) : null}
       </ScrollArea>
     </>
   );
