@@ -63,7 +63,7 @@ const Info = ({ type, user }: Props) => {
         <Group>
           <ProfileImage
             avatar={details?.avatar}
-            first_name={details?.name as string}
+            username={details?.name as string}
             size={60}
           />
           <Stack spacing={0}>

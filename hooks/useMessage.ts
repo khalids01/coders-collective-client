@@ -19,7 +19,7 @@ import { EVENTS } from "@/constants/socketConfig";
 const useMessage = () => {
   const {socket} = useSockets()
   const dispatch = useDispatch();
-  const { messages, roomId } = useSelector(
+  const { messages, chat_name } = useSelector(
     (state: RootState) => state.conversation
   );
 
@@ -46,10 +46,10 @@ const useMessage = () => {
   });
 
   const { refetch: refetchMessages } = useQuery(
-    [reactQueryKeys.messages + roomId],
-    () => getMessages({ receiverId: roomId as string }),
+    [reactQueryKeys.messages + chat_name],
+    () => getMessages({ chat_name: chat_name as string }),
     {
-      enabled: !!roomId,
+      enabled: !!chat_name,
       onSuccess({data}){
         dispatch(addMessagesAction(data.data))
       }
@@ -64,7 +64,7 @@ const useMessage = () => {
     sendMessageLoading,
     sendMessageSuccess,
     setConverSationId,
-    roomId
+    chat_name
   };
 };
 

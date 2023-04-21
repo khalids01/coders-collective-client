@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { changeActiveRoute } from "@/redux/slices/activeRouteSlice";
 import { withRouter, NextRouter } from "next/router";
-import { useChat, useMessage, useUser } from "@/hooks";
+import { useMessage, useUser } from "@/hooks";
 import { User } from "@/types";
 
 const useStyle = createStyles((theme) => {
@@ -48,7 +48,6 @@ const MainLayout = ({
   const { classes } = useStyle();
   const dispatch = useDispatch();
   const { user } = useUser();
-  const { setActiveUsers } = useChat();
   const {  } = useMessage();
 
   useEffect(() => {

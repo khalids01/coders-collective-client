@@ -30,7 +30,7 @@ const SignUp = () => {
       .string()
       .min(2, { message: "Last name must be 2 or more character" })
       .max(10, { message: "Last name cannot be more then 10 characters" }),
-    user_name: z
+    username: z
       .string()
       .min(3, { message: "First name must be 3 or more character" })
       .max(15, { message: "First name cannot be more then 15 characters" }),
@@ -48,7 +48,7 @@ const SignUp = () => {
     initialValues: {
       first_name: "",
       last_name: "",
-      user_name: "",
+      username: "",
       email: "",
       password: "",
     },
@@ -98,7 +98,7 @@ const SignUp = () => {
               />
               <TextInput
                 mt="md"
-                {...form.getInputProps("user_name")}
+                {...form.getInputProps("username")}
                 label="User Name"
                 placeholder="@username"
                 required

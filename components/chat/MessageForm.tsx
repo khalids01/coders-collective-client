@@ -190,7 +190,7 @@ const DroppedImagesPreview = ({
   );
 };
 
-const MessageForm = ({ receiverId }: { receiverId: string }) => {
+const MessageForm = ({ chat_name }: { chat_name: string }) => {
   const { height: inputHeight, ref } = useElementSize();
   const { colors, colorScheme } = useTheme();
   const { sendMessage, sendMessageSuccess } = useMessage();
@@ -199,8 +199,7 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
   const { socket } = useSockets();
   const { user } = useUser();
 
-
-  // const [opened, { open, close }] = useDisclosure(false);
+// state for images array 
   const { array, push, pushFlattenArray, removeByIndex, clear } = useArray([]);
   useEffect(() => {
     dispatch(formHeight(inputHeight));
@@ -211,9 +210,15 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
       form.reset();
       clear();
       socket.emit(EVENTS.CLIENT.TYPING_MESSAGE, {
-        sender: user?._id,
-        receiver: receiverId,
-        message: '',
+        sender: {
+          username: user?.username,
+        },
+        receiver: {
+          username: chat_name
+        },
+        message: {
+          text: ''
+        },
       });
     }
   }, [sendMessageSuccess]);
@@ -227,14 +232,14 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
   const handleSendMessage = (values: typeof form.values) => {
     if (
       (array.length === 0 && values.message.trim()?.length === 0) ||
-      !receiverId
+      !chat_name
     ) {
       return;
     }
 
     const formData = new FormData();
 
-    formData.append("receiverId", receiverId);
+    formData.append("chat_name", chat_name);
     formData.append("message", form.values.message);
 
     for (let i = 0; i < array.length; i++) {
@@ -247,9 +252,15 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
   const handleInputChange = (e: any) => {
     form.setFieldValue("message", e.target.value);
     socket.emit(EVENTS.CLIENT.TYPING_MESSAGE, {
-      sender: user?._id,
-      receiver: receiverId,
-      message: e.target.value,
+      sender: {
+        username: user?.username,
+      },
+      receiver: {
+        username: chat_name
+      },
+      message: {
+        text: e.target.value
+      },
     });
   };
 
@@ -286,6 +297,7 @@ const MessageForm = ({ receiverId }: { receiverId: string }) => {
             maxRows={4}
             sx={{ width: "100%" }}
             onChange={handleInputChange}
+            value={form.values.message}
             rightSection={
               <Menu
                 trigger="click"

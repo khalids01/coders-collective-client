@@ -33,11 +33,7 @@ const UserAvatar = ({
       <Menu.Target>
         <UnstyledButton>
           {user?._id ? (
-            <ProfileImage
-              first_name={user.first_name}
-              last_name={user.last_name}
-              avatar={user.avatar}
-            />
+            <ProfileImage size={40} username={user.username} avatar={user.avatar} />
           ) : null}
         </UnstyledButton>
       </Menu.Target>

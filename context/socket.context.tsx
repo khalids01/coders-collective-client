@@ -15,7 +15,7 @@ interface Context {
   socket: Socket;
   username?: string;
   setUserName: Function;
-  roomId?: string;
+  chat_name?: string;
   newMessages?: Message;
   setNewMessages?: Function;
   newFriend?: Friend;
@@ -37,11 +37,10 @@ const SocketsProvider = (props: any) => {
   const { isLoggedIn } = useToken();
   const { user } = useUser();
   const [username, setUserName] = useState();
-  const [roomId, setRoomId] = useState();
+  const [chat_name, setChat_name] = useState();
   const [activeFriends, setActiveFriends] = useState<SocketUser[]>([]);
   const dispatch = useDispatch();
   function handleSocket() {
-    console.log('running')
     if (!isLoggedIn) {
       if (socket.connected) {
         socket.close();
@@ -77,7 +76,7 @@ const SocketsProvider = (props: any) => {
 
   return (
     <SocketContext.Provider
-      value={{ socket, username, setUserName, roomId, activeFriends }}
+      value={{ socket, username, setUserName, chat_name, activeFriends }}
       {...props}
     />
   );

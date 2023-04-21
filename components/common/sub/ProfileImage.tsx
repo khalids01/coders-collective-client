@@ -2,19 +2,18 @@ import Image from "next/image";
 import { Avatar, Box, Text } from "@mantine/core";
 
 type Props = {
-  first_name: string;
-  last_name?: string;
+  username: string;
   avatar: string | undefined;
   size?: number;
 };
 
-const ProfileImage = ({ first_name, last_name, avatar, size }: Props) => {
+const ProfileImage = ({ username, avatar, size }: Props) => {
   return (
-    <Avatar radius={size ? size * 2 : 50}>
+    <Avatar radius={size ? size * 2 : 50} size={size}>
       {avatar && avatar?.length > 0 ? (
         <Image
           src={avatar}
-          alt={first_name as string}
+          alt={username as string}
           height={size ? size : 48}
           width={size ? size : 48}
           className="cover"
@@ -29,13 +28,14 @@ const ProfileImage = ({ first_name, last_name, avatar, size }: Props) => {
           sx={{ placeContent: "center", borderRadius: 100 }}
         >
           <Text
-            size={size ? size / 2.5 : 16}
+            size={size ? size / 2.3 : 16}
             component="span"
             color="var(--card-text)"
             pt={2}
+            weight={700}
+            align="center"
           >
-            {first_name && first_name[0].toUpperCase()}
-            {last_name && last_name[0].toUpperCase()}
+            {username && username[0].toUpperCase()}
           </Text>
         </Box>
       )}

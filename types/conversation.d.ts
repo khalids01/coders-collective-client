@@ -14,5 +14,5 @@ export default interface conversationData {
   };
 
   sendMessageData: SendMessageData;
-  roomId: string | null;
+  chat_name: string | null;
 }

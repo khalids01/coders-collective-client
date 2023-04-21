@@ -25,7 +25,7 @@ const UserCard = ({ user }: { user: User }) => {
         {user.avatar.length > 0 ? (
           <Image
             src={user.avatar}
-            alt={user.user_name}
+            alt={user.username}
             height={250}
             width={350}
             className={"object-cover"}

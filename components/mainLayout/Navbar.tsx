@@ -94,8 +94,7 @@ function CustomNavbar() {
       <Navbar.Section className={classes.footer}>
         <ProfileImage
           avatar={user?.avatar as string}
-          first_name={user?.first_name as string}
-          last_name={user?.first_name}
+          username={user?.username as string}
         />
       </Navbar.Section>
     </Navbar>

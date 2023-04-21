@@ -12,11 +12,11 @@ import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
 import { endpoints } from "@/constants";
 import Link from "next/link";
 
-const ChatHeader = ({ receiverId }: { receiverId: string }) => {
+const ChatHeader = ({ chat_name }: { chat_name: string }) => {
   const { colors, colorScheme } = useTheme();
   const { md, xs } = useBreakPoints();
   const dispatch = useDispatch();
-  const { chatData } = useChat({ id: receiverId, type: "user" });
+  const { chatData } = useChat({ chat_name, type: "user" });
   const { showInfo } = useSelector(
     (state: RootState) => state.chatLayout.chatInfo
   );
@@ -24,6 +24,7 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
   const { show: showDrawer } = useSelector(
     (state: RootState) => state.chatLayout.mainNavDrawer
   );
+
 
   return (
     <Group
@@ -48,8 +49,7 @@ const ChatHeader = ({ receiverId }: { receiverId: string }) => {
         <ProfileImage
           size={xs ? 30 : md ? 35 : 40}
           avatar={chatData?.data?.avatar}
-          first_name={chatData?.data?.first_name}
-          last_name={chatData?.data?.last_name}
+          username={chatData?.data?.username}
         />
         <Stack spacing={0}>
           <Text color={colors.text.primary} size={md ? 16 : 18} weight={500}>

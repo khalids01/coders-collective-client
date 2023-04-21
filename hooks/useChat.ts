@@ -8,14 +8,13 @@ import queryKeys from "@/constants/reactQueryKeys";
 import { getChatData } from "@/services/chat/chatData";
 import { ChatType } from "@/types";
 import { SocketUser } from "@/Layouts/MainLayout";
-import { reactQueryKeys } from "@/constants";
 
 interface Params {
-  id?: string | undefined;
+  chat_name?: string | undefined;
   type?: ChatType | undefined;
 }
 
-const useChat = ({ id = "", type = "user" }: Params = {}) => {
+const useChat = ({ chat_name = "", type = "user" }: Params = {}) => {
   const dispatch = useDispatch();
 
   const { friends, activeUsers } = useSelector((state: RootState) => state.chat);
@@ -40,10 +39,10 @@ const useChat = ({ id = "", type = "user" }: Params = {}) => {
   );
 
   const { data: chatData, refetch: refetchChatData } = useQuery(
-    [queryKeys.chat + id],
-    () => getChatData({ id, type }),
+    [queryKeys.chat + chat_name],
+    () => getChatData({ chat_name, type }),
     {
-      enabled: !!id && !!type,
+      enabled: !!chat_name && !!type,
     }
   );
 

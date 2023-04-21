@@ -35,6 +35,7 @@ import { useSockets } from "@/context/socket.context";
 import { EVENTS } from "@/constants/socketConfig";
 import dayjs from "dayjs";
 import calender from "dayjs/plugin/calendar";
+import type { TypingMessage } from "@/types/message";
 
 const MessageItemMenu = ({
   id,
@@ -63,7 +64,7 @@ const MessageItemMenu = ({
     >
       <Menu.Target>
         <ActionIcon>
-          <DotsY size={20} />
+          <DotsY size={18} color={colors.text.secondary} />
         </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>
@@ -151,13 +152,30 @@ const SingleMessage = ({ message }: { message: Message }) => {
   const [image, setImage] = useState<string>("");
   const [opened, setOpened] = useState(false);
   const { md } = useBreakPoints();
-  const { chatData } = useChat({ id: message.receiver });
+  const { chatData } = useChat({ chat_name: message.receiver.username });
 
-  const me = user?._id === message.sender;
+  const me = user?._id === message.sender.id;
 
   // const [allImages, setAllImages] = useState<string[]>([]);
 
-  const Options = () => {};
+  const Options = () => {
+    return (
+      <Group
+        spacing={0}
+        miw={60}
+        sx={{
+          flexDirection: me ? "row-reverse" : "row",
+        }}
+      >
+        <MessageItemMenu type={me ? "me" : "other"} id={message._id} />
+        <ProfileImage
+          username={message.sender.username}
+          avatar={message.sender.avatar}
+          size={30}
+        />
+      </Group>
+    );
+  };
 
   if (!user?._id) return <></>;
 
@@ -165,7 +183,7 @@ const SingleMessage = ({ message }: { message: Message }) => {
     <Stack
       pr={8}
       sx={{
-        margin: user?._id === message.sender ? "0 0 0 auto" : "0 auto 0 0",
+        margin: user?._id === message.sender.id ? "0 0 0 auto" : "0 auto 0 0",
         maxWidth: "70%",
       }}
     >
@@ -183,32 +201,29 @@ const SingleMessage = ({ message }: { message: Message }) => {
       >
         {dayjs().calendar(dayjs(message.updatedAt))}
       </Text>
-      
-      <Div d="flex" items="center">
+
+      <Div d="flex" items="flex-start" justifyContent={me ? 'flex-end' : 'flex-start'}>
         {message.message.text?.length > 0 ? (
           <>
-            {!me ? (
-              <MessageItemMenu type={me ? "me" : "other"} id={message._id} />
-            ) : null}
-            <Text
-              size={14}
-              color={!me ? colors.text.primary : "white"}
-              p="10px 20px"
-              sx={{
-                borderRadius: 16,
-                letterSpacing: 1.05,
-                backgroundColor: !me
-                  ? colors.background.lighter
-                  : colors.card.focus,
-                lineHeight: 1.6,
-                marginLeft: !me ? 0 : "auto",
-              }}
-            >
-              {message.message.text}
-            </Text>
-            {me ? (
-              <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
-            ) : null}
+            {!me ? <Options /> : null}
+              <Text
+                size={14}
+                color={!me ? colors.text.primary : "white"}
+                p="10px 20px"
+                mx={10}
+                sx={{
+                  borderRadius: 16,
+                  letterSpacing: 1.05,
+                  backgroundColor: !me
+                    ? colors.background.lighter
+                    : colors.card.focus,
+                  lineHeight: 1.6,
+                  marginLeft: !me ? 0 : "auto",
+                }}
+              >
+                {message.message.text}
+              </Text>
+            {me ? <Options /> : null}
           </>
         ) : null}
       </Div>
@@ -219,9 +234,8 @@ const SingleMessage = ({ message }: { message: Message }) => {
             <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
             <ProfileImage
               size={30}
-              avatar={chatData?.data?.avatar}
-              first_name={chatData?.data?.first_name}
-              last_name={chatData?.data?.last_name}
+              avatar={message.sender?.avatar}
+              username={message.sender?.username}
             />
           </>
         ) : null}
@@ -241,6 +255,7 @@ const SingleMessage = ({ message }: { message: Message }) => {
                     setImage(img.src);
                     setOpened(!opened);
                   }}
+                  mx={10}
                   sx={{
                     display: "inline-block",
                     transition: "all 0.2s",
@@ -264,7 +279,14 @@ const SingleMessage = ({ message }: { message: Message }) => {
         ) : null}
 
         {message.message.images?.length > 0 && me ? (
-          <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
+          <>
+            <ProfileImage
+              size={30}
+              avatar={message.sender?.avatar}
+              username={message.sender?.username}
+            />
+            <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
+          </>
         ) : null}
       </Div>
 
@@ -279,17 +301,13 @@ const SingleMessage = ({ message }: { message: Message }) => {
   );
 };
 
-const Dialogues = ({ receiverId }: { receiverId: string }) => {
+const Dialogues = ({ chat_name }: { chat_name: string }) => {
   const { colors } = useTheme();
   const { messages } = useMessage();
   const { md } = useBreakPoints();
   const router = useRouter();
 
-  const [typingMessage, setTypingMessage] = useState<{
-    sender: string;
-    receiver: string;
-    message: string;
-  }>();
+  const [typingMessage, setTypingMessage] = useState<TypingMessage>();
   const { socket } = useSockets();
 
   const targetRef = useRef<HTMLDivElement>(null);
@@ -324,6 +342,11 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
           borderBottom: `1px solid ${colors.divider}`,
           background: colors.background.neutral,
         }}
+        styles={{
+          root: {
+            position: "relative",
+          },
+        }}
       >
         <Stack
           px={md ? 5 : 12}
@@ -343,8 +366,9 @@ const Dialogues = ({ receiverId }: { receiverId: string }) => {
             : null}
         </Stack>
         <div ref={targetRef} />
-        {typingMessage?.message && typingMessage.sender === receiverId ? (
-          <Group ml={20} pb={10}>
+        {String(typingMessage?.message.text).trim() &&
+        typingMessage?.sender?.username === chat_name ? (
+          <Group pos="absolute" bottom={0} left={0} ml={20} pb={10}>
             <Loader variant="dots" size={"md"} color={colors.text.secondary} />
           </Group>
         ) : null}

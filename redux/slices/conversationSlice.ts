@@ -14,7 +14,7 @@ const initialState: ConversationData = {
       images: [],
     },
   },
-  roomId: null,
+  chat_name: null,
 };
 
 export const ConversationSlice = createSlice({
@@ -37,9 +37,9 @@ export const ConversationSlice = createSlice({
 
     setConverSationId: (
       state: ConversationData,
-      action: PayloadAction<typeof initialState.roomId>
+      action: PayloadAction<typeof initialState.chat_name>
     ) => {
-      state.roomId = action.payload;
+      state.chat_name = action.payload;
     },
   },
 });

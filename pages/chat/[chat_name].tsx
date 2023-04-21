@@ -19,9 +19,9 @@ const Chat = ({ router }: { router: NextRouter }) => {
   const { setConverSationId } = useMessage();
 
   useEffect(() => {
-    if(!String(router.query?.id).trim()) return ;
-    setConverSationId(router.query.id as string);
-  }, [router.query?.id]);
+    if(!String(router.query?.chat_name).trim()) return ;
+    setConverSationId(router.query.chat_name as string);
+  }, [router.query?.chat_name]);
 
   const { height } = useSelector(
     (state: RootState) => state.chatLayout.conversation.form
@@ -47,9 +47,9 @@ const Chat = ({ router }: { router: NextRouter }) => {
             }}
             spacing={0}
           >
-            <ChatHeader receiverId={router.query?.id as string} />
-            <Dialogues receiverId={router.query?.id as string} />
-            <MessageForm receiverId={router.query?.id as string} />
+            <ChatHeader chat_name={router.query?.chat_name as string} />
+            <Dialogues chat_name={router.query?.chat_name as string} />
+            <MessageForm chat_name={router.query?.chat_name as string} />
           </Stack>
         }
       />

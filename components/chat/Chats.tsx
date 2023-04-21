@@ -69,7 +69,7 @@ const SingleActiveUser = ({ user }: { user: User }) => {
   const router = useRouter();
   return (
     <UnstyledButton
-      onClick={() => router.push(`${endpoints.client.chat}/${user._id}`)}
+      onClick={() => router.push(`${endpoints.client.chat}/${user.username}`)}
       pos="relative"
     >
       <Badge
@@ -84,12 +84,7 @@ const SingleActiveUser = ({ user }: { user: User }) => {
           zIndex: 2,
         }}
       />
-      <ProfileImage
-        size={40}
-        avatar={user.avatar}
-        first_name={user.first_name}
-        last_name={user.last_name}
-      />
+      <ProfileImage size={40} avatar={user.avatar} username={user.username} />
     </UnstyledButton>
   );
 };
@@ -134,12 +129,14 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   const { colors } = useTheme();
   const { md } = useBreakPoints();
   const router = useRouter();
-  const { id } = router.query;
+  const { chat_name } = router.query;
   const { classes } = useStyle(colors);
 
   const handleChatItemClick = () => {
-    router.push(`${endpoints.client.chat}/${friend._id}`);
+    router.push(`${endpoints.client.chat}/${friend.username}`);
   };
+
+  const active = chat_name === friend.username
 
   return (
     <UnstyledButton
@@ -148,25 +145,27 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
       className={classes.chatItem}
       sx={{
         backgroundColor:
-          id === friend._id ? colors.card.focus : colors.background.paper,
+          chat_name === friend.username
+            ? colors.card.focus
+            : colors.background.paper,
       }}
     >
       <ProfileImage
-        first_name={friend.first_name}
-        last_name={friend.last_name}
+        username={friend.username}
         avatar={friend.avatar}
+        size={40}
       />
       <Stack align={"stretch"} spacing={4}>
         <Group position="apart">
           <Text weight={600}>
             <CompactText
-              color={id === friend._id ? "white" : undefined}
+              color={active ? "white" : undefined}
               text={`${friend.first_name} ${friend.last_name}`}
               length={md ? 20 : 30}
             />
           </Text>
           <Text
-            color={id === friend._id ? "white" : colors.text.primary}
+            color={active ? "white" : colors.text.primary}
             size={12}
           >
             9:36
@@ -175,7 +174,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
         <Group position="apart">
           <Text size={14}>
             <CompactText
-              color={id === friend._id ? "white" : undefined}
+              color={active ? "white" : undefined}
               text={"Last message"}
               length={md ? 20 : 30}
             />
@@ -184,10 +183,10 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
             py={5}
             px={6}
             bg={
-              id === friend._id ? "var(--badgeBg)" : colors.background.default
+              active ? "var(--badgeBg)" : colors.background.default
             }
             sx={{
-              color: id === friend._id ? "black" : "var(--blue)",
+              color: active ? "black" : "var(--blue)",
             }}
           >
             {Math.floor(Math.random() * 5) + 1}
@@ -206,7 +205,7 @@ const AddConnection = ({ connection }: { connection: User }) => {
   const { classes } = useStyle(colors);
   const [requestSent, setRequestSent] = useState(false);
   const handleChatItemClick = () => {
-    router.push(`${endpoints.client.chat}/${connection._id}`);
+    router.push(`${endpoints.client.chat}/${connection.username}`);
   };
 
   return (
@@ -217,11 +216,7 @@ const AddConnection = ({ connection }: { connection: User }) => {
         backgroundColor: colors.background.paper,
       }}
     >
-      <ProfileImage
-        first_name={connection.first_name}
-        last_name={connection.last_name}
-        avatar={connection.avatar}
-      />
+      <ProfileImage username={connection.username} avatar={connection.avatar} />
       <Group position="apart">
         <Stack spacing={0}>
           <Text weight={600}>
