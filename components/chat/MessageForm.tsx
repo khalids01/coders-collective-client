@@ -199,7 +199,7 @@ const MessageForm = ({ chat_name }: { chat_name: string }) => {
   const { socket } = useSockets();
   const { user } = useUser();
 
-// state for images array 
+  // state for images array
   const { array, push, pushFlattenArray, removeByIndex, clear } = useArray([]);
   useEffect(() => {
     dispatch(formHeight(inputHeight));
@@ -214,10 +214,10 @@ const MessageForm = ({ chat_name }: { chat_name: string }) => {
           username: user?.username,
         },
         receiver: {
-          username: chat_name
+          username: chat_name,
         },
         message: {
-          text: ''
+          text: "",
         },
       });
     }
@@ -256,10 +256,10 @@ const MessageForm = ({ chat_name }: { chat_name: string }) => {
         username: user?.username,
       },
       receiver: {
-        username: chat_name
+        username: chat_name,
       },
       message: {
-        text: e.target.value
+        text: e.target.value,
       },
     });
   };
@@ -321,12 +321,23 @@ const MessageForm = ({ chat_name }: { chat_name: string }) => {
                   <Picker
                     theme={colorScheme}
                     data={data}
-                    onEmojiSelect={(e: Skin) =>
+                    onEmojiSelect={(e: Skin) => {
                       form.setFieldValue(
                         "message",
                         form.values.message + e?.native
-                      )
-                    }
+                      );
+                      socket.emit(EVENTS.CLIENT.TYPING_MESSAGE, {
+                        sender: {
+                          username: user?.username,
+                        },
+                        receiver: {
+                          username: chat_name,
+                        },
+                        message: {
+                          text: e?.native,
+                        },
+                      });
+                    }}
                   />
                 </Menu.Dropdown>
               </Menu>
