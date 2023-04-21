@@ -10,10 +10,12 @@ import { showMainNavDrawer } from "@/redux/slices/chatLayoutProps";
 import { Info as ChatInfo } from "@/components/chat";
 import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
 import { endpoints } from "@/constants";
+import { useSockets } from "@/context/socket.context";
 import Link from "next/link";
 
 const ChatHeader = ({ chat_name }: { chat_name: string }) => {
   const { colors, colorScheme } = useTheme();
+  const { activeFriends } = useSockets();
   const { md, xs } = useBreakPoints();
   const dispatch = useDispatch();
   const { chatData } = useChat({ chat_name, type: "user" });
@@ -25,6 +27,7 @@ const ChatHeader = ({ chat_name }: { chat_name: string }) => {
     (state: RootState) => state.chatLayout.mainNavDrawer
   );
 
+  const active = !!activeFriends.find((f)=> f.user.username === chatData?.data?.username);
 
   return (
     <Group
@@ -58,7 +61,7 @@ const ChatHeader = ({ chat_name }: { chat_name: string }) => {
               : ""}
           </Text>
           <Text color={colors.text.secondary} size={md ? 11 : 14} weight={400}>
-            {dayjs().format("MMM D h:mm")}
+            {active ? <Group>Online</Group> : dayjs().format("MMM D h:mm")}
           </Text>
         </Stack>
       </Group>

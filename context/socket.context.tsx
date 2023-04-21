@@ -74,6 +74,8 @@ const SocketsProvider = (props: any) => {
     return <>{props.children}</>;
   }
 
+
+
   return (
     <SocketContext.Provider
       value={{ socket, username, setUserName, chat_name, activeFriends }}
