@@ -38,7 +38,7 @@ const useMessage = () => {
   } = useMutation(sendMessageService, {
     onSuccess: (data) => {
       dispatch(addANewMessageAction(data.data.data));
-      socket.emit(EVENTS.SERVER.GET_CONVERSATION_NEW_MESSAGE, {message: data.data.data})
+      socket.emit(EVENTS.SERVER.SET_CONVERSATION_NEW_MESSAGE, {message: data.data.data})
     },
     onError: (error) => {
       console.log(error);

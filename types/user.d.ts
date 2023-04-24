@@ -13,6 +13,7 @@ interface User {
     cover: string;
     active: boolean;
     exp: number;
+    last_seen: string;
     iat: number;
 }
 

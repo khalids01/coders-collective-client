@@ -40,3 +40,5 @@ export default function useArray(defaultValue: any[]) {
     removeByObjectKey
   };
 }
+
+export type ArrayStatesType = ReturnType<typeof useArray>

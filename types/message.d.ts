@@ -1,4 +1,4 @@
-export interface TypingMessage{
+export interface TypingMessage {
   sender: {
     id: Schema.Types.ObjectId;
     avatar?: string;
@@ -19,25 +19,26 @@ export interface TypingMessage{
 }
 
 export default interface Message {
-    _id: string;
-    sender: {
-        id: Schema.Types.ObjectId;
-        avatar?: string;
-        username: string;
-      };
-      receiver: {
-        id: Schema.Types.ObjectId;
-        avatar?: string;
-        username: string;
-      };
-      edited?: {
-        hasBeenEdited: boolean;
-        date?: string;
-      };
-    updatedAt: string | Date;
-    createdAt: string | Date;
-    message: {
-        text: string,
-        images: ImageData [];
-    }
+  _id: string;
+  sender: {
+    id: Schema.Types.ObjectId;
+    avatar?: string;
+    username: string;
+  };
+  receiver: {
+    id: Schema.Types.ObjectId;
+    avatar?: string;
+    username: string;
+  };
+  seen: string[];
+  edited?: {
+    hasBeenEdited: boolean;
+    date?: string;
+  };
+  updatedAt: string | Date;
+  createdAt: string | Date;
+  message: {
+    text: string;
+    images: ImageData[];
+  };
 }

@@ -25,12 +25,13 @@ import { Div } from "@/components/common/sub";
 import Friend from "@/types/friend";
 import { useRouter } from "next/router";
 import { endpoints } from "@/constants";
-import { User } from "@/types";
+import { Message, User } from "@/types";
 import { showMainNavDrawer } from "@/redux/slices/chatLayoutProps";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
 import { useSockets } from "@/context/socket.context";
+import { ArrayStatesType } from "@/hooks/useArray";
 
 const DATA = [
   { label: "Friends", value: "friends" },
@@ -131,25 +132,65 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   const router = useRouter();
   const { chat_name } = router.query;
   const { classes } = useStyle(colors);
+  const [hasNewMessage, setHasNewMessage] = useState<boolean>(false);
+  const [howManyUnreadMessages, setHowManyUnreadMessages] = useState(0);
 
+  const { newMessagesArray } = useSockets();
   const handleChatItemClick = () => {
     router.push(`${endpoints.client.chat}/${friend.username}`);
   };
 
-  const active = chat_name === friend.username
+  const active = chat_name === friend.username;
+  const { array } = newMessagesArray as ArrayStatesType;
+
+  useEffect(() => {
+    if (!chat_name || !array) return;
+
+    const newMsg: Message | undefined = array?.find(
+      (newMsg: Message) => newMsg.sender.username !== chat_name
+    );
+    const findMsg = array?.find(
+      (newMsg: Message) => newMsg.sender.username === chat_name
+    );
+
+    setHowManyUnreadMessages(
+      () => array.filter((msg) => msg.sender.username === chat_name)?.length
+    );
+
+    if (chat_name === findMsg?.sender?.username) {
+      setHasNewMessage(false);
+      return;
+    }
+
+    setHasNewMessage(!!newMsg?.sender?.username);
+  }, [chat_name, array]);
 
   return (
     <UnstyledButton
       mx={4}
       onClick={handleChatItemClick}
       className={classes.chatItem}
+      pos="relative"
       sx={{
-        backgroundColor:
-          chat_name === friend.username
-            ? colors.card.focus
-            : colors.background.paper,
+        backgroundColor: active ? colors.card.focus : colors.background.paper,
       }}
     >
+      {!active && hasNewMessage && (
+        <Box
+          pos="absolute"
+          left={5}
+          top={5}
+          bg={colors.card.focus}
+          h={15}
+          w={15}
+          sx={{
+            borderRadius: 50,
+            zIndex: 1,
+            filter: `drop-shadow(0 0 10px ${colors.card.focus})`,
+          }}
+        />
+      )}
+
       <ProfileImage
         username={friend.username}
         avatar={friend.avatar}
@@ -164,10 +205,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
               length={md ? 20 : 30}
             />
           </Text>
-          <Text
-            color={active ? "white" : colors.text.primary}
-            size={12}
-          >
+          <Text color={active ? "white" : colors.text.primary} size={12}>
             9:36
           </Text>
         </Group>
@@ -179,18 +217,18 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
               length={md ? 20 : 30}
             />
           </Text>
-          <Badge
-            py={5}
-            px={6}
-            bg={
-              active ? "var(--badgeBg)" : colors.background.default
-            }
-            sx={{
-              color: active ? "black" : "var(--blue)",
-            }}
-          >
-            {Math.floor(Math.random() * 5) + 1}
-          </Badge>
+          {!active && howManyUnreadMessages > 0 && (
+            <Badge
+              py={5}
+              px={6}
+              bg={active ? "var(--badgeBg)" : colors.background.default}
+              sx={{
+                color: active ? "black" : "var(--blue)",
+              }}
+            >
+              {howManyUnreadMessages}
+            </Badge>
+          )}
         </Group>
       </Stack>
     </UnstyledButton>

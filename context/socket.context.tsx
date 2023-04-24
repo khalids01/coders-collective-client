@@ -1,10 +1,9 @@
 import { EVENTS, SOCKET_URL } from "@/constants/socketConfig";
-import { useToken, useUser } from "@/hooks";
+import { useArray, useToken, useUser } from "@/hooks";
 import { Friend, Message, User } from "@/types";
 import { createContext, useContext, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
-import { useDispatch } from "react-redux";
-import { addANewMessage } from "@/redux/slices/conversationSlice";
+import type {ArrayStatesType} from '@/hooks/useArray'
 
 interface SocketUser {
   socketId: string;
@@ -16,9 +15,9 @@ interface Context {
   username?: string;
   setUserName: Function;
   chat_name?: string;
-  newMessages?: Message;
-  setNewMessages?: Function;
+  setChat_name: Function;
   newFriend?: Friend;
+  newMessagesArray: ArrayStatesType | {},
   setNewFriend?: Function;
   activeFriends: SocketUser[];
 }
@@ -31,6 +30,8 @@ const SocketContext = createContext<Context>({
   socket,
   setUserName: () => false,
   activeFriends: [],
+  setChat_name: () => false,
+  newMessagesArray: {}
 });
 
 const SocketsProvider = (props: any) => {
@@ -39,7 +40,8 @@ const SocketsProvider = (props: any) => {
   const [username, setUserName] = useState();
   const [chat_name, setChat_name] = useState();
   const [activeFriends, setActiveFriends] = useState<SocketUser[]>([]);
-  const dispatch = useDispatch();
+  const newMessagesArray = useArray([]);
+
   function handleSocket() {
     if (!isLoggedIn) {
       if (socket.connected) {
@@ -59,11 +61,6 @@ const SocketsProvider = (props: any) => {
     socket.on(EVENTS.CLIENT.GET_ACTIVE_FRIENDS, (values) => {
       setActiveFriends(values);
     });
-    socket.off(EVENTS.SERVER.GET_CONVERSATION_NEW_MESSAGE);
-    socket.on(EVENTS.SERVER.GET_CONVERSATION_NEW_MESSAGE, (data) => {
-      dispatch(addANewMessage(data));
-    });
-    return
   }
 
   useEffect(() => {
@@ -74,11 +71,17 @@ const SocketsProvider = (props: any) => {
     return <>{props.children}</>;
   }
 
-
-
   return (
     <SocketContext.Provider
-      value={{ socket, username, setUserName, chat_name, activeFriends }}
+      value={{
+        socket,
+        username,
+        setUserName,
+        newMessagesArray,
+        chat_name,
+        setChat_name,
+        activeFriends,
+      }}
       {...props}
     />
   );

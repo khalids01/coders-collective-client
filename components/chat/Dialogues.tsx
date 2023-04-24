@@ -149,10 +149,7 @@ const SingleMessage = ({ message }: { message: Message }) => {
   dayjs.extend(calender);
   const { user } = useUser();
   const { colors } = useTheme();
-  const [image, setImage] = useState<string>("");
   const [opened, setOpened] = useState(false);
-  const { md } = useBreakPoints();
-  const { chatData } = useChat({ chat_name: message.receiver.username });
 
   const me = user?._id === message.sender.id;
 
@@ -252,7 +249,6 @@ const SingleMessage = ({ message }: { message: Message }) => {
                 <UnstyledButton
                   key={index}
                   onClick={() => {
-                    setImage(img.src);
                     setOpened(!opened);
                   }}
                   mx={10}

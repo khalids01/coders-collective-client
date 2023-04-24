@@ -6,21 +6,42 @@ import {
   Chats,
   Dialogues,
   MessageForm,
-  Info,
 } from "@/components/chat/";
 import { withRouter, NextRouter } from "next/router";
 import { useBreakPoints, useMessage } from "@/hooks";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useEffect } from "react";
+import { useSockets } from "@/context/socket.context";
+import { EVENTS } from "@/constants/socketConfig";
+import { Message } from "@/types";
+import { useDispatch } from "react-redux";
+import { addANewMessage } from "@/redux/slices/conversationSlice";
+import { ArrayStatesType } from "@/hooks/useArray";
 
 const Chat = ({ router }: { router: NextRouter }) => {
   const { md } = useBreakPoints();
   const { setConverSationId } = useMessage();
+  const { socket, newMessagesArray } = useSockets();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if(!String(router.query?.chat_name).trim()) return ;
+    if (!String(router.query?.chat_name).trim()) return;
     setConverSationId(router.query.chat_name as string);
+    if (!socket || !newMessagesArray) return;
+
+    const {push} = newMessagesArray as ArrayStatesType
+
+    socket.off(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE);
+    socket.on(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE, (data: Message) => {
+      push(data);
+      if (
+        !!String(router.query?.chat_name).trim() &&
+        router.query?.chat_name === data.sender.username
+      ) {
+        dispatch(addANewMessage(data));
+      }
+    });
   }, [router.query?.chat_name]);
 
   const { height } = useSelector(
