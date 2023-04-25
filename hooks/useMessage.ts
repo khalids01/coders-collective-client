@@ -9,15 +9,15 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addANewMessage as addANewMessageAction,
   setConverSationId as setConverSationIdAction,
-  addMessages as addMessagesAction
+  addMessages as addMessagesAction,
 } from "@/redux/slices/conversationSlice";
 import { Message } from "@/types";
 import { useSockets } from "@/context/socket.context";
 import { EVENTS } from "@/constants/socketConfig";
-
+import { compact } from "@/utils/compactText";
 
 const useMessage = () => {
-  const {socket} = useSockets()
+  const { socket } = useSockets();
   const dispatch = useDispatch();
   const { messages, chat_name } = useSelector(
     (state: RootState) => state.conversation
@@ -31,6 +31,32 @@ const useMessage = () => {
     dispatch(setConverSationIdAction(id));
   };
 
+  const lastMessage = ({
+    senderUsername,
+    receiverUsername,
+  }: {
+    senderUsername: string;
+    receiverUsername: string;
+  }): string => {
+    const lastMsg: Message | undefined = messages.data.find(
+      (m: Message) =>
+        m.sender.username === senderUsername &&
+        m.receiver.username === receiverUsername
+    );
+
+    if (lastMsg) {
+      if (lastMsg.message.text) {
+        return `${compact(lastMsg.message.text, 20, true)}`;
+      }
+
+      if (lastMsg.message.images) {
+        return `Image`;
+      }
+    }
+
+    return "No messages yet.";
+  };
+
   const {
     mutate: sendMessage,
     isLoading: sendMessageLoading,
@@ -38,7 +64,9 @@ const useMessage = () => {
   } = useMutation(sendMessageService, {
     onSuccess: (data) => {
       dispatch(addANewMessageAction(data.data.data));
-      socket.emit(EVENTS.SERVER.SET_CONVERSATION_NEW_MESSAGE, {message: data.data.data})
+      socket.emit(EVENTS.SERVER.SET_CONVERSATION_NEW_MESSAGE, {
+        message: data.data.data,
+      });
     },
     onError: (error) => {
       console.log(error);
@@ -50,9 +78,9 @@ const useMessage = () => {
     () => getMessages({ chat_name: chat_name as string }),
     {
       enabled: !!chat_name,
-      onSuccess({data}){
-        dispatch(addMessagesAction(data.data))
-      }
+      onSuccess({ data }) {
+        dispatch(addMessagesAction(data.data));
+      },
     }
   );
 
@@ -64,7 +92,8 @@ const useMessage = () => {
     sendMessageLoading,
     sendMessageSuccess,
     setConverSationId,
-    chat_name
+    chat_name,
+    lastMessage,
   };
 };
 

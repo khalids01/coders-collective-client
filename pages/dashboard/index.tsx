@@ -30,7 +30,7 @@ const Chat = () => {
   const { colors } = useTheme();
   const { classes } = useStyle(colors);
   const theme = useMantineTheme();
-  console.log(rem(2));
+  
   return (
     <MainLayout>
       <section className={classes.container}>

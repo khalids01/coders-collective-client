@@ -17,7 +17,13 @@ import {
   createStyles,
 } from "@mantine/core";
 import { useElementSize } from "@mantine/hooks";
-import { useBreakPoints, useTheme, useUser, useChat } from "@/hooks";
+import {
+  useBreakPoints,
+  useTheme,
+  useUser,
+  useChat,
+  useMessage,
+} from "@/hooks";
 import { Plus } from "@/constants/icons";
 import { CircleDashed, Search, Filter, CheckIcon } from "@/constants/icons";
 import { CompactText, ProfileImage } from "@/components/common/sub";
@@ -134,31 +140,31 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   const { classes } = useStyle(colors);
   const [hasNewMessage, setHasNewMessage] = useState<boolean>(false);
   const [howManyUnreadMessages, setHowManyUnreadMessages] = useState(0);
+  const [active, setActive] = useState(chat_name === friend.username);
+  const { lastMessage } = useMessage();
+  const { user } = useUser();
 
   const { newMessagesArray } = useSockets();
   const handleChatItemClick = () => {
     router.push(`${endpoints.client.chat}/${friend.username}`);
   };
 
-  const active = chat_name === friend.username;
   const { array } = newMessagesArray as ArrayStatesType;
 
   useEffect(() => {
     if (!chat_name || !array) return;
-
+    setActive(chat_name === friend.username);
     const newMsg: Message | undefined = array?.find(
       (newMsg: Message) => newMsg.sender.username !== chat_name
-    );
-    const findMsg = array?.find(
-      (newMsg: Message) => newMsg.sender.username === chat_name
     );
 
     setHowManyUnreadMessages(
       () => array.filter((msg) => msg.sender.username === chat_name)?.length
     );
 
-    if (chat_name === findMsg?.sender?.username) {
+    if (active) {
       setHasNewMessage(false);
+      setHowManyUnreadMessages(0);
       return;
     }
 
@@ -211,11 +217,17 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
         </Group>
         <Group position="apart">
           <Text size={14}>
-            <CompactText
+            {/* <CompactText
               color={active ? "white" : undefined}
               text={"Last message"}
               length={md ? 20 : 30}
-            />
+            /> */}
+            {user?.username &&
+              friend.username &&
+              lastMessage({
+                senderUsername: user?.username as string,
+                receiverUsername: friend.username as string,
+              })}
           </Text>
           {!active && howManyUnreadMessages > 0 && (
             <Badge
