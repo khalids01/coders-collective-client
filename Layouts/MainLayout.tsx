@@ -4,8 +4,12 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { changeActiveRoute } from "@/redux/slices/activeRouteSlice";
 import { withRouter, NextRouter } from "next/router";
-import { useMessage, useUser } from "@/hooks";
-import { User } from "@/types";
+import { Message, User } from "@/types";
+import { useSockets } from "@/context/socket.context";
+import { EVENTS } from "@/constants/socketConfig";
+import { showNotification } from "@mantine/notifications";
+import { compact } from "@/utils/compactText";
+import { ProfileImage } from "@/components/common/sub";
 
 const useStyle = createStyles((theme) => {
   return {
@@ -47,16 +51,30 @@ const MainLayout = ({
 }: WithRouterProps) => {
   const { classes } = useStyle();
   const dispatch = useDispatch();
-  const { user } = useUser();
-  const {  } = useMessage();
+  const { socket } = useSockets();
 
   useEffect(() => {
     dispatch(changeActiveRoute(router.pathname));
-  }, []);
 
-  useEffect(() => {
-    
-  }, [user?._id]);
+    if (!socket) return;
+
+    socket.on(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE, (data: Message) => {
+      showNotification({
+        id: data.sender.username,
+        title: data.sender.username,
+        message: data.message.text
+          ? compact(data.message.text, 20, true)
+          : data.message.images && "Image",
+        icon: (
+          <ProfileImage
+            size={35}
+            username={data.sender.username}
+            avatar={data.sender.avatar}
+          />
+        ),
+      });
+    });
+  }, []);
 
   return (
     <div className={`${classes.layout} ${showMainNav ? classes.withNav : ""}`}>

@@ -217,11 +217,6 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
         </Group>
         <Group position="apart">
           <Text size={14}>
-            {/* <CompactText
-              color={active ? "white" : undefined}
-              text={"Last message"}
-              length={md ? 20 : 30}
-            /> */}
             {user?.username &&
               friend.username &&
               lastMessage({

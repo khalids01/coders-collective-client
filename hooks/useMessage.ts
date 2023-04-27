@@ -38,19 +38,35 @@ const useMessage = () => {
     senderUsername: string;
     receiverUsername: string;
   }): string => {
-    const lastMsg: Message | undefined = messages.data.find(
-      (m: Message) =>
-        m.sender.username === senderUsername &&
-        m.receiver.username === receiverUsername
-    );
+    const filteredMsgs = messages.data.filter((m: Message) => {
+      if (
+        (m.sender.username === senderUsername &&
+          m.receiver.username === receiverUsername) ||
+        (m.sender.username === receiverUsername &&
+          m.receiver.username === senderUsername)
+      ) {
+        return m;
+      }
+    });
+    const lastMsg: Message | undefined = filteredMsgs
+      ? filteredMsgs[filteredMsgs.length - 1]
+      : undefined;
 
     if (lastMsg) {
       if (lastMsg.message.text) {
-        return `${compact(lastMsg.message.text, 20, true)}`;
+        return `${
+          lastMsg.sender.username === senderUsername
+            ? "You "
+            : compact(lastMsg.sender.username, 12, true)
+        } : ${compact(lastMsg.message.text, 20, true)}`;
       }
 
       if (lastMsg.message.images) {
-        return `Image`;
+        return `${
+          lastMsg.sender.username === senderUsername
+            ? "You "
+            : compact(lastMsg.sender.username, 12, true)
+        } : Image`;
       }
     }
 
