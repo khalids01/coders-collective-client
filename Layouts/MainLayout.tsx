@@ -1,4 +1,4 @@
-import { createStyles } from "@mantine/core";
+import { createStyles, Text } from "@mantine/core";
 import MainNavbar from "@/components/mainLayout/nav";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -10,6 +10,8 @@ import { EVENTS } from "@/constants/socketConfig";
 import { showNotification } from "@mantine/notifications";
 import { compact } from "@/utils/compactText";
 import { ProfileImage } from "@/components/common/sub";
+import { endpoints } from "@/constants";
+import Link from "next/link";
 
 const useStyle = createStyles((theme) => {
   return {
@@ -55,16 +57,31 @@ const MainLayout = ({
 
   useEffect(() => {
     dispatch(changeActiveRoute(router.pathname));
-
     if (!socket) return;
 
     socket.on(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE, (data: Message) => {
+      if (router.query?.chat_name === data.sender.username) return;
+
       showNotification({
         id: data.sender.username,
-        title: data.sender.username,
-        message: data.message.text
-          ? compact(data.message.text, 20, true)
-          : data.message.images && "Image",
+        title: (
+          <Text
+            href={`${endpoints.client.chat}/${data.sender.username}`}
+            component={Link}
+          >
+            {data.sender.username}
+          </Text>
+        ),
+        message: (
+          <Text
+            href={`${endpoints.client.chat}/${data.sender.username}`}
+            component={Link}
+          >
+            {data.message.text
+              ? compact(data.message.text, 20, true)
+              : data.message.images && "Image"}
+          </Text>
+        ),
         icon: (
           <ProfileImage
             size={35}
@@ -72,15 +89,33 @@ const MainLayout = ({
             avatar={data.sender.avatar}
           />
         ),
+        styles: {
+          title: {
+            cursor: "pointer",
+            a:{
+              display: 'block',
+            }
+          },
+          description: {
+            cursor: "pointer",
+            a:{
+              display: 'block',
+            }
+          },
+        },
       });
     });
   }, []);
 
   return (
-    <div className={`${classes.layout} ${showMainNav ? classes.withNav : ""}`}>
-      {showMainNav ? <MainNavbar /> : null}
-      {children}
-    </div>
+    <>
+      <div
+        className={`${classes.layout} ${showMainNav ? classes.withNav : ""}`}
+      >
+        {showMainNav ? <MainNavbar /> : null}
+        {children}
+      </div>
+    </>
   );
 };
 

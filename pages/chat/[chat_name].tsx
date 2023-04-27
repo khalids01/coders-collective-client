@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { useSockets } from "@/context/socket.context";
 import { EVENTS } from "@/constants/socketConfig";
 import { Message } from "@/types";
+import { hideNotification } from "@mantine/notifications";
 import { useDispatch } from "react-redux";
 import { addANewMessage } from "@/redux/slices/conversationSlice";
 import { ArrayStatesType } from "@/hooks/useArray";
@@ -28,6 +29,7 @@ const Chat = ({ router }: { router: NextRouter }) => {
   useEffect(() => {
     if (!String(router.query?.chat_name).trim()) return;
     setConverSationId(router.query.chat_name as string);
+    hideNotification(router.query?.chat_name as string)
     if (!socket || !newMessagesArray) return;
 
     const {push} = newMessagesArray as ArrayStatesType

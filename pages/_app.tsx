@@ -43,7 +43,7 @@ export default function App({ Component, pageProps }: AppProps) {
               }}
             >
               <main className={colorScheme}>
-                <Notifications />
+                <Notifications position="top-center" />
                 <Component {...pageProps} />
               </main>
             </MantineProvider>
