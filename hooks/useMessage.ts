@@ -1,5 +1,5 @@
 import { RootState } from "@/redux/store";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   sendMessage as sendMessageService,
   getMessages,
@@ -14,7 +14,6 @@ import {
 import { Message } from "@/types";
 import { useSockets } from "@/context/socket.context";
 import { EVENTS } from "@/constants/socketConfig";
-import { compact } from "@/utils/compactText";
 
 const useMessage = () => {
   const { socket } = useSockets();
@@ -22,6 +21,7 @@ const useMessage = () => {
   const { messages, chat_name } = useSelector(
     (state: RootState) => state.conversation
   );
+  const queryClient = useQueryClient();
 
   const addANewMessage = (message: Message) => {
     dispatch(addANewMessageAction(message));
@@ -31,55 +31,19 @@ const useMessage = () => {
     dispatch(setConverSationIdAction(id));
   };
 
-  const lastMessage = ({
-    senderUsername,
-    receiverUsername,
-  }: {
-    senderUsername: string;
-    receiverUsername: string;
-  }): string => {
-    const filteredMsgs = messages.data.filter((m: Message) => {
-      if (
-        (m.sender.username === senderUsername &&
-          m.receiver.username === receiverUsername) ||
-        (m.sender.username === receiverUsername &&
-          m.receiver.username === senderUsername)
-      ) {
-        return m;
-      }
-    });
-    const lastMsg: Message | undefined = filteredMsgs
-      ? filteredMsgs[filteredMsgs.length - 1]
-      : undefined;
-
-    if (lastMsg) {
-      if (lastMsg.message.text) {
-        return `${
-          lastMsg.sender.username === senderUsername
-            ? "You "
-            : compact(lastMsg.sender.username, 12, true)
-        } : ${compact(lastMsg.message.text, 20, true)}`;
-      }
-
-      if (lastMsg.message.images) {
-        return `${
-          lastMsg.sender.username === senderUsername
-            ? "You "
-            : compact(lastMsg.sender.username, 12, true)
-        } : Image`;
-      }
-    }
-
-    return "No messages yet.";
-  };
-
   const {
     mutate: sendMessage,
     isLoading: sendMessageLoading,
     isSuccess: sendMessageSuccess,
   } = useMutation(sendMessageService, {
     onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [reactQueryKeys.lastMessage + chat_name],
+        exact: true,
+        
+      });
       dispatch(addANewMessageAction(data.data.data));
+
       socket.emit(EVENTS.SERVER.SET_CONVERSATION_NEW_MESSAGE, {
         message: data.data.data,
       });
@@ -109,7 +73,6 @@ const useMessage = () => {
     sendMessageSuccess,
     setConverSationId,
     chat_name,
-    lastMessage,
   };
 };
 

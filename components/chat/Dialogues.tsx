@@ -353,8 +353,8 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
             height: "100%",
           }}
         >
-          {messages?.data
-            ? messages?.data?.map((m: Message, index: number) => (
+          {Array.from(messages?.data)
+            ? Array.from(messages?.data)?.map((m: Message, index: number) => (
                 <React.Fragment key={index}>
                   <SingleMessage message={m} key={index} />
                 </React.Fragment>

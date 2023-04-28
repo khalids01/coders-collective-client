@@ -22,7 +22,6 @@ import {
   useTheme,
   useUser,
   useChat,
-  useMessage,
 } from "@/hooks";
 import { Plus } from "@/constants/icons";
 import { CircleDashed, Search, Filter, CheckIcon } from "@/constants/icons";
@@ -38,6 +37,10 @@ import { RootState } from "@/redux/store";
 import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
 import { useSockets } from "@/context/socket.context";
 import { ArrayStatesType } from "@/hooks/useArray";
+import { useQuery } from "@tanstack/react-query";
+import { getMessages } from "@/services/chat/message";
+import { reactQueryKeys } from "@/constants";
+import { compact } from "@/utils/compactText";
 
 const DATA = [
   { label: "Friends", value: "friends" },
@@ -141,15 +144,44 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   const [hasNewMessage, setHasNewMessage] = useState<boolean>(false);
   const [howManyUnreadMessages, setHowManyUnreadMessages] = useState(0);
   const [active, setActive] = useState(chat_name === friend.username);
-  const { lastMessage } = useMessage();
+  const [lastMessage, setLastMessage] = useState("No message yet");
+  const [newMessage, setNewMessage] = useState<Message>();
   const { user } = useUser();
 
   const { newMessagesArray } = useSockets();
+  const { array } = newMessagesArray as ArrayStatesType;
+
   const handleChatItemClick = () => {
     router.push(`${endpoints.client.chat}/${friend.username}`);
   };
 
-  const { array } = newMessagesArray as ArrayStatesType;
+  useQuery(
+    [reactQueryKeys.lastMessage + friend.username],
+    () => getMessages({ chat_name: friend.username as string, limit: 1 }),
+    {
+      onSuccess: (data) => {
+        const lastMsg: Message | undefined = data?.data?.data[0];
+        let text: string = "No message yet";
+        if (lastMsg) {
+          if (lastMsg.message.text) {
+            text = `${
+              lastMsg.sender.username === user?.username
+                ? "You "
+                : compact(lastMsg.sender.username, 12, true)
+            } : ${compact(lastMsg.message.text, 20, true)}`;
+          } else if (lastMsg.message.images) {
+            text = `${
+              lastMsg.sender.username === user?.username
+                ? "You "
+                : compact(lastMsg.sender.username, 12, true)
+            } : Image`;
+          }
+        }
+
+        setLastMessage(text);
+      },
+    }
+  );
 
   useEffect(() => {
     if (!chat_name || !array) return;
@@ -169,6 +201,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
     }
 
     setHasNewMessage(!!newMsg?.sender?.username);
+    setNewMessage(newMsg);
   }, [chat_name, array]);
 
   return (
@@ -216,14 +249,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
           </Text>
         </Group>
         <Group position="apart">
-          <Text size={14}>
-            {user?.username &&
-              friend.username &&
-              lastMessage({
-                senderUsername: user?.username as string,
-                receiverUsername: friend.username as string,
-              })}
-          </Text>
+          <Text size={14}>{lastMessage}</Text>
           {!active && howManyUnreadMessages > 0 && (
             <Badge
               py={5}
@@ -497,3 +523,15 @@ const Chats = () => {
 };
 
 export default Chats;
+function showNotification(arg0: {
+  id: any;
+  title: JSX.Element;
+  message: JSX.Element;
+  icon: JSX.Element;
+  styles: {
+    title: { cursor: string; a: { display: string } };
+    description: { cursor: string; a: { display: string } };
+  };
+}) {
+  throw new Error("Function not implemented.");
+}

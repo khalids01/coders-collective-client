@@ -59,6 +59,7 @@ const MainLayout = ({
     dispatch(changeActiveRoute(router.pathname));
     if (!socket) return;
 
+
     socket.on(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE, (data: Message) => {
       if (router.query?.chat_name === data.sender.username) return;
 

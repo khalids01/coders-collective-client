@@ -1,6 +1,6 @@
 import { EVENTS, SOCKET_URL } from "@/constants/socketConfig";
 import { useArray, useToken, useUser } from "@/hooks";
-import { Friend, Message, User } from "@/types";
+import { Friend, User } from "@/types";
 import { createContext, useContext, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import type {ArrayStatesType} from '@/hooks/useArray'

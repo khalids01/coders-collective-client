@@ -5,6 +5,7 @@ const queryKeys = {
     chat: 'chat',
     chatInfo: 'chatInfo',
     messages: 'messages',
+    lastMessage: 'lastMessage',
     users:{
         all: 'all',
         me: 'me',
