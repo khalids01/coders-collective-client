@@ -17,19 +17,14 @@ import {
   createStyles,
 } from "@mantine/core";
 import { useElementSize } from "@mantine/hooks";
-import {
-  useBreakPoints,
-  useTheme,
-  useUser,
-  useChat,
-} from "@/hooks";
+import { useBreakPoints, useTheme, useUser, useChat } from "@/hooks";
 import { Plus } from "@/constants/icons";
 import { CircleDashed, Search, Filter, CheckIcon } from "@/constants/icons";
 import { CompactText, ProfileImage } from "@/components/common/sub";
 import { Div } from "@/components/common/sub";
 import Friend from "@/types/friend";
 import { useRouter } from "next/router";
-import { endpoints } from "@/constants";
+import { endpoints, sounds } from "@/constants";
 import { Message, User } from "@/types";
 import { showMainNavDrawer } from "@/redux/slices/chatLayoutProps";
 import { useSelector, useDispatch } from "react-redux";
@@ -142,11 +137,13 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   const { chat_name } = router.query;
   const { classes } = useStyle(colors);
   const [hasNewMessage, setHasNewMessage] = useState<boolean>(false);
-  const [howManyUnreadMessages, setHowManyUnreadMessages] = useState(0);
   const [active, setActive] = useState(chat_name === friend.username);
   const [lastMessage, setLastMessage] = useState("No message yet");
-  const [newMessage, setNewMessage] = useState<Message>();
   const { user } = useUser();
+  // const [discordSound] = useSound(sounds.discord, {
+  //   interrupt: true,
+  //   volume: 0.5,
+  // });
 
   const { newMessagesArray } = useSockets();
   const { array } = newMessagesArray as ArrayStatesType;
@@ -189,20 +186,17 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
     const newMsg: Message | undefined = array?.find(
       (newMsg: Message) => newMsg.sender.username !== chat_name
     );
-
-    setHowManyUnreadMessages(
-      () => array.filter((msg) => msg.sender.username === chat_name)?.length
-    );
-
     if (active) {
       setHasNewMessage(false);
-      setHowManyUnreadMessages(0);
       return;
     }
 
     setHasNewMessage(!!newMsg?.sender?.username);
-    setNewMessage(newMsg);
   }, [chat_name, array]);
+
+  // useEffect(() => {
+  //   discordSound();
+  // }, [array]);
 
   return (
     <UnstyledButton
@@ -250,8 +244,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
         </Group>
         <Group position="apart">
           <Text size={14}>{lastMessage}</Text>
-          {!active && howManyUnreadMessages > 0 && (
-            <Badge
+          {/* <Badge
               py={5}
               px={6}
               bg={active ? "var(--badgeBg)" : colors.background.default}
@@ -260,8 +253,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
               }}
             >
               {howManyUnreadMessages}
-            </Badge>
-          )}
+            </Badge> */}
         </Group>
       </Stack>
     </UnstyledButton>
@@ -523,15 +515,3 @@ const Chats = () => {
 };
 
 export default Chats;
-function showNotification(arg0: {
-  id: any;
-  title: JSX.Element;
-  message: JSX.Element;
-  icon: JSX.Element;
-  styles: {
-    title: { cursor: string; a: { display: string } };
-    description: { cursor: string; a: { display: string } };
-  };
-}) {
-  throw new Error("Function not implemented.");
-}
