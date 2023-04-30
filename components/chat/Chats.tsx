@@ -32,10 +32,17 @@ import { RootState } from "@/redux/store";
 import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
 import { useSockets } from "@/context/socket.context";
 import { ArrayStatesType } from "@/hooks/useArray";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "@/services/chat/message";
 import { reactQueryKeys } from "@/constants";
 import { compact } from "@/utils/compactText";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
+import { EVENTS } from "@/constants/socketConfig";
+
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
 
 const DATA = [
   { label: "Friends", value: "friends" },
@@ -140,10 +147,9 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   const [active, setActive] = useState(chat_name === friend.username);
   const [lastMessage, setLastMessage] = useState("No message yet");
   const { user } = useUser();
-  // const [discordSound] = useSound(sounds.discord, {
-  //   interrupt: true,
-  //   volume: 0.5,
-  // });
+  const { invalidateQueries } = useQueryClient();
+  const { socket } = useSockets();
+  const [lastMsgDate, setLastMsgDate] = useState(dayjs());
 
   const { newMessagesArray } = useSockets();
   const { array } = newMessagesArray as ArrayStatesType;
@@ -160,6 +166,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
         const lastMsg: Message | undefined = data?.data?.data[0];
         let text: string = "No message yet";
         if (lastMsg) {
+          setLastMsgDate(dayjs(lastMsg.updatedAt).utc());
           if (lastMsg.message.text) {
             text = `${
               lastMsg.sender.username === user?.username
@@ -180,6 +187,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
     }
   );
 
+
   useEffect(() => {
     if (!chat_name || !array) return;
     setActive(chat_name === friend.username);
@@ -194,9 +202,20 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
     setHasNewMessage(!!newMsg?.sender?.username);
   }, [chat_name, array]);
 
-  // useEffect(() => {
-  //   discordSound();
-  // }, [array]);
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE, (data: Message) => {
+      console.log(data?.sender?.username);
+    });
+
+    const interval = setInterval(() => {
+      setLastMsgDate(dayjs());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const timeAgo = lastMsgDate.fromNow();
 
   return (
     <UnstyledButton
@@ -238,9 +257,11 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
               length={md ? 20 : 30}
             />
           </Text>
-          <Text color={active ? "white" : colors.text.primary} size={12}>
-            9:36
-          </Text>
+          {lastMessage !== "No message yet" && lastMsgDate ? (
+            <Text size={13} pt={3}>
+              {timeAgo}
+            </Text>
+          ) : null}
         </Group>
         <Group position="apart">
           <Text size={14}>{lastMessage}</Text>

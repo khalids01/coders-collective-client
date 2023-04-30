@@ -11,6 +11,7 @@ import {
   FileButton,
   ScrollArea,
   Group,
+  TextInput,
 } from "@mantine/core";
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useDebouncedState, useElementSize } from "@mantine/hooks";
@@ -290,11 +291,12 @@ const MessageForm = ({ chat_name }: { chat_name: string }) => {
           </Box>
         ) : null}
         <div className={classes.action_elements}>
-          <Textarea
-            autosize
+          <TextInput
+            // autosize
             // py={md ? 0 : 16}
-            minRows={1}
-            maxRows={4}
+            // minRows={1}
+            // maxRows={4}
+            size={'lg'}
             sx={{ width: "100%" }}
             onChange={handleInputChange}
             value={form.values.message}
