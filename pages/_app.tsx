@@ -28,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <ReduxStoreProvider store={store}>
       <SocketProvider>
         <QueryClientProvider client={queryClient}>
-          {/* <ReactQueryDevtools position="top-left" initialIsOpen={false}/> */}
+          <ReactQueryDevtools position="top-left" initialIsOpen={false}/>
           <ColorSchemeProvider
             colorScheme={colorScheme}
             toggleColorScheme={toggleColorScheme}

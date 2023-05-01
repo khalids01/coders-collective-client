@@ -199,27 +199,31 @@ const SingleMessage = ({ message }: { message: Message }) => {
         {dayjs().calendar(dayjs(message.updatedAt))}
       </Text>
 
-      <Div d="flex" items="flex-start" justifyContent={me ? 'flex-end' : 'flex-start'}>
+      <Div
+        d="flex"
+        items="flex-start"
+        justifyContent={me ? "flex-end" : "flex-start"}
+      >
         {message.message.text?.length > 0 ? (
           <>
             {!me ? <Options /> : null}
-              <Text
-                size={14}
-                color={!me ? colors.text.primary : "white"}
-                p="10px 20px"
-                mx={10}
-                sx={{
-                  borderRadius: 16,
-                  letterSpacing: 1.05,
-                  backgroundColor: !me
-                    ? colors.background.lighter
-                    : colors.card.focus,
-                  lineHeight: 1.6,
-                  marginLeft: !me ? 0 : "auto",
-                }}
-              >
-                {message.message.text}
-              </Text>
+            <Text
+              size={14}
+              color={!me ? colors.text.primary : "white"}
+              p="10px 20px"
+              mx={10}
+              sx={{
+                borderRadius: 16,
+                letterSpacing: 1.05,
+                backgroundColor: !me
+                  ? colors.background.lighter
+                  : colors.card.focus,
+                lineHeight: 1.6,
+                marginLeft: !me ? 0 : "auto",
+              }}
+            >
+              {message.message.text}
+            </Text>
             {me ? <Options /> : null}
           </>
         ) : null}

@@ -1,14 +1,9 @@
 import MainLayout from "@/Layouts/MainLayout";
 import ChatLayout from "@/Layouts/ChatLayout";
 import { Stack } from "@mantine/core";
-import {
-  ChatHeader,
-  Chats,
-  Dialogues,
-  MessageForm,
-} from "@/components/chat/";
+import { ChatHeader, Chats, Dialogues, MessageForm } from "@/components/chat/";
 import { withRouter, NextRouter } from "next/router";
-import { useBreakPoints, useMessage } from "@/hooks";
+import { useBreakPoints, useMessage, useUser } from "@/hooks";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useEffect } from "react";
@@ -19,20 +14,26 @@ import { hideNotification } from "@mantine/notifications";
 import { useDispatch } from "react-redux";
 import { addANewMessage } from "@/redux/slices/conversationSlice";
 import { ArrayStatesType } from "@/hooks/useArray";
+import { endpoints } from "@/constants";
 
 const Chat = ({ router }: { router: NextRouter }) => {
   const { md } = useBreakPoints();
   const { setConverSationId } = useMessage();
   const { socket, newMessagesArray } = useSockets();
   const dispatch = useDispatch();
+  const { user } = useUser();
 
   useEffect(() => {
     if (!String(router.query?.chat_name).trim()) return;
+    if (router.query?.chat_name === user?.username) {
+      router.push(endpoints.client.chat);
+      return;
+    }
     setConverSationId(router.query.chat_name as string);
-    hideNotification(router.query?.chat_name as string)
+    hideNotification(router.query?.chat_name as string);
     if (!socket || !newMessagesArray) return;
 
-    const {push} = newMessagesArray as ArrayStatesType
+    const { push } = newMessagesArray as ArrayStatesType;
 
     socket.off(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE);
     socket.on(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE, (data: Message) => {

@@ -40,8 +40,9 @@ const useMessage = () => {
       queryClient.invalidateQueries({
         queryKey: [reactQueryKeys.lastMessage + chat_name],
         exact: true,
-        
+        type: 'all'
       });
+
       dispatch(addANewMessageAction(data.data.data));
 
       socket.emit(EVENTS.SERVER.SET_CONVERSATION_NEW_MESSAGE, {

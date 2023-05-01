@@ -40,7 +40,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import { EVENTS } from "@/constants/socketConfig";
-
+import "dayjs/locale/en";
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
@@ -147,7 +147,7 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   const [active, setActive] = useState(chat_name === friend.username);
   const [lastMessage, setLastMessage] = useState("No message yet");
   const { user } = useUser();
-  const { invalidateQueries } = useQueryClient();
+  const queryClient = useQueryClient();
   const { socket } = useSockets();
   const [lastMsgDate, setLastMsgDate] = useState(dayjs());
 
@@ -158,35 +158,41 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
     router.push(`${endpoints.client.chat}/${friend.username}`);
   };
 
-  useQuery(
-    [reactQueryKeys.lastMessage + friend.username],
-    () => getMessages({ chat_name: friend.username as string, limit: 1 }),
-    {
-      onSuccess: (data) => {
-        const lastMsg: Message | undefined = data?.data?.data[0];
-        let text: string = "No message yet";
-        if (lastMsg) {
-          setLastMsgDate(dayjs(lastMsg.updatedAt).utc());
-          if (lastMsg.message.text) {
-            text = `${
-              lastMsg.sender.username === user?.username
-                ? "You "
-                : compact(lastMsg.sender.username, 12, true)
-            } : ${compact(lastMsg.message.text, 20, true)}`;
-          } else if (lastMsg.message.images) {
-            text = `${
-              lastMsg.sender.username === user?.username
-                ? "You "
-                : compact(lastMsg.sender.username, 12, true)
-            } : Image`;
-          }
-        }
-
-        setLastMessage(text);
-      },
+  const handleLastMessage = (lastMsg: Message) => {
+    let text: string = "No message yet";
+    if (lastMsg) {
+      setLastMsgDate(dayjs(lastMsg.updatedAt).utc());
+      if (lastMsg.message.text) {
+        text = `${
+          lastMsg.sender.username === user?.username
+            ? "You "
+            : compact(lastMsg.sender.username, 12, true)
+        } : ${compact(lastMsg.message.text, 12, true)}`;
+      } else if (lastMsg.message.images) {
+        text = `${
+          lastMsg.sender.username === user?.username
+            ? "You "
+            : compact(lastMsg.sender.username, 12, true)
+        } : Image`;
+      }
     }
-  );
 
+    setLastMessage(text);
+  };
+
+  const { data: lastMsgData } = useQuery({
+    queryKey: [reactQueryKeys.lastMessage + friend.username],
+    queryFn: () =>
+      getMessages({ chat_name: friend.username as string, limit: 1 }),
+      
+    onSuccess: (data) => {
+      const lastMsg: Message | undefined = data?.data?.data[0] ?? undefined;
+      if (lastMsg) {
+        handleLastMessage(lastMsg);
+      }
+    },
+    refetchOnWindowFocus: "always",
+  });
 
   useEffect(() => {
     if (!chat_name || !array) return;
@@ -203,16 +209,22 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   }, [chat_name, array]);
 
   useEffect(() => {
-    if (!socket) return;
-
-    socket.on(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE, (data: Message) => {
-      console.log(data?.sender?.username);
-    });
+    if (!lastMsgData?.data?.data && !lastMsgData?.data?.data[0]) return;
 
     const interval = setInterval(() => {
-      setLastMsgDate(dayjs());
+      setLastMsgDate(dayjs(lastMsgData?.data?.data[0]?.updatedAt).utc());
     }, 60000);
     return () => clearInterval(interval);
+  }, [lastMsgData?.data]);
+
+  useEffect(() => {
+    socket.on(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE, () => {
+      queryClient.invalidateQueries({
+        queryKey: [reactQueryKeys.lastMessage + chat_name],
+        exact: true,
+        type: 'all'
+      });
+    });
   }, []);
 
   const timeAgo = lastMsgDate.fromNow();
@@ -257,11 +269,6 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
               length={md ? 20 : 30}
             />
           </Text>
-          {lastMessage !== "No message yet" && lastMsgDate ? (
-            <Text size={13} pt={3}>
-              {timeAgo}
-            </Text>
-          ) : null}
         </Group>
         <Group position="apart">
           <Text size={14}>{lastMessage}</Text>
@@ -275,6 +282,11 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
             >
               {howManyUnreadMessages}
             </Badge> */}
+          {lastMessage !== "No message yet" && lastMsgDate ? (
+            <Text size={13} pt={3}>
+              {timeAgo}
+            </Text>
+          ) : null}
         </Group>
       </Stack>
     </UnstyledButton>
@@ -350,7 +362,7 @@ const Chats = () => {
   const { colors } = useTheme();
   const { user } = useUser();
   const { ref, height } = useElementSize();
-  const [scrollHeight, setScrollHeight] = useState(200);
+  const [scrollHeight, setScrollHeight] = useState(600);
   const { ref: first, height: firstHeight } = useElementSize();
   const { friends } = useChat();
   const [chatSectionData, setChatSectionData] = useState(DATA[0].value);

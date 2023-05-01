@@ -51,6 +51,7 @@ const SocketsProvider = (props: any) => {
   const newMessagesArray = useArray([]);
   const router = useRouter();
   const [discordSound] = useSound(sounds.discord, {
+    id: 'uuid',
     volume: 0.5,
   });
   function handleSocket() {
@@ -79,12 +80,11 @@ const SocketsProvider = (props: any) => {
   }, [isLoggedIn]);
 
   useEffect(() => {
+    if (!isLoggedIn) return;
     if (!socket) return;
 
     socket.on(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE, (data: Message) => {
       discordSound();
-
-      if (!isLoggedIn) return;
       if (router.query?.chat_name === data.sender.username) return;
 
       showNotification({
