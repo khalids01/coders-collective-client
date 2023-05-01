@@ -11,7 +11,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { store } from "@/redux/store";
 import SocketProvider from "@/context/socket.context";
 
-export default function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient();
   const { colorScheme, toggleColorScheme } = useTheme();
 
@@ -53,3 +53,5 @@ export default function App({ Component, pageProps }: AppProps) {
     </ReduxStoreProvider>
   ) : null;
 }
+
+export default App

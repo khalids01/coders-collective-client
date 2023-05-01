@@ -2,7 +2,7 @@ import MainLayout from "@/Layouts/MainLayout";
 import ChatLayout from "@/Layouts/ChatLayout";
 import { Stack } from "@mantine/core";
 import { ChatHeader, Chats, Dialogues, MessageForm } from "@/components/chat/";
-import { withRouter, NextRouter } from "next/router";
+import { withRouter, NextRouter, useRouter } from "next/router";
 import { useBreakPoints, useMessage, useUser } from "@/hooks";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -15,8 +15,10 @@ import { useDispatch } from "react-redux";
 import { addANewMessage } from "@/redux/slices/conversationSlice";
 import { ArrayStatesType } from "@/hooks/useArray";
 import { endpoints } from "@/constants";
+import { requireAuthentication } from "@/utils/requireAuthentication";
+import { GetServerSidePropsContext } from "next";
 
-const Chat = ({ router }: { router: NextRouter }) => {
+const Chat = ({router}:{router: NextRouter}) => {
   const { md } = useBreakPoints();
   const { setConverSationId } = useMessage();
   const { socket, newMessagesArray } = useSockets();
@@ -82,3 +84,7 @@ const Chat = ({ router }: { router: NextRouter }) => {
 };
 
 export default withRouter(Chat);
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return requireAuthentication(context);
+}

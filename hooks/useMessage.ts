@@ -40,7 +40,6 @@ const useMessage = () => {
       queryClient.invalidateQueries({
         queryKey: [reactQueryKeys.lastMessage + chat_name],
         exact: true,
-        type: 'all'
       });
 
       dispatch(addANewMessageAction(data.data.data));

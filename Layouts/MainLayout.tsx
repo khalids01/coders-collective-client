@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { changeActiveRoute } from "@/redux/slices/activeRouteSlice";
 import { withRouter, NextRouter } from "next/router";
 import { User } from "@/types";
+import { useSockets } from "@/context/socket.context";
 
 const useStyle = createStyles((theme) => {
   return {

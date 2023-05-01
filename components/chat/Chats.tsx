@@ -41,6 +41,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import { EVENTS } from "@/constants/socketConfig";
 import "dayjs/locale/en";
+import Link from "next/link";
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
@@ -60,10 +61,10 @@ const useStyle = createStyles((_, colors: any) => ({
     borderRadius: 8,
     // border: `1px solid ${active ? colors.teal : "transparent"}`,
     transition: "all 0.3s",
-    "&:hover": {
-      scale: "101%",
-      boxShadow: `0 0 20px ${colors.shadows.default}`,
-    },
+    // "&:hover": {
+    //   scale: "101%",
+    //   boxShadow: `0 0 20px ${colors.shadows.default}`,
+    // },
   },
 
   addBtn: {
@@ -71,9 +72,9 @@ const useStyle = createStyles((_, colors: any) => ({
     transition: "all 0.3s",
     display: "grid",
     placeItems: "center",
-    "&:hover": {
-      scale: "102%",
-    },
+    // "&:hover": {
+    //   scale: "102%",
+    // },
   },
 }));
 
@@ -154,10 +155,6 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   const { newMessagesArray } = useSockets();
   const { array } = newMessagesArray as ArrayStatesType;
 
-  const handleChatItemClick = () => {
-    router.push(`${endpoints.client.chat}/${friend.username}`);
-  };
-
   const handleLastMessage = (lastMsg: Message) => {
     let text: string = "No message yet";
     if (lastMsg) {
@@ -166,13 +163,13 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
         text = `${
           lastMsg.sender.username === user?.username
             ? "You "
-            : compact(lastMsg.sender.username, 12, true)
-        } : ${compact(lastMsg.message.text, 12, true)}`;
+            : compact(lastMsg.sender.username, 8, true)
+        } : ${compact(lastMsg.message.text, 8, true)}`;
       } else if (lastMsg.message.images) {
         text = `${
           lastMsg.sender.username === user?.username
             ? "You "
-            : compact(lastMsg.sender.username, 12, true)
+            : compact(lastMsg.sender.username, 8, true)
         } : Image`;
       }
     }
@@ -184,14 +181,13 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
     queryKey: [reactQueryKeys.lastMessage + friend.username],
     queryFn: () =>
       getMessages({ chat_name: friend.username as string, limit: 1 }),
-      
+    keepPreviousData: true,
     onSuccess: (data) => {
-      const lastMsg: Message | undefined = data?.data?.data[0] ?? undefined;
+      const lastMsg: Message | undefined = data?.data?.data[0];
       if (lastMsg) {
         handleLastMessage(lastMsg);
       }
     },
-    refetchOnWindowFocus: "always",
   });
 
   useEffect(() => {
@@ -218,13 +214,15 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   }, [lastMsgData?.data]);
 
   useEffect(() => {
-    socket.on(EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE, () => {
-      queryClient.invalidateQueries({
-        queryKey: [reactQueryKeys.lastMessage + chat_name],
-        exact: true,
-        type: 'all'
-      });
-    });
+    socket.on(
+      EVENTS.CLIENT.GET_CONVERSATION_NEW_MESSAGE,
+      async (data: Message) => {
+        queryClient.invalidateQueries({
+          queryKey: [reactQueryKeys.lastMessage + chat_name],
+          exact: true,
+        });
+      }
+    );
   }, []);
 
   const timeAgo = lastMsgDate.fromNow();
@@ -232,9 +230,10 @@ const ChatItem = ({ friend }: { friend: Friend }) => {
   return (
     <UnstyledButton
       mx={4}
-      onClick={handleChatItemClick}
       className={classes.chatItem}
       pos="relative"
+      component={Link}
+      href={`${endpoints.client.chat}/${friend.username}`}
       sx={{
         backgroundColor: active ? colors.card.focus : colors.background.paper,
       }}

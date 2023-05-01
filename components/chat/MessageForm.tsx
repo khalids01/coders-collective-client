@@ -44,6 +44,8 @@ import { useEffect, useRef } from "react";
 import { ColorsType } from "@/hooks/useTheme";
 import { useSockets } from "@/context/socket.context";
 import { EVENTS } from "@/constants/socketConfig";
+import { useQueryClient } from "@tanstack/react-query";
+import { reactQueryKeys } from "@/constants";
 
 const useStyles = createStyles((theme, colors: ColorsType) => ({
   form: {
@@ -119,6 +121,9 @@ const DroppedImagesPreview = ({
 }) => {
   const { colors } = useTheme();
   const { classes } = useStyles(colors);
+
+  useEffect(()=>{}, [])
+
   return (
     <ScrollArea.Autosize mah={200}>
       <Box className={classes.preview}>
@@ -199,6 +204,7 @@ const MessageForm = ({ chat_name }: { chat_name: string }) => {
   const dispatch = useDispatch();
   const { socket } = useSockets();
   const { user } = useUser();
+  const queryClient = useQueryClient();
 
   // state for images array
   const { array, push, pushFlattenArray, removeByIndex, clear } = useArray([]);
@@ -221,6 +227,12 @@ const MessageForm = ({ chat_name }: { chat_name: string }) => {
           text: "",
         },
       });
+
+      queryClient.invalidateQueries({
+        queryKey: [reactQueryKeys.lastMessage + chat_name],
+        exact: true,
+      });
+
     }
   }, [sendMessageSuccess]);
 
