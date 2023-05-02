@@ -12,7 +12,7 @@ import { store } from "@/redux/store";
 import SocketProvider from "@/context/socket.context";
 
 function App({ Component, pageProps }: AppProps) {
-  const queryClient = new QueryClient();
+  const [queryClient] = useState(() => new QueryClient())
   const { colorScheme, toggleColorScheme } = useTheme();
 
   const [isMounted, setIsMounted] = useState(false);
