@@ -30,7 +30,7 @@ interface Context {
   activeFriends: SocketUser[];
 }
 
-const socket = io(SOCKET_URL, {
+const socket = io(SOCKET_URL as string, {
   autoConnect: false,
 });
 

@@ -1,6 +1,9 @@
 const endpoints = {
   server: {
-    base: process.env.NEXT_PUBLIC_BASE_URL,
+    base:
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3005/api/v1/coders-collective"
+        : process.env.NEXT_PUBLIC_BASE_URL,
     image: "/images",
     auth: {
       login: "/login",
@@ -22,11 +25,7 @@ const endpoints = {
     message: {
       send_message: "/send-message",
       get_messages: "/get-messages",
-    },
-    socketIo: {
-      addUser: "addUser",
-      getUser: "getUser",
-      sendMessage: 'sendMessage'
+      message_seen: "/message-seen",
     },
   },
   client: {

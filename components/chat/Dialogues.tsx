@@ -7,20 +7,29 @@ import {
   UnstyledButton,
   Modal,
   Menu,
-  Box,
   Loader,
 } from "@mantine/core";
 import Image from "next/image";
+
 import type { ImageData, Message } from "@/types";
 import {
+  useArray,
   useBreakPoints,
-  useChat,
   useMessage,
   useTheme,
   useUser,
+  useSets,
 } from "@/hooks";
 import { Div, ProfileImage } from "../common/sub";
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  createContext,
+  useContext,
+  useCallback,
+} from "react";
 import {
   DotsY,
   Trash,
@@ -36,6 +45,8 @@ import { EVENTS } from "@/constants/socketConfig";
 import dayjs from "dayjs";
 import calender from "dayjs/plugin/calendar";
 import type { TypingMessage } from "@/types/message";
+import { useIntersection } from "@mantine/hooks";
+import { SetsType } from "@/hooks/useSets";
 
 const MessageItemMenu = ({
   id,
@@ -145,15 +156,28 @@ const ImageModal = ({
   );
 };
 
+interface Context {
+  container: HTMLDivElement | null;
+  seenSets?: SetsType;
+}
+
+const DialoguesContext = createContext<Context>({
+  container: null,
+});
+
+const useSeenContext = () => useContext(DialoguesContext);
+
 const SingleMessage = ({ message }: { message: Message }) => {
   dayjs.extend(calender);
   const { user } = useUser();
   const { colors } = useTheme();
   const [opened, setOpened] = useState(false);
-
+  const { container, seenSets } = useSeenContext();
   const me = user?._id === message.sender.id;
-
-  // const [allImages, setAllImages] = useState<string[]>([]);
+  const { ref, entry } = useIntersection({
+    root: container,
+    threshold: 1,
+  });
 
   const Options = () => {
     return (
@@ -174,11 +198,26 @@ const SingleMessage = ({ message }: { message: Message }) => {
     );
   };
 
+  const seen = message.seen?.find((item) => item.user._id === user?._id);
+  useEffect(() => {
+    if (!seenSets) return;
+    const { push } = seenSets;
+    if (entry?.isIntersecting) {
+      push(entry.target.getAttribute("id"));
+    }
+  }, [entry]);
+
+  useMemo(() => {
+    // console.log(seenSets?.sets.values())
+  }, [seenSets?.sets]);
+
   if (!user?._id) return <></>;
 
   return (
     <Stack
       pr={8}
+      ref={seen ? null : ref}
+      id={message._id}
       sx={{
         margin: user?._id === message.sender.id ? "0 0 0 auto" : "0 auto 0 0",
         maxWidth: "70%",
@@ -196,7 +235,7 @@ const SingleMessage = ({ message }: { message: Message }) => {
         ml={me ? 0 : 30}
         size={12}
       >
-        {dayjs().calendar(dayjs(message.updatedAt))}
+        {dayjs(message.updatedAt).calendar()}
       </Text>
 
       <Div
@@ -306,9 +345,13 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
   const { messages } = useMessage();
   const { md } = useBreakPoints();
   const router = useRouter();
+  const setsState = useSets();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [typingMessage, setTypingMessage] = useState<TypingMessage>();
   const { socket } = useSockets();
+  const { seenSets } = useSeenContext();
+  const stackRef = useRef<HTMLDivElement>(null);
 
   const targetRef = useRef<HTMLDivElement>(null);
 
@@ -316,8 +359,38 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
     targetRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleSeen = (messageId: string) => {
+    // update the 'seen' collection for the current user and the specified message
+  };
+
+  const handleEnterViewport = (messageId: string) => {
+    handleSeen(messageId);
+  };
+
+  function startAtBottom (){
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+      try {
+        containerRef.current?.firstElementChild?.nextElementSibling?.classList?.add(
+          "SELECTED"
+        );
+        if (containerRef.current.querySelector(".SELECTED")) {
+          containerRef.current
+            .querySelector(".SELECTED")
+            ?.scrollBy(
+              0,
+              containerRef.current.querySelector(".SELECTED")?.scrollHeight ?? 500
+            );
+        }
+      } catch (err) {
+        scrollToBottom();
+      }
+    }
+  }
+
   useEffect(() => {
-    scrollToBottom();
+    // scrollToBottom();
+    startAtBottom()
     router.events.on("routeChangeComplete", scrollToBottom);
 
     return () => {
@@ -334,9 +407,19 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
     );
   }, []);
 
+  // useEffect(() => {
+  //   console.log(setsState.sets)
+  // }, [seenSets]);
+
   return (
-    <>
+    <DialoguesContext.Provider
+      value={{
+        container: containerRef.current,
+        seenSets: setsState,
+      }}
+    >
       <ScrollArea
+        ref={containerRef}
         style={{
           borderTop: `1px solid ${colors.divider}`,
           borderBottom: `1px solid ${colors.divider}`,
@@ -352,6 +435,7 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
           px={md ? 5 : 12}
           py={10}
           h={"100%"}
+          ref={stackRef}
           sx={{
             background: colors.background.neutral,
             height: "100%",
@@ -373,7 +457,7 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
           </Group>
         ) : null}
       </ScrollArea>
-    </>
+    </DialoguesContext.Provider>
   );
 };
 

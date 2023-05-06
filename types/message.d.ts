@@ -1,3 +1,5 @@
+import User from "./user";
+
 export interface TypingMessage {
   sender: {
     id: Schema.Types.ObjectId;
@@ -30,7 +32,7 @@ export default interface Message {
     avatar?: string;
     username: string;
   };
-  seen: string[];
+  seen: { user: User; time: String; _id }[];
   edited?: {
     hasBeenEdited: boolean;
     date?: string;

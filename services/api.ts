@@ -1,7 +1,10 @@
 import { retrieveToken } from "@/utils/tokenStore";
 import axios, { AxiosRequestConfig } from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+const baseURL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3005/api/v1/coders-collective"
+    : process.env.NEXT_PUBLIC_BASE_URL;
 
 const api = axios.create({
   baseURL,

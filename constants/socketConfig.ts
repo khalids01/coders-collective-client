@@ -1,4 +1,7 @@
-export const SOCKET_URL = process.env.SOCKET_URL || "http://localhost:3005";
+export const SOCKET_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3005"
+    : process.env.SOCKET_URL;
 
 export const EVENTS = {
   connection: "connection",
@@ -7,7 +10,7 @@ export const EVENTS = {
     GET_ACTIVE_FRIENDS: "GET_ACTIVE_FRIENDS",
     TYPING_MESSAGE: "TYPING_MESSAGE",
     TYPING_MESSAGE_GET: "TYPING_MESSAGE_GET",
-    GET_CONVERSATION_NEW_MESSAGE: "GET_CONVERSATION_NEW_MESSAGE"
+    GET_CONVERSATION_NEW_MESSAGE: "GET_CONVERSATION_NEW_MESSAGE",
   },
   SERVER: {
     NEW_FRIEND: "NEW_FRIEND",
