@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   sendMessage as sendMessageService,
   getMessages,
+  seenMessage as seenMessageService,
 } from "@/services/chat/message";
 import { reactQueryKeys } from "@/constants";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +32,7 @@ const useMessage = () => {
     dispatch(setConverSationIdAction(id));
   };
 
+  // send message
   const {
     mutate: sendMessage,
     isLoading: sendMessageLoading,
@@ -53,6 +55,7 @@ const useMessage = () => {
     },
   });
 
+  // get messages
   const { refetch: refetchMessages } = useQuery(
     [reactQueryKeys.messages + chat_name],
     () => getMessages({ chat_name: chat_name as string }),
@@ -64,6 +67,13 @@ const useMessage = () => {
     }
   );
 
+  // message seen
+  const {
+    data: messageAfterSeenData,
+    isSuccess: messageSeenSuccess,
+    mutate: messageSeenMutation,
+  } = useMutation(seenMessageService);
+
   return {
     messages,
     addANewMessage,
@@ -73,6 +83,9 @@ const useMessage = () => {
     sendMessageSuccess,
     setConverSationId,
     chat_name,
+    messageSeenMutation,
+    messageAfterSeenData: messageAfterSeenData?.data,
+    messageSeenSuccess,
   };
 };
 

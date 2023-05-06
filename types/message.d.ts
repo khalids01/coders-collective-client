@@ -32,7 +32,10 @@ export default interface Message {
     avatar?: string;
     username: string;
   };
-  seen: { user: User; time: String; _id }[];
+  seen: {
+    messageId: string;
+    seenBy: { user: User; time: String; }[];
+  };
   edited?: {
     hasBeenEdited: boolean;
     date?: string;

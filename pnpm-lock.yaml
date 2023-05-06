@@ -46,9 +46,6 @@ dependencies:
   '@mantine/tiptap':
     specifier: ^6.0.1
     version: 6.0.1(@mantine/core@6.0.1)(@mantine/hooks@6.0.1)(@tabler/icons-react@2.13.2)(@tiptap/extension-link@2.0.0-beta.218)(@tiptap/react@2.0.0-beta.218)(react@18.2.0)
-  '@next/font':
-    specifier: ^13.3.0
-    version: 13.3.0
   '@reduxjs/toolkit':
     specifier: ^1.9.2
     version: 1.9.2(react-redux@8.0.5)(react@18.2.0)
@@ -685,10 +682,6 @@ packages:
     dependencies:
       glob: 7.1.7
     dev: true
-
-  /@next/font@13.3.0:
-    resolution: {integrity: sha512-xUv7VRUA2Zr6n/KJDILyv7/zGy9xKUsyQURaQqYr7lVxn0REScazwyZQzhSm+DnJoUyo+9DcFs2J3WsZXHUvQw==}
-    dev: false
 
   /@next/swc-android-arm-eabi@13.2.4:
     resolution: {integrity: sha512-DWlalTSkLjDU11MY11jg17O1gGQzpRccM9Oes2yTqj2DpHndajrXHGxj9HGtJ+idq2k7ImUdJVWS2h2l/EDJOw==}

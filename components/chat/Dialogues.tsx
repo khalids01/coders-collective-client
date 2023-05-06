@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import Image from "next/image";
 
-import type { ImageData, Message } from "@/types";
+import type { ImageData, Message, User } from "@/types";
 import {
   useArray,
   useBreakPoints,
@@ -167,6 +167,13 @@ const DialoguesContext = createContext<Context>({
 
 const useSeenContext = () => useContext(DialoguesContext);
 
+const SeenBy = (item: {
+  messageId: string;
+  seenBy: { user: User; time: String }[];
+}) => {
+  
+};
+
 const SingleMessage = ({ message }: { message: Message }) => {
   dayjs.extend(calender);
   const { user } = useUser();
@@ -174,6 +181,8 @@ const SingleMessage = ({ message }: { message: Message }) => {
   const [opened, setOpened] = useState(false);
   const { container, seenSets } = useSeenContext();
   const me = user?._id === message.sender.id;
+  const { messageSeenMutation, messageAfterSeenData, messageSeenSuccess } =
+    useMessage();
   const { ref, entry } = useIntersection({
     root: container,
     threshold: 1,
@@ -198,18 +207,29 @@ const SingleMessage = ({ message }: { message: Message }) => {
     );
   };
 
-  const seen = message.seen?.find((item) => item.user._id === user?._id);
+  const seen = message?.seen?.seenBy?.find(
+    (item) => item.user._id === user?._id
+  );
   useEffect(() => {
     if (!seenSets) return;
-    const { push } = seenSets;
+    const { push, sets } = seenSets;
     if (entry?.isIntersecting) {
       push(entry.target.getAttribute("id"));
+      console.log(sets);
     }
-  }, [entry]);
+    if (!seen && entry?.isIntersecting) {
+      const messageId = entry.target.getAttribute("id") ?? "";
+      if (!!String(messageId).trim()) {
+        messageSeenMutation("64550b7598e42d3b683934a6");
+      }
+    }
+  }, [entry?.isIntersecting]);
 
-  useMemo(() => {
-    // console.log(seenSets?.sets.values())
-  }, [seenSets?.sets]);
+  useEffect(() => {
+    if (!messageSeenSuccess) return;
+    const newMsg: Message = messageAfterSeenData.data ?? {};
+    message.seen.seenBy = newMsg.seen.seenBy;
+  }, [messageSeenSuccess]);
 
   if (!user?._id) return <></>;
 
@@ -221,6 +241,7 @@ const SingleMessage = ({ message }: { message: Message }) => {
       sx={{
         margin: user?._id === message.sender.id ? "0 0 0 auto" : "0 auto 0 0",
         maxWidth: "70%",
+        background: entry?.isIntersecting ? "red" : "transparent",
       }}
     >
       {/* Date */}
@@ -350,7 +371,6 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
 
   const [typingMessage, setTypingMessage] = useState<TypingMessage>();
   const { socket } = useSockets();
-  const { seenSets } = useSeenContext();
   const stackRef = useRef<HTMLDivElement>(null);
 
   const targetRef = useRef<HTMLDivElement>(null);
@@ -359,15 +379,7 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
     targetRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSeen = (messageId: string) => {
-    // update the 'seen' collection for the current user and the specified message
-  };
-
-  const handleEnterViewport = (messageId: string) => {
-    handleSeen(messageId);
-  };
-
-  function startAtBottom (){
+  function startAtBottom() {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
       try {
@@ -379,7 +391,8 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
             .querySelector(".SELECTED")
             ?.scrollBy(
               0,
-              containerRef.current.querySelector(".SELECTED")?.scrollHeight ?? 500
+              containerRef.current.querySelector(".SELECTED")?.scrollHeight ??
+                500
             );
         }
       } catch (err) {
@@ -390,7 +403,7 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
 
   useEffect(() => {
     // scrollToBottom();
-    startAtBottom()
+    startAtBottom();
     router.events.on("routeChangeComplete", scrollToBottom);
 
     return () => {
@@ -406,10 +419,6 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
       }
     );
   }, []);
-
-  // useEffect(() => {
-  //   console.log(setsState.sets)
-  // }, [seenSets]);
 
   return (
     <DialoguesContext.Provider
