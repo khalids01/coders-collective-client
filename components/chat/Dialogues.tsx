@@ -8,12 +8,15 @@ import {
   Modal,
   Menu,
   Loader,
+  Avatar,
+  Box,
+  Tooltip,
+  GroupPosition,
 } from "@mantine/core";
 import Image from "next/image";
 
 import type { ImageData, Message, User } from "@/types";
 import {
-  useArray,
   useBreakPoints,
   useMessage,
   useTheme,
@@ -25,10 +28,8 @@ import React, {
   useEffect,
   useRef,
   useState,
-  useMemo,
   createContext,
   useContext,
-  useCallback,
 } from "react";
 import {
   DotsY,
@@ -167,14 +168,130 @@ const DialoguesContext = createContext<Context>({
 
 const useSeenContext = () => useContext(DialoguesContext);
 
-const SeenBy = (item: {
-  messageId: string;
-  seenBy: { user: User; time: String }[];
+const SeenBy = ({
+  seen,
+  position,
+}: {
+  position: GroupPosition;
+  seen: { user: User; time: string | Date }[];
 }) => {
-  
+  const arr = seen.length > 10 ? seen.slice(0, 9) : seen;
+  const { user } = useUser();
+
+  return (
+    <Group
+      spacing={3}
+      position={position}
+      mt={-16}
+      mr={position === "right" ? 65 : 0}
+      ml={position === "left" ? 65 : 0}
+    >
+      {arr
+        ? arr?.map((arrItem, i) => {
+            return (
+              <Tooltip
+                className="tooltip"
+                key={arrItem.user._id}
+                label={
+                  <Group>
+                    <Text>
+                      {arrItem.user.username} at{" "}
+                      {dayjs.utc(arrItem.time).calendar()}
+                    </Text>
+                  </Group>
+                }
+              >
+                <Avatar radius={50} size={16}>
+                  {!!String(arrItem.user.avatar).trim() ? (
+                    <Image
+                      src={arrItem.user.avatar}
+                      alt={arrItem.user.username}
+                      height={16}
+                      width={16}
+                      style={{
+                        objectFit: "cover",
+                        objectPosition: "top",
+                      }}
+                    />
+                  ) : (
+                    <Box
+                      bg="var(--card-focus)"
+                      display={"grid"}
+                      p={10}
+                      w={16}
+                      h={16}
+                      sx={{ placeContent: "center", borderRadius: 100 }}
+                    >
+                      <Text
+                        size={10}
+                        component="span"
+                        color="var(--card-text)"
+                        pt={2}
+                        weight={700}
+                        align="center"
+                      >
+                        {arrItem.user.username[0].toUpperCase()}
+                      </Text>
+                    </Box>
+                  )}
+                </Avatar>
+              </Tooltip>
+            );
+          })
+        : null}
+
+      {seen && seen.length > 10 ? (
+        <Menu position="left-end">
+          <Menu.Target>
+            <UnstyledButton>{seen.length - arr.length} more</UnstyledButton>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <ScrollArea.Autosize mah={350}>
+              {seen &&
+                seen.map((item, i) => {
+                  if (item.user._id === user?._id) return <></>;
+                  return (
+                    <Menu.Item key={`${item.user._id}${i}`}>
+                      <Group>
+                        <ProfileImage
+                          avatar={item.user.avatar}
+                          username={item.user.username}
+                          size={25}
+                        />
+                        <Text>{item.user.username}</Text>
+                        <Text>{dayjs.utc(item.time).calendar()}</Text>
+                      </Group>
+                    </Menu.Item>
+                  );
+                })}
+            </ScrollArea.Autosize>
+          </Menu.Dropdown>
+        </Menu>
+      ) : null}
+    </Group>
+  );
 };
 
-const SingleMessage = ({ message }: { message: Message }) => {
+async function simulateAPICall(messageId: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Simulate the API call by checking if the messageId is "valid"
+      const isValid = messageId === "validId";
+
+      // Resolve the promise with the result after 1 second
+      resolve(isValid);
+    }, 1000);
+  });
+}
+
+const SingleMessage = ({
+  message,
+  showSeenBy,
+}: {
+  message: Message;
+  showSeenBy: boolean;
+}) => {
   dayjs.extend(calender);
   const { user } = useUser();
   const { colors } = useTheme();
@@ -207,41 +324,45 @@ const SingleMessage = ({ message }: { message: Message }) => {
     );
   };
 
-  const seen = message?.seen?.seenBy?.find(
-    (item) => item.user._id === user?._id
-  );
+  const seen = message?.seen?.find((item) => item.user._id === user?._id);
   useEffect(() => {
     if (!seenSets) return;
-    const { push, sets } = seenSets;
-    if (entry?.isIntersecting) {
-      push(entry.target.getAttribute("id"));
-      console.log(sets);
-    }
-    if (!seen && entry?.isIntersecting) {
-      const messageId = entry.target.getAttribute("id") ?? "";
-      if (!!String(messageId).trim()) {
-        messageSeenMutation("64550b7598e42d3b683934a6");
-      }
+    const { sets } = seenSets;
+    if (entry?.isIntersecting && !seen) {
+      const id = entry.target.getAttribute("id") as string;
+      if (sets.has(id)) return;
+
+      messageSeenMutation(id);
     }
   }, [entry?.isIntersecting]);
 
   useEffect(() => {
-    if (!messageSeenSuccess) return;
+    if (!messageSeenSuccess || !seenSets) return;
     const newMsg: Message = messageAfterSeenData.data ?? {};
-    message.seen.seenBy = newMsg.seen.seenBy;
+    message = {
+      ...message,
+      seen: newMsg.seen,
+    };
+    const { push } = seenSets;
+    push(message._id);
   }, [messageSeenSuccess]);
+
+  useEffect(() => {
+    if (!seenSets) return;
+    const { sets } = seenSets;
+  }, [seenSets?.sets]);
 
   if (!user?._id) return <></>;
 
   return (
     <Stack
       pr={8}
-      ref={seen ? null : ref}
+      ref={seen || message.sender.id === user._id ? null : ref}
       id={message._id}
       sx={{
         margin: user?._id === message.sender.id ? "0 0 0 auto" : "0 auto 0 0",
         maxWidth: "70%",
-        background: entry?.isIntersecting ? "red" : "transparent",
+        // background: entry?.isIntersecting ? "red" : "transparent",
       }}
     >
       {/* Date */}
@@ -357,6 +478,13 @@ const SingleMessage = ({ message }: { message: Message }) => {
           images={message.message.images as unknown as ImageData[]}
         />
       ) : null}
+
+      {message.seen && showSeenBy ? (
+        <SeenBy
+          position={user?._id === message.sender.id ? "right" : "left"}
+          seen={message.seen}
+        />
+      ) : null}
     </Stack>
   );
 };
@@ -368,11 +496,11 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
   const router = useRouter();
   const setsState = useSets();
   const containerRef = useRef<HTMLDivElement>(null);
+  const { user } = useUser();
 
   const [typingMessage, setTypingMessage] = useState<TypingMessage>();
   const { socket } = useSockets();
   const stackRef = useRef<HTMLDivElement>(null);
-
   const targetRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -420,6 +548,33 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
     );
   }, []);
 
+  const checkIfSeenByToShow = ({
+    message,
+    arr,
+    index,
+  }: {
+    arr: Message[];
+    index: number;
+    message: Message;
+  }): boolean => {
+    if (index > 0) {
+      // const previousSeen = arr[index - 1].seen?.map(
+      //   (s: { user: User; time: string | Date }) => s.user._id
+      // );
+      // const currentSeen = m.seen?.map((s) => s.user._id);
+      // showSeenBy = currentSeen.some((userId: string) =>
+      //   previousSeen.includes(userId)
+      // );
+    } else if (
+      arr.length - 1 === index &&
+      arr[arr.length - 1].sender.id !== user?._id
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <DialoguesContext.Provider
       value={{
@@ -451,11 +606,23 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
           }}
         >
           {Array.from(messages?.data)
-            ? Array.from(messages?.data)?.map((m: Message, index: number) => (
-                <React.Fragment key={index}>
-                  <SingleMessage message={m} key={index} />
-                </React.Fragment>
-              ))
+            ? Array.from(messages?.data)?.map(
+                (m: Message, index: number, arr) => {
+                  return (
+                    <React.Fragment key={index}>
+                      <SingleMessage
+                        message={m}
+                        showSeenBy={checkIfSeenByToShow({
+                          arr,
+                          index,
+                          message: m,
+                        })}
+                        key={index}
+                      />
+                    </React.Fragment>
+                  );
+                }
+              )
             : null}
         </Stack>
         <div ref={targetRef} />
