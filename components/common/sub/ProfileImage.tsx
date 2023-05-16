@@ -9,7 +9,7 @@ type Props = {
 
 const ProfileImage = ({ username, avatar, size }: Props) => {
   return (
-    <Avatar radius={size ? size * 2 : 50} size={size}>
+    <Avatar radius={size ? size * 2 : 50} size={size} bg='transparent'>
       {avatar && avatar?.length > 0 ? (
         <Image
           src={avatar}

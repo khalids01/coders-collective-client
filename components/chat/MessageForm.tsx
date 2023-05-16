@@ -122,7 +122,7 @@ const DroppedImagesPreview = ({
   const { colors } = useTheme();
   const { classes } = useStyles(colors);
 
-  useEffect(()=>{}, [])
+  // useEffect(()=>{}, [])
 
   return (
     <ScrollArea.Autosize mah={200}>

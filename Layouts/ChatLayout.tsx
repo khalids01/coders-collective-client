@@ -1,8 +1,7 @@
 import { createStyles } from "@mantine/core";
 import type { ReactNode } from "react";
-
+import { Chats } from "@/components/chat";
 interface ChatLayoutProps {
-  chats: ReactNode;
   content: ReactNode | null;
   showContent?: Boolean;
   showChats?: Boolean;
@@ -34,7 +33,6 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const ChatLayout = ({
-  chats,
   content,
   showContent = true,
   showChats = true,
@@ -42,10 +40,12 @@ const ChatLayout = ({
   const { classes } = useStyles();
 
   return (
-    <section
-      className={`${classes.container}`}
-    >
-      {showChats ? <div className={classes.chats}>{chats}</div> : null}
+    <section className={`${classes.container}`}>
+      {showChats ? (
+        <div className={classes.chats}>
+          <Chats />
+        </div>
+      ) : null}
       {showContent ? content : null}
     </section>
   );

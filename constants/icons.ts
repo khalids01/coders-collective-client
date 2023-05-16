@@ -1,4 +1,5 @@
 export { IconPhone as Call } from "@tabler/icons";
+export {IconPhoneOff as CallOff} from '@tabler/icons'
 export { IconVideo as Video } from "@tabler/icons";
 export { IconInfoCircle as Info } from "@tabler/icons";
 export { IconSettings as Settings } from "@tabler/icons";
@@ -37,6 +38,8 @@ export {IconPlus as Plus} from '@tabler/icons'
 export {IconCheck as CheckIcon} from '@tabler/icons'
 export {IconUserCheck as ProfileView} from '@tabler/icons'
 export {IconPhotoCancel as PhotoCancel} from '@tabler/icons'
-
-
+export {IconX as Close} from '@tabler/icons'
+export {IconMicrophoneOff as MicOff} from '@tabler/icons'
+export {IconMicrophone as MicOn} from '@tabler/icons'
+export {IconVideoOff as VideoOff } from '@tabler/icons' 
 

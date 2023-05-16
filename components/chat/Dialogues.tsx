@@ -188,10 +188,11 @@ const SeenBy = ({
     >
       {arr
         ? arr?.map((arrItem, i) => {
+            if (arrItem.user.username === user?.username) return <></>;
             return (
               <Tooltip
                 className="tooltip"
-                key={arrItem.user._id}
+                key={i}
                 label={
                   <Group>
                     <Text>
@@ -273,18 +274,6 @@ const SeenBy = ({
   );
 };
 
-async function simulateAPICall(messageId: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Simulate the API call by checking if the messageId is "valid"
-      const isValid = messageId === "validId";
-
-      // Resolve the promise with the result after 1 second
-      resolve(isValid);
-    }, 1000);
-  });
-}
-
 const SingleMessage = ({
   message,
   showSeenBy,
@@ -298,6 +287,7 @@ const SingleMessage = ({
   const [opened, setOpened] = useState(false);
   const { container, seenSets } = useSeenContext();
   const me = user?._id === message.sender.id;
+  const { md } = useBreakPoints();
   const { messageSeenMutation, messageAfterSeenData, messageSeenSuccess } =
     useMessage();
   const { ref, entry } = useIntersection({
@@ -324,7 +314,9 @@ const SingleMessage = ({
     );
   };
 
-  const seen = message?.seen?.find((item) => item.user._id === user?._id);
+  const seen = message?.seen?.find(
+    (item) => item.user.username === user?.username
+  );
   useEffect(() => {
     if (!seenSets) return;
     const { sets } = seenSets;
@@ -354,145 +346,160 @@ const SingleMessage = ({
 
   if (!user?._id) return <></>;
 
+  const alreadySeen =
+    message.sender.username !== user?.username &&
+    message.seen?.find((u) => u.user.username === user?.username);
+
   return (
-    <Stack
-      pr={8}
-      ref={seen || message.sender.id === user._id ? null : ref}
-      id={message._id}
+    <Box
+      py={10}
+      px={md ? 5 : 12}
       sx={{
-        margin: user?._id === message.sender.id ? "0 0 0 auto" : "0 auto 0 0",
-        maxWidth: "70%",
-        // background: entry?.isIntersecting ? "red" : "transparent",
+        background:
+          message.sender.username === user?.username || alreadySeen
+            ? "transparent"
+            : colors.background.lighter,
       }}
     >
-      {/* Date */}
-      <Text
+      <Stack
+        pr={8}
+        ref={seen || message.sender.id === user._id ? null : ref}
+        id={message._id}
         sx={{
-          display: "inline-block",
-          textAlign: me ? "end" : "start",
+          margin: user?._id === message.sender.id ? "0 0 0 auto" : "0 auto 0 0",
+          maxWidth: "70%",
         }}
-        color="var(--textMuted)"
-        mb={-10}
-        mr={me ? 30 : 0}
-        ml={me ? 0 : 30}
-        size={12}
       >
-        {dayjs(message.updatedAt).calendar()}
-      </Text>
+        {/* Date */}
+        <Text
+          sx={{
+            display: "inline-block",
+            textAlign: me ? "end" : "start",
+          }}
+          color="var(--textMuted)"
+          mb={-10}
+          mr={me ? 30 : 0}
+          ml={me ? 0 : 30}
+          size={12}
+        >
+          {dayjs(message.updatedAt).calendar()}
+        </Text>
 
-      <Div
-        d="flex"
-        items="flex-start"
-        justifyContent={me ? "flex-end" : "flex-start"}
-      >
-        {message.message.text?.length > 0 ? (
-          <>
-            {!me ? <Options /> : null}
-            <Text
-              size={14}
-              color={!me ? colors.text.primary : "white"}
-              p="10px 20px"
-              mx={10}
-              sx={{
-                borderRadius: 16,
-                letterSpacing: 1.05,
-                backgroundColor: !me
-                  ? colors.background.lighter
-                  : colors.card.focus,
-                lineHeight: 1.6,
-                marginLeft: !me ? 0 : "auto",
-              }}
+        <Div
+          d="flex"
+          items="flex-start"
+          justifyContent={me ? "flex-end" : "flex-start"}
+        >
+          {message.message.text?.length > 0 ? (
+            <>
+              {!me ? <Options /> : null}
+              <Text
+                size={14}
+                color={!me ? colors.text.primary : "white"}
+                p="10px 20px"
+                mx={10}
+                sx={{
+                  borderRadius: 16,
+                  letterSpacing: 1.05,
+                  backgroundColor: !me
+                    ? colors.background.lighter
+                    : colors.card.focus,
+                  lineHeight: 1.6,
+                  marginLeft: !me ? 0 : "auto",
+                }}
+              >
+                {message.message.text}
+              </Text>
+              {me ? <Options /> : null}
+            </>
+          ) : null}
+        </Div>
+
+        <Div d="flex" justifyContent="flex-end">
+          {message.message.images?.length > 0 && !me ? (
+            <>
+              <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
+              <ProfileImage
+                size={30}
+                avatar={message.sender?.avatar}
+                username={message.sender?.username}
+              />
+            </>
+          ) : null}
+
+          {message.message?.images ? (
+            <Div
+              d="flex"
+              wrap
+              gap={16}
+              justifyContent={!me ? "flex-start" : "flex-end"}
             >
-              {message.message.text}
-            </Text>
-            {me ? <Options /> : null}
-          </>
-        ) : null}
-      </Div>
+              {message.message?.images?.map((img: any, index: number) => {
+                return (
+                  <UnstyledButton
+                    key={index}
+                    onClick={() => {
+                      setOpened(!opened);
+                    }}
+                    mx={10}
+                    sx={{
+                      display: "inline-block",
+                      transition: "all 0.2s",
+                      "&:hover": {
+                        scale: "104%",
+                      },
+                    }}
+                  >
+                    <Image
+                      src={`${endpoints.server.base}${endpoints.server.image}/${img.src}`}
+                      alt={"Image"}
+                      width={100}
+                      height={100}
+                      className="cover"
+                      style={{ borderRadius: 12 }}
+                    />
+                  </UnstyledButton>
+                );
+              })}
+            </Div>
+          ) : null}
 
-      <Div d="flex" justifyContent="flex-end">
-        {message.message.images?.length > 0 && !me ? (
-          <>
-            <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
-            <ProfileImage
-              size={30}
-              avatar={message.sender?.avatar}
-              username={message.sender?.username}
-            />
-          </>
-        ) : null}
+          {message.message.images?.length > 0 && me ? (
+            <>
+              <ProfileImage
+                size={30}
+                avatar={message.sender?.avatar}
+                username={message.sender?.username}
+              />
+              <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
+            </>
+          ) : null}
+        </Div>
 
-        {message.message?.images ? (
-          <Div
-            d="flex"
-            wrap
-            gap={16}
-            justifyContent={!me ? "flex-start" : "flex-end"}
-          >
-            {message.message?.images?.map((img: any, index: number) => {
-              return (
-                <UnstyledButton
-                  key={index}
-                  onClick={() => {
-                    setOpened(!opened);
-                  }}
-                  mx={10}
-                  sx={{
-                    display: "inline-block",
-                    transition: "all 0.2s",
-                    "&:hover": {
-                      scale: "104%",
-                    },
-                  }}
-                >
-                  <Image
-                    src={`${endpoints.server.base}${endpoints.server.image}/${img.src}`}
-                    alt={"Image"}
-                    width={100}
-                    height={100}
-                    className="cover"
-                    style={{ borderRadius: 12 }}
-                  />
-                </UnstyledButton>
-              );
-            })}
-          </Div>
+        {message.message.images?.length > 0 ? (
+          <ImageModal
+            opened={opened}
+            setOpened={setOpened}
+            images={message.message.images as unknown as ImageData[]}
+          />
         ) : null}
 
-        {message.message.images?.length > 0 && me ? (
-          <>
-            <ProfileImage
-              size={30}
-              avatar={message.sender?.avatar}
-              username={message.sender?.username}
-            />
-            <MessageItemMenu type={"me"} id={me ? "me" : "other"} />
-          </>
+        {message.seen ? (
+          <SeenBy
+            seen={message.seen}
+            position={
+              message.sender.username === user?.username ? "right" : "left"
+            }
+          />
         ) : null}
-      </Div>
-
-      {message.message.images?.length > 0 ? (
-        <ImageModal
-          opened={opened}
-          setOpened={setOpened}
-          images={message.message.images as unknown as ImageData[]}
-        />
-      ) : null}
-
-      {message.seen && showSeenBy ? (
-        <SeenBy
-          position={user?._id === message.sender.id ? "right" : "left"}
-          seen={message.seen}
-        />
-      ) : null}
-    </Stack>
+      </Stack>
+    </Box>
   );
 };
 
 const Dialogues = ({ chat_name }: { chat_name: string }) => {
   const { colors } = useTheme();
   const { messages } = useMessage();
-  const { md } = useBreakPoints();
   const router = useRouter();
   const setsState = useSets();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -596,9 +603,9 @@ const Dialogues = ({ chat_name }: { chat_name: string }) => {
         }}
       >
         <Stack
-          px={md ? 5 : 12}
           py={10}
           h={"100%"}
+          spacing={0}
           ref={stackRef}
           sx={{
             background: colors.background.neutral,

@@ -56,7 +56,6 @@ const Chat = ({router}:{router: NextRouter}) => {
   return (
     <MainLayout showMainNav={!md}>
       <ChatLayout
-        chats={<Chats />}
         showChats={!md}
         content={
           <Stack

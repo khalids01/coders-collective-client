@@ -32,7 +32,6 @@ const Chat = ({ router }: { router: NextRouter }) => {
     <MainLayout showMainNav={!md}>
       <ChatLayout
         showContent={!md && !router.query?.id}
-        chats={<Chats />}
         content={
           md ? null : (
             <section className={classes.section}>

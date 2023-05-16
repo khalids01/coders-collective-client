@@ -34,6 +34,7 @@ const endpoints = {
     forget_password: "/forget-password",
     dashboard: "/dashboard",
     chat: "/chat",
+    room: '/room'
   },
 };
 

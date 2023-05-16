@@ -1,7 +1,15 @@
-import { Group, ActionIcon, Text, Stack, Burger, Drawer } from "@mantine/core";
+import {
+  Group,
+  ActionIcon,
+  Text,
+  Stack,
+  Burger,
+  Drawer,
+  Badge,
+} from "@mantine/core";
 import dayjs from "dayjs";
 import { Call, Video, Info, Left } from "@/constants/icons";
-import { useBreakPoints, useTheme, useChat } from "@/hooks";
+import { useBreakPoints, useTheme, useChat, useUser } from "@/hooks";
 import { showChatInfo } from "@/redux/slices/chatLayoutProps";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -12,6 +20,10 @@ import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
 import { endpoints } from "@/constants";
 import { useSockets } from "@/context/socket.context";
 import Link from "next/link";
+import { useCallback } from "react";
+import { EVENTS } from "@/constants/socketConfig";
+import { useRouter } from "next/router";
+import PeerService from "@/services/chat/peer";
 
 const ChatHeader = ({ chat_name }: { chat_name: string }) => {
   const { colors, colorScheme } = useTheme();
@@ -19,6 +31,9 @@ const ChatHeader = ({ chat_name }: { chat_name: string }) => {
   const { md, xs } = useBreakPoints();
   const dispatch = useDispatch();
   const { chatData } = useChat({ chat_name, type: "user" });
+  const { socket } = useSockets();
+  const { user } = useUser();
+  const router = useRouter();
   const { showInfo } = useSelector(
     (state: RootState) => state.chatLayout.chatInfo
   );
@@ -27,7 +42,17 @@ const ChatHeader = ({ chat_name }: { chat_name: string }) => {
     (state: RootState) => state.chatLayout.mainNavDrawer
   );
 
-  const active = !!activeFriends.find((f)=> f.user.username === chatData?.data?.username);
+  const active = !!activeFriends.find(
+    (f) => f.user.username === chatData?.data?.username
+  );
+
+  const startCall = useCallback(async () => {
+    const peer = new PeerService();
+    const offer = await peer.getOffer();
+
+    socket.emit(EVENTS.CLIENT.CALL, { fromAvatar: user?.avatar, toUsername: router.query?.chat_name, offer });
+    router.push(endpoints.client.room + "/" + router.query?.chat_name);
+  }, []);
 
   return (
     <Group
@@ -61,7 +86,14 @@ const ChatHeader = ({ chat_name }: { chat_name: string }) => {
               : ""}
           </Text>
           <Text color={colors.text.secondary} size={md ? 11 : 14} weight={400}>
-            {active ? <Group>Online</Group> : dayjs().format("MMM D h:mm")}
+            {active ? (
+              <Group spacing={5}>
+                <Badge h={10} p={0} w={10} bg={"green"} />
+                Online
+              </Group>
+            ) : (
+              dayjs().format("MMM D h:mm")
+            )}
           </Text>
         </Stack>
       </Group>
@@ -80,7 +112,13 @@ const ChatHeader = ({ chat_name }: { chat_name: string }) => {
           },
         }}
       >
-        <ActionIcon variant="transparent" radius={50} h={40} w={40}>
+        <ActionIcon
+          onClick={() => startCall()}
+          variant="transparent"
+          radius={50}
+          h={40}
+          w={40}
+        >
           <Call size={xs ? 18 : md ? 20 : 24} stroke={1.5} />
         </ActionIcon>
         <ActionIcon variant="transparent" radius={50} h={40} w={40}>
