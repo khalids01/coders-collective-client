@@ -318,7 +318,7 @@ const Room = () => {
   const [showAnimation, setShowAnimation] = useState(true)
 
   const { md } = useBreakPoints();
-  const { socket, activeFriends } = useSockets();
+  const { socket } = useSockets();
   const router = useRouter()
   
   const handleRejectedCall = useCallback(({ from }: any) => {
@@ -331,6 +331,8 @@ const Room = () => {
     })
     router.push(`${endpoints.client.chat}/${router.query?.room}`)
   }, []);
+
+  console.log(router)
 
 
   const handleAcceptedCall = useCallback(({ from }: any) => {

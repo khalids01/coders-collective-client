@@ -17,8 +17,9 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { ProfileImage } from "@/components/common/sub";
 import { compact } from "@/utils/compactText";
-import { notifications, showNotification } from "@mantine/notifications";
+import { showNotification } from "@mantine/notifications";
 import { Call, CallOff } from "@/constants/icons";
+import PeerService from "@/services/chat/peer";
 
 interface SocketUser {
   socketId: string;
@@ -35,6 +36,7 @@ interface Context {
   newMessagesArray: ArrayStatesType | {};
   setNewFriend?: Function;
   activeFriends: SocketUser[];
+  peer: PeerService | {}
 }
 
 const socket = io(SOCKET_URL as string, {
@@ -47,17 +49,19 @@ const SocketContext = createContext<Context>({
   activeFriends: [],
   setChat_name: () => false,
   newMessagesArray: {},
+  peer: {}
 });
 
 const SocketsProvider = (props: any) => {
   const { isLoggedIn } = useToken();
+  const [peer, setPeer] = useState<PeerService>(new PeerService())
   const { user } = useUser();
   const [username, setUserName] = useState();
   const [chat_name, setChat_name] = useState();
   const [activeFriends, setActiveFriends] = useState<SocketUser[]>([]);
   const newMessagesArray = useArray([]);
   const router = useRouter();
-  const [incomingCallInfo, setIncomingCallInfo] = useState<{ from: string, offer: any }>()
+  const [incomingCallInfo, setIncomingCallInfo] = useState<{ from: string, offer: RTCSessionDescription, fromAvatar: string }>()
   const [openCallDialog, setOpenCallDialog] = useState(false)
   const { colors } = useTheme()
   const [discordSound] = useSound(sounds.discord, {
@@ -65,7 +69,7 @@ const SocketsProvider = (props: any) => {
     volume: 0.5,
   });
 
-  const [callRingtone, {stop}] = useSound(sounds.callRingtone, {
+  const [callRingtone, { stop }] = useSound(sounds.callRingtone, {
     id: 'call-ringtone-round',
     volume: 0.7
   })
@@ -142,11 +146,16 @@ const SocketsProvider = (props: any) => {
     });
   }, []);
 
-  const handleIncomingCall = useCallback(({ from, offer, fromAvatar }: any) => {
-    console.log("call from : ", from, offer);
-    setIncomingCallInfo({ from, offer })
+  const handleIncomingCall = useCallback(async ({ from, offer, fromAvatar }: {from: string, offer:RTCSessionDescription, fromAvatar: string}) => {
+    // const stream = await navigator.mediaDevices.getUserMedia({
+    //   audio: true,
+    //   video: true
+    // })
+    console.log("call from : ", from, offer, fromAvatar);
+    setIncomingCallInfo({ from, offer, fromAvatar })
     setOpenCallDialog(true)
     callRingtone()
+    const ans  = await peer?.getAnswer(offer)
   }, []);
 
 
@@ -194,6 +203,7 @@ const SocketsProvider = (props: any) => {
     <SocketContext.Provider
       value={{
         socket,
+        peer,
         username,
         setUserName,
         newMessagesArray,
@@ -215,14 +225,14 @@ const SocketsProvider = (props: any) => {
       >
         <Center mt={20}>
           <ProfileImage
-            username="Khalid"
-            avatar=''
+            username={incomingCallInfo?.from ?? ""}
+            avatar={incomingCallInfo?.fromAvatar}
             size={60}
           />
         </Center>
 
         <Text mt={16} color={colors.text.primary} size={'lg'} align='center'>
-          Khalid
+          {incomingCallInfo?.from}
         </Text>
 
         <Group spacing={40} mt={60} position='center'>
