@@ -144,7 +144,7 @@ const ImageModal = ({
         const NEW_HEIGHT = (NEW_WEIGHT / image.width) * image.height;
         return (
           <Image
-            key={index}
+            key={image._id+index}
             src={`${endpoints.server.base}${endpoints.server.image}/${image.src}`}
             alt={image.src}
             height={NEW_HEIGHT}
@@ -192,7 +192,7 @@ const SeenBy = ({
             return (
               <Tooltip
                 className="tooltip"
-                key={i}
+                key={arrItem.user._id + i}
                 label={
                   <Group>
                     <Text>
@@ -253,7 +253,7 @@ const SeenBy = ({
                 seen.map((item, i) => {
                   if (item.user._id === user?._id) return <></>;
                   return (
-                    <Menu.Item key={`${item.user._id}${i}`}>
+                    <Menu.Item key={`${item.user.username}${i}`}>
                       <Group>
                         <ProfileImage
                           avatar={item.user.avatar}
@@ -437,7 +437,7 @@ const SingleMessage = ({
               {message.message?.images?.map((img: any, index: number) => {
                 return (
                   <UnstyledButton
-                    key={index}
+                    key={`${img}-${index}`}
                     onClick={() => {
                       setOpened(!opened);
                     }}

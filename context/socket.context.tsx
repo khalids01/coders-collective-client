@@ -17,7 +17,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { ProfileImage } from "@/components/common/sub";
 import { compact } from "@/utils/compactText";
-import { showNotification } from "@mantine/notifications";
+import { notifications, showNotification } from "@mantine/notifications";
 import { Call, CallOff } from "@/constants/icons";
 import PeerService from "@/services/chat/peer";
 
@@ -36,7 +36,8 @@ interface Context {
   newMessagesArray: ArrayStatesType | {};
   setNewFriend?: Function;
   activeFriends: SocketUser[];
-  peer: PeerService | {}
+  peer: PeerService | {};
+  setOpenCallDialog: Function
 }
 
 const socket = io(SOCKET_URL as string, {
@@ -49,19 +50,21 @@ const SocketContext = createContext<Context>({
   activeFriends: [],
   setChat_name: () => false,
   newMessagesArray: {},
-  peer: {}
+  peer: {},
+  setOpenCallDialog: () => false,
 });
 
 const SocketsProvider = (props: any) => {
   const { isLoggedIn } = useToken();
-  const [peer, setPeer] = useState<PeerService>(new PeerService())
+  const [peer] = useState<PeerService>(new PeerService())
   const { user } = useUser();
   const [username, setUserName] = useState();
   const [chat_name, setChat_name] = useState();
   const [activeFriends, setActiveFriends] = useState<SocketUser[]>([]);
   const newMessagesArray = useArray([]);
   const router = useRouter();
-  const [incomingCallInfo, setIncomingCallInfo] = useState<{ from: string, offer: RTCSessionDescription, fromAvatar: string }>()
+  const [ans, setAns] = useState<RTCSessionDescriptionInit | {}>({})
+  const [incomingCallInfo, setIncomingCallInfo] = useState<{ from: string, offer: RTCSessionDescription, fromAvatar: string, room: string }>()
   const [openCallDialog, setOpenCallDialog] = useState(false)
   const { colors } = useTheme()
   const [discordSound] = useSound(sounds.discord, {
@@ -146,17 +149,31 @@ const SocketsProvider = (props: any) => {
     });
   }, []);
 
-  const handleIncomingCall = useCallback(async ({ from, offer, fromAvatar }: {from: string, offer:RTCSessionDescription, fromAvatar: string}) => {
+  const handleIncomingCall = useCallback(async ({ from, offer, fromAvatar, room }: { from: string, offer: RTCSessionDescription, fromAvatar: string, room: string }) => {
     // const stream = await navigator.mediaDevices.getUserMedia({
     //   audio: true,
     //   video: true
     // })
     console.log("call from : ", from, offer, fromAvatar);
-    setIncomingCallInfo({ from, offer, fromAvatar })
+    setIncomingCallInfo({ from, offer, fromAvatar, room })
     setOpenCallDialog(true)
     callRingtone()
-    const ans  = await peer?.getAnswer(offer)
+    // const answer = await peer?.getAnswer(offer)
+    // setAns(answer)
   }, []);
+
+  // when caller start a call and end right way
+  // its hides the calling dialogue on the receiving side 
+  const handleCallCanceled = useCallback(({ from }: { from: string }) => {
+    console.log('Hiding Calling Dialog')
+    setOpenCallDialog(false)
+    notifications.show({
+      id: 'end-call',
+      title: `${from === user?.username ? 'You' : from} ended tha call`,
+      message: ``,
+      color: 'orange'
+    })
+  }, [])
 
 
   useEffect(() => {
@@ -177,19 +194,25 @@ const SocketsProvider = (props: any) => {
   useEffect(() => {
     if (!socket) return;
     socket.on(EVENTS.CLIENT.INCOMING_CALL, handleIncomingCall);
-
+    socket.on(EVENTS.CLIENT.END_CALL, handleCallCanceled)
     return () => {
       socket.off(EVENTS.CLIENT.INCOMING_CALL, handleIncomingCall);
+      socket.off(EVENTS.CLIENT.END_CALL, handleCallCanceled)
     };
-  }, [socket]);
+  }, [socket, handleIncomingCall, handleCallCanceled]);
 
   if (!isLoggedIn || !user?._id) {
     return <>{props.children}</>;
   }
 
-  const acceptcall = () => {
-    socket.emit(EVENTS.CLIENT.ACCEPT_CALL, ({ from: user?.username }));
-    router.push(endpoints.client.room + '/' + incomingCallInfo?.from)
+  const acceptcall = async () => {
+    if (!incomingCallInfo?.offer) {
+      console.log('OFFER is missing', incomingCallInfo)
+      return
+    }
+    const answer = await peer?.getAnswer(incomingCallInfo?.offer)
+    socket.emit(EVENTS.CLIENT.ACCEPT_CALL, ({ from: user?.username, ans }));
+    router.push(endpoints.client.room + '/' + incomingCallInfo?.from + `?room-name=${incomingCallInfo?.room}`)
   }
 
   const rejectCall = () => {
@@ -210,6 +233,7 @@ const SocketsProvider = (props: any) => {
         chat_name,
         setChat_name,
         activeFriends,
+        setOpenCallDialog,
       }}
     >
       <Dialog

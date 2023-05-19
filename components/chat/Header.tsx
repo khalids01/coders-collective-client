@@ -50,8 +50,8 @@ const ChatHeader = ({ chat_name }: { chat_name: string }) => {
     const peer = new PeerService();
     const offer = await peer.getOffer();
 
-    socket.emit(EVENTS.CLIENT.CALL, { fromAvatar: user?.avatar, toUsername: router.query?.chat_name, offer });
-    router.push(endpoints.client.room + "/" + router.query?.chat_name + `?room-creator=${user?.username}`);
+    socket.emit(EVENTS.CLIENT.CALL, { fromAvatar: user?.avatar, toUsername: router.query?.chat_name, offer, room: user?.username });
+    router.push(endpoints.client.room + "/" + router.query?.chat_name + `?room-name=${user?.username}`);
   }, []);
 
   return (

@@ -58,9 +58,9 @@ const useStyles = createStyles(() => ({
   }
 }))
 
-const Content = ({showAnimation}:{showAnimation: boolean}) => {
+const Content = ({ showAnimation }: { showAnimation: boolean }) => {
   const { classes } = useStyles()
-  const { socket, activeFriends } = useSockets();
+  const { socket, activeFriends, setOpenCallDialog } = useSockets();
   const [myStream, setMyStream] = useState<any>(null);
   const [videoOn, setVideoOn] = useState(false);
   const [audioOn, setAudioOn] = useState(false);
@@ -104,9 +104,23 @@ const Content = ({showAnimation}:{showAnimation: boolean}) => {
 
 
   const handleCallEnd = () => {
-    socket.emit(EVENTS.CLIENT.END_CALL, ({ username: user?.username, room: router.query?.room }))
+    // when i end the call
+    socket.emit(EVENTS.CLIENT.END_CALL, ({ from: user?.username, to: router.query?.room }))
     router.push(`${endpoints.client.chat}/${router.query?.room}`)
   }
+
+  // when user from other side end the call
+  const onEndCall = useCallback(({ from }: { from: string }) => {
+    if (router.query['room-name'] !== user?.username) {
+      notifications.show({
+        id: 'user-leaved-call',
+        title: `${from} Leaved`,
+        message: `${from} has leaved the call in room ${router.query['room-name']}`,
+        color: 'orange'
+      })
+    }
+    router.push(`${endpoints.client.chat}/${router.query?.room}`)
+  }, [])
 
   useEffect(() => {
     getUserMedia();
@@ -116,6 +130,16 @@ const Content = ({showAnimation}:{showAnimation: boolean}) => {
     if (router.query?.room === user?.username) {
       router.push(endpoints.client.chat);
       return;
+    }
+
+    setOpenCallDialog(false)
+  }, [])
+
+  useEffect(() => {
+    socket.on(EVENTS.CLIENT.END_CALL, onEndCall)
+
+    return () => {
+      socket.off(EVENTS.CLIENT.END_CALL, onEndCall)
     }
   }, [])
 
@@ -320,7 +344,7 @@ const Room = () => {
   const { md } = useBreakPoints();
   const { socket } = useSockets();
   const router = useRouter()
-  
+
   const handleRejectedCall = useCallback(({ from }: any) => {
     console.log('call rejected')
     notifications.show({
@@ -332,16 +356,17 @@ const Room = () => {
     router.push(`${endpoints.client.chat}/${router.query?.room}`)
   }, []);
 
-  console.log(router)
 
 
   const handleAcceptedCall = useCallback(({ from }: any) => {
     setShowAnimation(false)
   }, []);
 
+
   useEffect(() => {
     if (!socket) return;
 
+    // on sender / caller side
     socket.on(EVENTS.CLIENT.REJECT_CALL, handleRejectedCall)
 
     return () => {
