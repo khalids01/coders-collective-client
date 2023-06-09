@@ -13,11 +13,24 @@ class PeerService {
     });
   }
 
-  async getAnswer (offer : RTCSessionDescription){
-    await this.peer.setLocalDescription(offer)
-    const answer = await this.peer.createAnswer()
-    await this.peer.setLocalDescription(new RTCSessionDescription(answer));
-    return answer;
+  getSignalingState() {
+    return this.peer.signalingState;
+  }
+
+  async getAnswer(offer: RTCSessionDescription) {
+    try {
+      await this.peer.setRemoteDescription(offer);
+      const answer = await this.peer.createAnswer();
+      await this.peer.setLocalDescription(answer);
+      return answer;
+    } catch (error) {
+      console.log("Failed to create answer", error);
+      throw error;
+    }
+  }
+
+  async setLocalDescription(ans: RTCSessionDescription) {
+    await this.peer.setLocalDescription(new RTCSessionDescription(ans));
   }
 
   async getOffer() {

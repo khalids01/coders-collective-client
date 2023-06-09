@@ -17,13 +17,15 @@ import { ArrayStatesType } from "@/hooks/useArray";
 import { endpoints } from "@/constants";
 import { requireAuthentication } from "@/utils/requireAuthentication";
 import { GetServerSidePropsContext } from "next";
+import Media from "@/utils/Media";
 
-const Chat = ({router}:{router: NextRouter}) => {
+const Chat = ({ router }: { router: NextRouter }) => {
   const { md } = useBreakPoints();
   const { setConverSationId } = useMessage();
   const { socket, newMessagesArray } = useSockets();
   const dispatch = useDispatch();
   const { user } = useUser();
+  const media = new Media();
 
   useEffect(() => {
     if (!String(router.query?.chat_name).trim()) return;
@@ -47,6 +49,8 @@ const Chat = ({router}:{router: NextRouter}) => {
         dispatch(addANewMessage(data));
       }
     });
+    
+    media.turnOffAll();
   }, [router.query?.chat_name]);
 
   const { height } = useSelector(

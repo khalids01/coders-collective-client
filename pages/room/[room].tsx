@@ -1,3 +1,4 @@
+"use-client";
 import {
   Text,
   ActionIcon,
@@ -12,7 +13,7 @@ import {
   Burger,
   createStyles,
 } from "@mantine/core";
-import { NextRouter, useRouter, withRouter } from "next/router";
+import { useRouter } from "next/router";
 import {
   Video,
   Close,
@@ -29,7 +30,6 @@ import MainLayout from "@/Layouts/MainLayout";
 import ChatLayout from "@/Layouts/ChatLayout";
 import ReactPlayer from "react-player";
 import { useBreakPoints, useChat, useUser } from "@/hooks";
-import PeerService from "@/services/chat/peer";
 import { useTheme } from "@/hooks";
 import { ProfileImage } from "@/components/common/sub";
 import Link from "next/link";
@@ -45,6 +45,7 @@ import { RootState } from "@/redux/store";
 import { MobileNavbarDrawer } from "@/components/mainLayout/nav";
 import { motion } from "framer-motion";
 import { notifications } from "@mantine/notifications";
+import Media from "@/utils/Media";
 
 const useStyles = createStyles(() => ({
   circle: {
@@ -52,24 +53,27 @@ const useStyles = createStyles(() => ({
     left: "50%",
     top: "50%",
     borderRadius: 9999,
-    background: 'rgba(58, 108, 146, 0.521)',
-    translateX: '-50%',
-    translateY: '-50%',
-  }
-}))
+    background: "rgba(58, 108, 146, 0.521)",
+    translateX: "-50%",
+    translateY: "-50%",
+  },
+}));
 
 const Content = ({ showAnimation }: { showAnimation: boolean }) => {
-  const { classes } = useStyles()
-  const { socket, activeFriends, setOpenCallDialog } = useSockets();
-  const [myStream, setMyStream] = useState<any>(null);
-  const [videoOn, setVideoOn] = useState(false);
-  const [audioOn, setAudioOn] = useState(false);
+  const { classes } = useStyles();
+  const { socket, activeFriends, setOpenCallDialog, peerService } =
+    useSockets();
+  const [myStream, setMyStream] = useState<MediaStream>();
+  const [remoteStream, setRemoteStream] = useState<any>(null);
+  const [videoOn, setVideoOn] = useState(true);
+  const [audioOn, setAudioOn] = useState(true);
   const { colors } = useTheme();
-  const { user } = useUser()
+  const { user } = useUser();
   const router = useRouter();
   const { chatData } = useChat({ chat_name: router.query?.room as string });
   const { md, xs } = useBreakPoints();
   const dispatch = useDispatch();
+
   const { showInfo } = useSelector(
     (state: RootState) => state.chatLayout.chatInfo
   );
@@ -77,54 +81,129 @@ const Content = ({ showAnimation }: { showAnimation: boolean }) => {
     (state: RootState) => state.chatLayout.mainNavDrawer
   );
 
-  async function toggleAudio() {
-    setAudioOn((prevAudioOn) => !prevAudioOn);
-    await getUserMedia();
-  }
+  // const sendStreams = () => {
+  //   for (const track of myStream.getTracks()) {
+  //     // @ts-ignore
+  //     peerService?.peer.addTrack(track, myStream);
+  //   }
+  // }
 
-  async function toggleVideo() {
-    setVideoOn((prevVideoOn) => !prevVideoOn);
-    await getUserMedia();
-  }
-
-  const getUserMedia = useCallback(async () => {
-    if (videoOn || audioOn) {
-      try {
-        const newStream = await navigator.mediaDevices.getUserMedia({
-          audio: audioOn,
-          video: videoOn,
-        });
-        setMyStream(newStream);
-      } catch (error) {
-        console.error(error);
+  // when I'm calling and user from other side accepts
+  const handleAcceptedCall = useCallback(
+    async ({
+      from,
+      to,
+      answer,
+    }: {
+      from: string;
+      to: string;
+      answer: RTCSessionDescriptionInit;
+    }) => {
+      if (!myStream) {
+        console.log("Stream is not available ");
+        return;
       }
-    }
-  }, [socket]);
-
-
+      for (const track of myStream?.getTracks()) {
+        // @ts-ignore
+        peerService?.peer.addTrack(track, myStream);
+      }
+    },
+    [myStream]
+  );
 
   const handleCallEnd = () => {
     // when i end the call
-    socket.emit(EVENTS.CLIENT.END_CALL, ({ from: user?.username, to: router.query?.room }))
-    router.push(`${endpoints.client.chat}/${router.query?.room}`)
-  }
+    socket.emit(EVENTS.CLIENT.END_CALL, {
+      from: user?.username,
+      to: router.query?.room,
+    });
+    turnOffAll();
+    router.push(`${endpoints.client.chat}/${router.query?.room}`);
+  };
 
   // when user from other side end the call
   const onEndCall = useCallback(({ from }: { from: string }) => {
-    if (router.query['room-name'] !== user?.username) {
+    if (router.query["room-name"] !== user?.username) {
       notifications.show({
-        id: 'user-leaved-call',
+        id: "user-leaved-call",
         title: `${from} Leaved`,
-        message: `${from} has leaved the call in room ${router.query['room-name']}`,
-        color: 'orange'
-      })
+        message: `${from} has leaved the call in room ${router.query["room-name"]}`,
+        color: "orange",
+      });
     }
-    router.push(`${endpoints.client.chat}/${router.query?.room}`)
-  }, [])
+    router.push(`${endpoints.client.chat}/${router.query?.room}`);
+  }, []);
+
+  const handleNegoNeeded = useCallback(async (ng: any) => {
+    console.log({ ng });
+    // @ts-ignore
+    const offer = await peerService?.getOffer();
+    socket.emit(EVENTS.CLIENT.PEER_NEGOTIATION_NEEDED, {
+      offer,
+      to: router.query.room,
+      from: user?.username,
+    });
+  }, []);
+
+  const handleNegoNeededIncoming = useCallback(async ({ from, offer }: any) => {
+    // @ts-ignore
+    const ans = await peerService.getAnswer(offer);
+    socket.emit(EVENTS.CLIENT.PEER_NEGOTIATION_DONE, { to: from, ans });
+  }, []);
+
+  const handleNegoFinal = useCallback(async ({ ans }: any) => {
+    // @ts-ignore
+    await peerService.setLocalDescription(ans);
+  }, []);
+
+  function turnOffAll() {
+    console.log("off", myStream?.getVideoTracks());
+    myStream?.getTracks()?.forEach((track) => {
+      track.stop();
+    });
+  }
+
+  const toggleCamera = () => {
+    if (videoOn && myStream?.getVideoTracks()) {
+      setVideoOn(false);
+      myStream?.getVideoTracks().forEach((track) => {
+        track.stop();
+      });
+    } else {
+      setVideoOn(true);
+    }
+  };
+
+  const toggleMic = () => {
+    if (audioOn && myStream?.getAudioTracks()) {
+      setAudioOn(false);
+      myStream?.getAudioTracks().forEach((track) => {
+        track.stop();
+      });
+    } else {
+      setAudioOn(true);
+    }
+  };
 
   useEffect(() => {
-    getUserMedia();
-  }, [audioOn, videoOn]);
+    let media: Media | undefined;
+
+    const initializeMediaStream = async () => {
+      media = new Media(videoOn);
+      await media.cameraOn(); // Start with the camera enabled
+      setMyStream(media.getStream());
+    };
+
+    initializeMediaStream();
+
+    return () => {
+      media?.turnOffAll();
+    };
+  }, []);
+
+  // useEffect(() => {
+  // console.log(myStream);
+  // }, [myStream]);
 
   useEffect(() => {
     if (router.query?.room === user?.username) {
@@ -132,21 +211,55 @@ const Content = ({ showAnimation }: { showAnimation: boolean }) => {
       return;
     }
 
-    setOpenCallDialog(false)
-  }, [])
+    setOpenCallDialog(false);
+  }, []);
 
   useEffect(() => {
-    socket.on(EVENTS.CLIENT.END_CALL, onEndCall)
+    if (!peerService) return;
+    // @ts-ignore
+    peerService?.peer?.addEventListener("negotiationneeded", handleNegoNeeded);
 
     return () => {
-      socket.off(EVENTS.CLIENT.END_CALL, onEndCall)
-    }
-  }, [])
+      // @ts-ignore
+      peerService?.peer?.removeEventListener(
+        "negotiationneeded",
+        handleNegoNeeded
+      );
+    };
+  }, [handleNegoNeeded]);
 
+  useEffect(() => {
+    if (!peerService) return;
+    // @ts-ignore
+    peerService?.peer?.addEventListener("track", async (ev) => {
+      console.log("cv is here", { ev });
+      const rStream = ev.streams;
+      setRemoteStream(rStream[0]);
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on(EVENTS.CLIENT.END_CALL, onEndCall);
+    socket.on(EVENTS.CLIENT.ACCEPTED_CALL, handleAcceptedCall);
+    socket.on(EVENTS.CLIENT.PEER_NEGOTIATION_NEEDED, handleNegoNeededIncoming);
+    socket.on(EVENTS.CLIENT.PEER_NEGOTIATION_FINAL, handleNegoFinal);
+
+    return () => {
+      socket.off(EVENTS.CLIENT.END_CALL, onEndCall);
+      socket.off(EVENTS.CLIENT.ACCEPTED_CALL, handleAcceptedCall);
+      socket.off(
+        EVENTS.CLIENT.PEER_NEGOTIATION_NEEDED,
+        handleNegoNeededIncoming
+      );
+      socket.off(EVENTS.CLIENT.PEER_NEGOTIATION_FINAL, handleNegoFinal);
+    };
+  }, [onEndCall]);
 
   const active = !!activeFriends.find(
     (f) => f.user.username === chatData?.data?.username
   );
+
+  // console.log({ media, remoteStream });
 
   return (
     <Stack
@@ -239,60 +352,74 @@ const Content = ({ showAnimation }: { showAnimation: boolean }) => {
         </Group>
       </Group>
       <Stack spacing={80}>
-        {videoOn ? (
-          <ReactPlayer
-            muted={false}
-            style={{ objectFit: "cover" }}
-            height={300}
-            width={500}
-            playing
-            url={myStream}
-          />
+        {remoteStream ? (
+          <>
+            <h1>Remote stream</h1>
+            <ReactPlayer
+              muted={false}
+              style={{ objectFit: "cover" }}
+              height={300}
+              width={500}
+              playing
+              url={remoteStream}
+            />
+          </>
+        ) : null}
+        {videoOn && myStream ? (
+          <>
+            <h1>My stream</h1>
+            <ReactPlayer
+              muted={false}
+              style={{ objectFit: "cover" }}
+              height={300}
+              width={500}
+              playing
+              url={myStream}
+            />
+          </>
         ) : (
           <Box pos={"relative"}>
-            {
-              showAnimation && (
-                <>
-                  <motion.div
-                    className={classes.circle}
-                    style={{
-                      height: 90,
-                      width: 90,
-                      zIndex: 3,
-                      translateX: '-50%',
-                      translateY: '-50%',
-                    }}
-                    animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
-                  />
-                  <motion.div
-                    className={classes.circle}
-                    style={{
-                      height: 90,
-                      width: 90,
-                      zIndex: 2,
-                      translateX: '-50%',
-                      translateY: '-50%',
-                    }}
-                    animate={{ scale: [1, 1.8, 1], opacity: [1, 0.5, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
-                  />
-                  <motion.div
-                    className={classes.circle}
-                    style={{
-                      height: 90,
-                      width: 90,
-                      zIndex: 2,
-                      translateX: '-50%',
-                      translateY: '-50%',
-                    }}
-                    animate={{ scale: [1, 2, 1], opacity: [1, 0.5, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.7 }}
-                  />
-                </>
-              )
-            }
-            <Box pos={'relative'} sx={{ zIndex: 4 }}>
+            {showAnimation && (
+              <>
+                <motion.div
+                  className={classes.circle}
+                  style={{
+                    height: 90,
+                    width: 90,
+                    zIndex: 3,
+                    translateX: "-50%",
+                    translateY: "-50%",
+                  }}
+                  animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
+                />
+                <motion.div
+                  className={classes.circle}
+                  style={{
+                    height: 90,
+                    width: 90,
+                    zIndex: 2,
+                    translateX: "-50%",
+                    translateY: "-50%",
+                  }}
+                  animate={{ scale: [1, 1.8, 1], opacity: [1, 0.5, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+                />
+                <motion.div
+                  className={classes.circle}
+                  style={{
+                    height: 90,
+                    width: 90,
+                    zIndex: 2,
+                    translateX: "-50%",
+                    translateY: "-50%",
+                  }}
+                  animate={{ scale: [1, 2, 1], opacity: [1, 0.5, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, delay: 0.7 }}
+                />
+              </>
+            )}
+            <Box pos={"relative"} sx={{ zIndex: 4 }}>
               <ProfileImage
                 avatar={chatData?.data?.avatar}
                 username={chatData?.data?.username}
@@ -302,16 +429,18 @@ const Content = ({ showAnimation }: { showAnimation: boolean }) => {
           </Box>
         )}
         <Center>
-          <Text>
-            Ringing...
-          </Text>
+          <Text>Ringing...</Text>
         </Center>
-
       </Stack>
 
       <Group position="center" py={16}>
         <Button.Group>
-          <Button onClick={handleCallEnd} variant="filled" color="red" size={"xl"}>
+          <Button
+            onClick={handleCallEnd}
+            variant="filled"
+            color="red"
+            size={"xl"}
+          >
             <Close />
           </Button>
 
@@ -319,7 +448,7 @@ const Content = ({ showAnimation }: { showAnimation: boolean }) => {
             variant="filled"
             size={"xl"}
             color={audioOn ? "indigo" : "gray"}
-            onClick={toggleAudio}
+            onClick={toggleMic}
           >
             {audioOn ? <MicOn /> : <MicOff />}
           </Button>
@@ -328,7 +457,7 @@ const Content = ({ showAnimation }: { showAnimation: boolean }) => {
             variant="filled"
             size={"xl"}
             color={videoOn ? "indigo" : "gray"}
-            onClick={toggleVideo}
+            onClick={toggleCamera}
           >
             {videoOn ? <Video /> : <VideoOff />}
           </Button>
@@ -339,47 +468,49 @@ const Content = ({ showAnimation }: { showAnimation: boolean }) => {
 };
 
 const Room = () => {
-  const [showAnimation, setShowAnimation] = useState(true)
+  const [showAnimation, setShowAnimation] = useState(true);
 
   const { md } = useBreakPoints();
   const { socket } = useSockets();
-  const router = useRouter()
+  const router = useRouter();
 
   const handleRejectedCall = useCallback(({ from }: any) => {
-    console.log('call rejected')
     notifications.show({
-      id: 'rejected-call' + from,
-      title: 'Rejected Call',
+      id: "rejected-call" + from,
+      title: "Rejected Call",
       message: `${from} rejected your call`,
-      color: 'red'
-    })
-    router.push(`${endpoints.client.chat}/${router.query?.room}`)
+      color: "red",
+    });
+    router.push(`${endpoints.client.chat}/${router.query?.room}`);
   }, []);
-
-
 
   const handleAcceptedCall = useCallback(({ from }: any) => {
-    setShowAnimation(false)
+    setShowAnimation(false);
   }, []);
-
 
   useEffect(() => {
     if (!socket) return;
 
     // on sender / caller side
-    socket.on(EVENTS.CLIENT.REJECT_CALL, handleRejectedCall)
+    socket.on(EVENTS.CLIENT.REJECT_CALL, handleRejectedCall);
+
+    // on receiver side
+    socket.on(EVENTS.CLIENT.ACCEPT_CALL, handleAcceptedCall);
 
     return () => {
-      socket.off(EVENTS.CLIENT.REJECT_CALL, handleRejectedCall)
-    }
-
-  }, [socket])
-
+      socket.off(EVENTS.CLIENT.REJECT_CALL, handleRejectedCall);
+      socket.off(EVENTS.CLIENT.ACCEPT_CALL, handleAcceptedCall);
+    };
+  }, [socket]);
 
   return (
     <MainLayout showMainNav={!md}>
-      <ChatLayout content={<Content showAnimation={showAnimation} />} showChats={!md} />
+      <ChatLayout
+        content={<Content showAnimation={showAnimation} />}
+        showChats={!md}
+      />
     </MainLayout>
   );
 };
+
 export default Room;

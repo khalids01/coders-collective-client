@@ -36,13 +36,14 @@ interface Context {
   newMessagesArray: ArrayStatesType | {};
   setNewFriend?: Function;
   activeFriends: SocketUser[];
-  peer: PeerService | {};
-  setOpenCallDialog: Function
+  setOpenCallDialog: Function,
+  peerService: PeerService | {}
 }
 
 const socket = io(SOCKET_URL as string, {
   autoConnect: false,
 });
+
 
 const SocketContext = createContext<Context>({
   socket,
@@ -50,20 +51,21 @@ const SocketContext = createContext<Context>({
   activeFriends: [],
   setChat_name: () => false,
   newMessagesArray: {},
-  peer: {},
   setOpenCallDialog: () => false,
+  peerService: {}
 });
+
 
 const SocketsProvider = (props: any) => {
   const { isLoggedIn } = useToken();
-  const [peer] = useState<PeerService>(new PeerService())
   const { user } = useUser();
   const [username, setUserName] = useState();
   const [chat_name, setChat_name] = useState();
   const [activeFriends, setActiveFriends] = useState<SocketUser[]>([]);
   const newMessagesArray = useArray([]);
   const router = useRouter();
-  const [ans, setAns] = useState<RTCSessionDescriptionInit | {}>({})
+  const peerService = new PeerService()
+  // const [ans, setAns] = useState<RTCSessionDescriptionInit | {}>({})
   const [incomingCallInfo, setIncomingCallInfo] = useState<{ from: string, offer: RTCSessionDescription, fromAvatar: string, room: string }>()
   const [openCallDialog, setOpenCallDialog] = useState(false)
   const { colors } = useTheme()
@@ -94,7 +96,7 @@ const SocketsProvider = (props: any) => {
     socket.emit(EVENTS.SERVER.ADD_ACTIVE_USER, user);
 
     // to handle audio and video call webRTC
-    socket.emit(EVENTS.SERVER.JOIN_ROOM, { username: user?.username });
+    // socket.emit(EVENTS.SERVER.JOIN_ROOM, { username: user?.username });
 
     socket.on(EVENTS.CLIENT.GET_ACTIVE_FRIENDS, (values) => {
       setActiveFriends(values);
@@ -150,22 +152,16 @@ const SocketsProvider = (props: any) => {
   }, []);
 
   const handleIncomingCall = useCallback(async ({ from, offer, fromAvatar, room }: { from: string, offer: RTCSessionDescription, fromAvatar: string, room: string }) => {
-    // const stream = await navigator.mediaDevices.getUserMedia({
-    //   audio: true,
-    //   video: true
-    // })
-    console.log("call from : ", from, offer, fromAvatar);
+  
     setIncomingCallInfo({ from, offer, fromAvatar, room })
     setOpenCallDialog(true)
     callRingtone()
-    // const answer = await peer?.getAnswer(offer)
-    // setAns(answer)
+
   }, []);
 
   // when caller start a call and end right way
   // its hides the calling dialogue on the receiving side 
   const handleCallCanceled = useCallback(({ from }: { from: string }) => {
-    console.log('Hiding Calling Dialog')
     setOpenCallDialog(false)
     notifications.show({
       id: 'end-call',
@@ -206,12 +202,16 @@ const SocketsProvider = (props: any) => {
   }
 
   const acceptcall = async () => {
+    if (!peerService) return;
     if (!incomingCallInfo?.offer) {
       console.log('OFFER is missing', incomingCallInfo)
       return
     }
-    const answer = await peer?.getAnswer(incomingCallInfo?.offer)
-    socket.emit(EVENTS.CLIENT.ACCEPT_CALL, ({ from: user?.username, ans }));
+
+    const answer = await peerService?.getAnswer(incomingCallInfo.offer)
+
+    socket.emit(EVENTS.CLIENT.ACCEPT_CALL, ({ from: user?.username, to: incomingCallInfo.from, answer }));
+
     router.push(endpoints.client.room + '/' + incomingCallInfo?.from + `?room-name=${incomingCallInfo?.room}`)
   }
 
@@ -225,8 +225,8 @@ const SocketsProvider = (props: any) => {
   return (
     <SocketContext.Provider
       value={{
+        peerService,
         socket,
-        peer,
         username,
         setUserName,
         newMessagesArray,

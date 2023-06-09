@@ -23,7 +23,6 @@ import Link from "next/link";
 import { useCallback } from "react";
 import { EVENTS } from "@/constants/socketConfig";
 import { useRouter } from "next/router";
-import PeerService from "@/services/chat/peer";
 
 const ChatHeader = ({ chat_name }: { chat_name: string }) => {
   const { colors, colorScheme } = useTheme();
@@ -31,7 +30,7 @@ const ChatHeader = ({ chat_name }: { chat_name: string }) => {
   const { md, xs } = useBreakPoints();
   const dispatch = useDispatch();
   const { chatData } = useChat({ chat_name, type: "user" });
-  const { socket } = useSockets();
+  const { socket, peerService } = useSockets();
   const { user } = useUser();
   const router = useRouter();
   const { showInfo } = useSelector(
@@ -47,8 +46,11 @@ const ChatHeader = ({ chat_name }: { chat_name: string }) => {
   );
 
   const startCall = useCallback(async () => {
-    const peer = new PeerService();
-    const offer = await peer.getOffer();
+    if(!peerService) return;
+
+
+    // @ts-ignore
+    const offer = await peerService?.getOffer();
 
     socket.emit(EVENTS.CLIENT.CALL, { fromAvatar: user?.avatar, toUsername: router.query?.chat_name, offer, room: user?.username });
     router.push(endpoints.client.room + "/" + router.query?.chat_name + `?room-name=${user?.username}`);
